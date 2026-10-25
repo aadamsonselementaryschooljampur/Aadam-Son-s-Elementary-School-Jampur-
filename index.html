@@ -145,16 +145,26 @@ header>img:first-child{height:50px;background:#fff;border-radius:50%;padding:4px
 </section>
 
 <section id="setup" hidden>
-  <div class="card"><h2>Teacher Profile</h2><p class="sub" id="su_mail"></p>
-    <form id="setup_f">
-      <label class="ph" id="su_ph"><span>Add photo</span><input type="file" id="su_file" accept="image/*" hidden></label>
-      <label>Teacher's Name</label><input id="su_name" required placeholder="Full name">
-      <div id="su_cw"><label>Class (baad mein sirf admin badal sakta hai)</label><select id="su_class"></select></div>
+  <div class="card">
+    <form id="setup_f"><h2>Create Password</h2><p class="sub" id="su_mail"></p>
+      <div id="su_cw"><label>Class (ek baar chunein, baad mein sirf admin badal sakta hai)</label><select id="su_class"></select></div>
       <label>Password (kam az kam 8 characters)</label><input id="su_pass" type="password" minlength="8" required>
       <label>Confirm Password</label><input id="su_pass2" type="password" minlength="8" required>
-      <button class="pri">Save and enter portal</button>
+      <button class="pri">Next &rsaquo;</button>
       <button type="button" class="alt" id="su_out">Logout</button>
-    </form><div id="su_msg" class="err" style="margin-top:12px;font-size:14px"></div></div>
+    </form>
+    <form id="prof_f" hidden><h2>Teacher Profile</h2><p class="sub">Apni profile mukammal karein</p>
+      <label class="ph" id="su_ph"><span>Profile picture</span><input type="file" id="su_file" accept="image/*" hidden></label>
+      <label>Name</label><input id="pf_name" required>
+      <label>Father's Name</label><input id="pf_father" required>
+      <label>C.N.I.C</label><input id="pf_cnic" required inputmode="numeric" placeholder="12345-1234567-1" pattern="\d{5}-?\d{7}-?\d" title="13 digit CNIC">
+      <label>Designation</label><input id="pf_des" placeholder="e.g. Primary Teacher"><select id="pf_desA" hidden><option>Headmaster</option></select>
+      <div id="pf_cw"><label>Class</label><input id="pf_class" readonly></div>
+      <div id="pf_sw"><label>Subject</label><input id="pf_sub" placeholder="e.g. Maths"></div>
+      <button class="pri">Save and enter portal &rsaquo;</button>
+    </form>
+    <div id="su_msg" class="err" style="margin-top:12px;font-size:14px"></div>
+  </div>
 </section>
 
 <!-- PORTAL -->
@@ -258,20 +268,36 @@ $('reset').onsubmit=async e=>{e.preventDefault();
 $('logout').onclick=$('su_out').onclick=()=>sb.auth.signOut();
 sb.auth.onAuthStateChange((ev)=>{if(!recovering&&ev!=='TOKEN_REFRESHED'&&ev!=='INITIAL_SESSION')setTimeout(boot,0)});
 
-// teacher first-time setup
+// first-time setup: step 1 password + class, step 2 profile
+function setStep(){
+  const adm=me.role==='admin';
+  $('setup_f').hidden=!!me.pwd_set;$('prof_f').hidden=!me.pwd_set;$('su_msg').textContent='';
+  $('su_mail').textContent=me.email;$('su_cw').hidden=adm;
+  $('pf_des').hidden=adm;$('pf_desA').hidden=!adm;$('pf_cw').hidden=adm;$('pf_sw').hidden=adm;
+  $('pf_class').value=me.class_name||'';
+}
 $('setup_f').onsubmit=async e=>{e.preventDefault();
-  const m=t=>$('su_msg').textContent=t,admin=me.role==='admin',p=$('su_pass').value;
+  const m=t=>$('su_msg').textContent=t,adm=me.role==='admin',p=$('su_pass').value;
   if(p.length<8)return m('Password kam az kam 8 characters ka ho.');
   if(p!==$('su_pass2').value)return m('Dono passwords match nahi karte.');
-  if(!admin&&!$('su_class').value)return m('Class select karein.');
+  if(!adm&&!$('su_class').value)return m('Class select karein.');
   try{
-    const url=await upload($('su_file').files[0]);
     const {error:e1}=await sb.auth.updateUser({password:p});if(e1)throw e1;
-    const upd={full_name:$('su_name').value.trim(),setup_done:true,avatar_url:url};
-    if(!admin)upd.class_name=$('su_class').value;
+    const upd={pwd_set:true};if(!adm)upd.class_name=$('su_class').value;
     const {error:e2}=await sb.from('profiles').update(upd).eq('id',me.id);if(e2)throw e2;
     boot();
   }catch(er){m(er.message)}
+};
+$('prof_f').onsubmit=async e=>{e.preventDefault();
+  const adm=me.role==='admin';
+  try{
+    const url=await upload($('su_file').files[0]);
+    const upd={full_name:$('pf_name').value.trim(),father_name:$('pf_father').value.trim(),cnic:$('pf_cnic').value.trim(),
+      designation:adm?$('pf_desA').value:$('pf_des').value.trim(),subject:adm?null:$('pf_sub').value.trim(),setup_done:true};
+    if(url)upd.avatar_url=url;
+    const {error}=await sb.from('profiles').update(upd).eq('id',me.id);if(error)throw error;
+    boot();
+  }catch(er){$('su_msg').textContent=er.message}
 };
 
 async function boot(){
@@ -280,11 +306,11 @@ async function boot(){
   const {data}=await sb.from('profiles').select('*').eq('id',session.user.id).single();
   me=data;if(!me){await sb.auth.signOut();return}
   $('auth').hidden=true;
-  if(!me.setup_done){$('app').hidden=true;$('setup').hidden=false;$('su_mail').textContent=me.email;$('su_cw').hidden=me.role==='admin';return}
+  if(!me.setup_done){$('app').hidden=true;$('setup').hidden=false;setStep();return}
   $('setup').hidden=true;$('app').hidden=false;
   const admin=me.role==='admin';
   $('av').hidden=!me.avatar_url;if(me.avatar_url)$('av').src=me.avatar_url;
-  $('who').textContent=(me.full_name||me.email)+' \u2022 '+(admin?'Admin':(me.class_name||'Class assign nahi hui'));
+  $('who').textContent=(me.full_name||me.email)+' \u2022 '+(admin?(me.designation||'Admin'):[me.designation,me.class_name||'Class assign nahi hui'].filter(Boolean).join(' \u2022 '));
   $('tabs').hidden=!admin;$('filter').hidden=!admin;$('st_class').disabled=!admin;
   $('f_sub').textContent=admin?'Aap admin hain: kisi bhi class ka data add/edit kar sakte hain.':'Class: '+(me.class_name||'-')+'. Save hone ke baad sirf admin change kar sakta hai.';
   $('l_title').textContent=admin?'All Students':'Students of '+(me.class_name||'-');
@@ -348,8 +374,8 @@ window.delS=async id=>{if(confirm('Is student ko delete karein?')){await sb.from
 
 async function loadTeachers(){
   const {data}=await sb.from('profiles').select('*').order('created_at');
-  $('ttable').innerHTML='<tr><th></th><th>Name</th><th>Email</th><th>Class</th><th>Role</th><th></th></tr>'+data.map(p=>
-  `<tr><td>${p.avatar_url?`<img class="thumb" src="${esc(p.avatar_url)}" alt="">`:''}</td><td>${esc(p.full_name)}</td><td>${esc(p.email)}</td>`+
+  $('ttable').innerHTML='<tr><th></th><th>Name</th><th>Father</th><th>CNIC</th><th>Designation</th><th>Subject</th><th>Email</th><th>Class</th><th>Role</th><th></th></tr>'+data.map(p=>
+  `<tr><td>${p.avatar_url?`<img class="thumb" src="${esc(p.avatar_url)}" alt="">`:''}</td><td>${esc(p.full_name)}</td><td>${esc(p.father_name)}</td><td>${esc(p.cnic)}</td><td>${esc(p.designation)}</td><td>${esc(p.subject)}</td><td>${esc(p.email)}</td>`+
   `<td><select id="c_${p.id}"><option value="">-</option>${CLASSES.map(c=>`<option${c===p.class_name?' selected':''}>${c}</option>`).join('')}</select></td>`+
   `<td><select id="r_${p.id}"><option${p.role==='teacher'?' selected':''}>teacher</option><option${p.role==='admin'?' selected':''}>admin</option></select></td>`+
   `<td><button onclick="saveT('${p.id}')">Save</button></td></tr>`).join('');
