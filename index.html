@@ -175,6 +175,11 @@ main>div:not([hidden]){animation:rise .45s both}
 .iob small{display:block;margin-top:8px;font-weight:600;color:var(--mut)}.iob small.rd{color:#c62828}
 .ib em{display:block;font-style:normal;font-size:19px;font-weight:600;margin-top:2px}
 .ib i{display:inline-block;font-style:normal;font-size:13px;font-weight:700;background:rgba(255,255,255,.25);padding:2px 10px;border-radius:99px;margin-top:4px}
+.ib{border-radius:999px;text-transform:uppercase;letter-spacing:.05em;padding:18px 10px;font-size:30px;line-height:1.1}
+.ib em,.ib i{text-transform:none;letter-spacing:0}
+.ib.out{background:linear-gradient(135deg,#ffe45c,#ffc800)}
+.ib.red{border-radius:34px}
+.row h2{line-height:1.2;margin-right:10px}
 </style></head>
 <body>
 
@@ -271,7 +276,7 @@ main>div:not([hidden]){animation:rise .45s both}
     <div style="height:16px"></div>
     <div class="card"><h2>Latest Students</h2><div id="latest"></div></div><div style="height:16px"></div>
     <div class="card" style="margin-top:16px">
-        <div class="row" style="margin:0"><h2 id="l_title">Students</h2><select id="filter" style="max-width:200px" hidden></select></div>
+        <div class="row" style="margin:0"><h2 id="l_title">Students</h2><select id="filter" style="max-width:150px" hidden></select></div>
         <div class="tw"><table id="stable"></table></div>
       </div></div>
     <div id="v_inout" hidden><div class="card"><h2>Teacher's In &amp; Out</h2><small class="sub io-date"></small><div class="io-box"></div></div></div>
@@ -522,11 +527,6 @@ function ioList(att,teachers){
 }
 async function loadIO(){
   document.querySelectorAll('.io-date').forEach(e=>e.textContent=new Date().toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long'}));
-  if(me.role==='admin'){
-    const [a,p]=await Promise.all([sb.from('attendance').select('*').eq('day',dayStr()),sb.from('profiles').select('id,full_name,email,avatar_url').eq('role','teacher')]);
-    if(a.error||p.error)return setIO('<p class="sub">'+esc((a.error||p.error).message)+'</p>');
-    return setIO(ioList(a.data,p.data));
-  }
   const {data,error}=await sb.from('attendance').select('*').eq('teacher_id',me.id).eq('day',dayStr()).maybeSingle();
   if(error)return setIO('<p class="sub">'+esc(error.message)+'</p>');
   todayRow=data;drawIO();
@@ -538,7 +538,6 @@ function drawIO(){
   <div><button class="ib out ${early?'red':''}" onclick="markIO('out')">Out${outT?`<em>${tm(r.out_time)}</em>${early?'<i>Too Early</i>':''}`:''}</button><small>${outT?'Marked for today':'Tap when you leave'}</small></div></div>`);
 }
 async function markIO(k){
-  if(me.role==='admin')return;
   const r=todayRow,now=new Date().toISOString();
   if(k==='in'&&r)return;
   if(k==='out'){if(!r)return alert('Please mark In first.');if(r.out_time)return}
@@ -548,7 +547,7 @@ async function markIO(k){
 }
 async function loadTD(){
   const day=$('td_day').value||dayStr();
-  const [a,p]=await Promise.all([sb.from('attendance').select('*').eq('day',day),sb.from('profiles').select('id,full_name,email,avatar_url').eq('role','teacher')]);
+  const [a,p]=await Promise.all([sb.from('attendance').select('*').eq('day',day),sb.from('profiles').select('id,full_name,email,avatar_url')]);
   $('td_list').innerHTML=(a.error||p.error)?'<p class="sub">'+esc((a.error||p.error).message)+'</p>':ioList(a.data,p.data);
 }
 $('td_day').onchange=loadTD;
