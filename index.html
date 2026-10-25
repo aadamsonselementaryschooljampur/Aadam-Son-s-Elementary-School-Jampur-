@@ -3,19 +3,15 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Aadam Son's Elementary School Jampur</title>
-<link rel="icon" href="logo.png">
+<link rel="icon" href="emblem.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Caveat:wght@700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <style>
 :root{--navy:#0b2a8a;--blue:#1565d8;--gold:#f5b81c;--bg:#eef4fd;--ink:#14213d;--mut:#6b7a99}
 *{box-sizing:border-box}
 body{margin:0;font-family:"Segoe UI",system-ui,sans-serif;color:var(--ink);background:linear-gradient(160deg,#dcebff,#f7fbff 60%,#fff7df);min-height:100vh}
 [hidden]{display:none!important}
-#auth{min-height:100vh;display:grid;grid-template-columns:auto 1fr;background:linear-gradient(180deg,#cfe6ff,#eaf4ff 70%,#fff)}
-.hero img{height:100vh;width:auto;display:block}
-.side{position:relative;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:90px 28px 14vh}
-.side .card{width:100%;max-width:460px}
-.tag{position:absolute;top:22px;right:28px;text-align:right;font-style:italic;font-weight:700;color:var(--navy);line-height:1.25;font-size:19px}
-.foot{position:absolute;left:0;right:0;bottom:0;height:11vh;background:var(--navy);color:var(--gold);display:flex;align-items:center;justify-content:center;font-style:italic;font-weight:600;font-size:18px}
 .fld{display:flex;align-items:center;gap:12px;border:1.5px solid #cfdaf0;border-radius:12px;padding:8px 14px;margin-top:12px;background:#fff}
 .fld:focus-within{border-color:var(--blue);box-shadow:0 0 0 3px rgba(21,101,216,.15)}
 .fld svg{flex:none;width:22px;height:22px;fill:none;stroke:var(--navy);stroke-width:2}
@@ -49,49 +45,98 @@ th{background:#f2f6fe;color:var(--navy)}
 td button{padding:6px 10px;font-size:13px;margin-right:4px;background:#e8f0fe;color:var(--navy)}
 td button.del{background:#fde8e8;color:#c62828}
 td input,td select{padding:6px 8px;font-size:13px}
-.tag{background:#fff3cf;color:#8a6200;padding:3px 10px;border-radius:99px;font-size:13px;font-weight:600}
-@media(max-width:900px){#auth{grid-template-columns:1fr}.hero{height:58vw;overflow:hidden}.hero img{width:100%;height:auto}.side{padding:20px 16px 90px}.tag{position:static;text-align:center;margin-bottom:14px}.foot{height:60px}}
 #setup{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:linear-gradient(180deg,#cfe6ff,#eaf4ff 70%,#fff)}
 #setup .card{width:100%;max-width:440px}
 .ph{width:110px;height:110px;border-radius:50%;background:#eaf1fd center/cover;border:3px solid var(--gold);margin:10px auto;display:grid;place-items:center;color:var(--mut);font-size:13px;cursor:pointer;text-align:center}
 .thumb{width:40px;height:40px;border-radius:8px;object-fit:cover}
 .av{height:40px;width:40px;border-radius:50%;object-fit:cover;border:2px solid var(--gold)}
+
+body{font-family:Poppins,"Segoe UI",system-ui,sans-serif}
+.card h2,header b{font-family:"Baloo 2",Poppins,sans-serif}
+header{background:linear-gradient(90deg,#08236f,#1565d8)}
+header b{color:#fff;font-size:22px}header small{color:#cfe1ff}header button{background:var(--gold);color:var(--navy)}
+header>img:first-child{height:50px;background:#fff;border-radius:50%;padding:4px}
+#auth,#setup{background:radial-gradient(900px 420px at 18% 0,#fff,transparent 60%),linear-gradient(180deg,#b3d8ff 0,#e4f2ff 55%,#fff 100%)}
+#auth{min-height:100vh;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(340px,480px);grid-template-rows:1fr auto;column-gap:2vw;padding:0 3vw;overflow:hidden}
+.left{display:flex;flex-direction:column;padding-top:3vh;min-height:0}
+.brand{display:flex;align-items:center;gap:clamp(10px,1.6vw,26px)}
+.brand img{height:clamp(84px,12vw,170px);filter:drop-shadow(0 6px 10px rgba(11,42,138,.25))}
+.ttl{font-family:"Baloo 2",cursive;font-weight:800;font-size:clamp(44px,6.6vw,104px);line-height:.95;color:var(--navy);text-shadow:0 3px 0 #fff,0 8px 18px rgba(11,42,138,.28);margin:0}
+.rib{display:inline-block;margin-top:8px;padding:6px clamp(24px,3vw,52px);font-weight:700;font-size:clamp(16px,2.1vw,32px);color:var(--navy);background:linear-gradient(#ffd75e,#f5b81c);clip-path:polygon(0 0,100% 0,97% 50%,100% 100%,0 100%,3% 50%)}
+.lgs{margin:10px 0 0 6px;letter-spacing:.35em;color:var(--navy);font-weight:500;font-size:clamp(13px,1.5vw,20px)}
+.kids{flex:1;position:relative;min-height:220px}
+.kids img{position:absolute;left:0;bottom:0;height:100%;width:auto;max-width:100%;object-fit:contain;object-position:left bottom;-webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 30%),linear-gradient(to right,transparent 0,#000 7%,#000 78%,transparent 100%);-webkit-mask-composite:source-in;mask-image:linear-gradient(to bottom,transparent 0,#000 30%),linear-gradient(to right,transparent 0,#000 7%,#000 78%,transparent 100%);mask-composite:intersect}
+.side{position:relative;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:80px 0 30px}
+.side .card{width:100%;max-width:480px;border-radius:24px;box-shadow:0 22px 60px rgba(11,42,138,.22)}
+.tag{position:absolute;top:2.5vh;right:0;font-family:Caveat,cursive;font-weight:700;font-size:clamp(24px,2.6vw,38px);line-height:1;color:var(--navy);transform:rotate(-6deg);text-align:center}
+.hd{display:flex;gap:14px;align-items:center;margin-bottom:8px}
+.hd i{flex:none;width:58px;height:58px;border-radius:50%;background:linear-gradient(135deg,var(--navy),var(--blue));display:grid;place-items:center}
+.hd svg{width:28px;height:28px;stroke:#fff;fill:none;stroke-width:2}
+.hd .sub{margin:2px 0 0}
+.pri{display:flex;justify-content:center;align-items:center;gap:10px;border-radius:12px;font-size:16px;padding:14px;transition:transform .15s}
+.pri:hover{transform:translateY(-1px)}
+.or{display:flex;align-items:center;gap:10px;color:var(--mut);font-size:12px;margin-top:16px}
+.or:before,.or:after{content:"";flex:1;height:1px;background:#d9e3f5}
+.foot{grid-column:1/-1;margin:0 -3vw;background:linear-gradient(90deg,#08236f,#0b3aa8);color:#fff;display:flex;align-items:center;justify-content:space-between;gap:18px;padding:18px 4vw;border-radius:60px 60px 0 0/26px 26px 0 0}
+.fi{display:flex;gap:12px;align-items:center}
+.fi svg{width:46px;height:46px;flex:none;fill:none;stroke:#fff;stroke-width:1.6;border:2px solid rgba(255,255,255,.7);border-radius:50%;padding:9px}
+.fi b{display:block;font-size:15px}.fi small{display:block;font-size:12px;opacity:.85;max-width:180px}
+.tg{font-family:Caveat,cursive;color:var(--gold);font-size:32px;font-weight:700;transform:rotate(-4deg);white-space:nowrap}
+@media(max-width:900px){
+ #auth{grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto auto;padding:0 14px}.left,.side,.card{min-width:0}.side .card{padding:20px}.fi b{font-size:13px}.tg{font-size:26px}
+ .left{padding-top:16px}.brand img{height:84px}.ttl{font-size:44px}.rib{font-size:13px;padding:5px 22px;white-space:nowrap}.lgs{font-size:12px}
+ .kids{flex:none;height:62vw;min-height:0}
+ .side{padding:6px 0 24px}.tag{position:static;transform:none;margin-bottom:10px;font-size:26px}
+ .foot{margin:0 -14px;flex-wrap:wrap;justify-content:center;gap:12px 16px;padding:18px 14px}.fi svg{width:38px;height:38px;padding:7px}.fi small{display:none}.tg{width:100%;text-align:center}
+}
 </style></head>
 <body>
 
 <!-- LOGIN / REGISTER SCREEN -->
 <section id="auth">
-  <div class="hero"><img src="banner.jpg" alt="Aadam Son's Elementary School Jampur"></div>
-  <div class="side"><div class="tag">"Better Students,<br>Brighter Future"</div>
+  <div class="left">
+    <div class="brand"><img src="emblem.png" alt="">
+      <div><h1 class="ttl">Aadam Son's</h1><div class="rib">Elementary School Jampur</div><div class="lgs">Learn &bull; Grow &bull; Succeed</div></div></div>
+    <div class="kids"><img src="kids.jpg" alt="Students of Aadam Son's Elementary School"></div>
+  </div>
+  <div class="side"><div class="tag">&ldquo;Better Students<br>Brighter Future&rdquo;</div>
   <div class="card">
-    <form id="login"><h2>Welcome back</h2><p class="sub">Login to Aadam Son's portal</p>
+    <form id="login"><div class="hd"><i><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="8" r="4"/></svg></i><div><h2>Welcome Back</h2><p class="sub">Login to Aadam Son's portal</p></div></div>
       <label>Email</label><input id="l_email" type="email" required placeholder="Enter your email address">
       <label>Password</label><input id="l_pass" type="password" required placeholder="Enter your password">
-      <button class="pri">Login</button>
-      <div class="row"><button type="button" class="ghost" data-go="forgot">Forgot Password?</button><button type="button" class="ghost" data-go="register">Register</button></div>
+      <button class="pri">Login &rsaquo;</button>
+      <div class="row"><button type="button" class="ghost" data-go="forgot">Forgot Password?</button></div>
+      <div class="or">New teacher?</div>
+      <button type="button" class="alt" data-go="register">Register (Create new account)</button>
     </form>
-    <form id="register" hidden><h2>Create New Account</h2><p class="sub">Apni email likhein, 6-digit code email par aayega</p>
+    <form id="register" hidden><div class="hd"><i><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21a7 7 0 0 0-14 0"/><circle cx="9" cy="8" r="4"/><path d="M19 8v6M16 11h6"/></svg></i><div><h2>Create New Account</h2><p class="sub">Join Aadam Son's Elementary School Jampur</p></div></div>
       <label>Email Address</label><input id="r_email" type="email" required placeholder="Enter your email address">
-      <button class="pri">Send code</button>
-      <button type="button" class="alt" data-go="login">Already have an account? Login</button>
+      <button class="pri">Send code &rsaquo;</button>
+      <div class="or">Already have an account?</div>
+      <button type="button" class="alt" data-go="login">Login</button>
     </form>
-    <form id="verify" hidden><h2>Enter 6-digit code</h2><p class="sub" id="v_sub"></p>
+    <form id="verify" hidden><div class="hd"><i><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></i><div><h2>Enter 6-digit code</h2><p class="sub"></p></div></div>
+      <p class="sub" id="v_sub"></p>
       <label>Confirmation Code</label><input id="v_code" inputmode="numeric" maxlength="6" required placeholder="123456">
-      <button class="pri">Confirm</button>
+      <button class="pri">Confirm &rsaquo;</button>
       <button type="button" class="alt" data-go="login">Back to Login</button>
     </form>
-    <form id="forgot" hidden><h2>Forgot Password</h2><p class="sub">Email par 6-digit code bheja jayega</p>
+    <form id="forgot" hidden><div class="hd"><i><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></i><div><h2>Forgot Password</h2><p class="sub">Email par 6-digit code bheja jayega</p></div></div>
       <label>Email</label><input id="f_email" type="email" required placeholder="Enter your email address">
-      <button class="pri">Send code</button>
+      <button class="pri">Send code &rsaquo;</button>
       <button type="button" class="alt" data-go="login">Back to Login</button>
     </form>
-    <form id="reset" hidden><h2>New Password</h2><p class="sub">Kam az kam 8 characters</p>
+    <form id="reset" hidden><div class="hd"><i><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></i><div><h2>New Password</h2><p class="sub">Kam az kam 8 characters</p></div></div>
       <label>New Password</label><input id="n_pass" type="password" minlength="8" required>
-      <button class="pri">Save password</button>
+      <button class="pri">Save password &rsaquo;</button>
     </form>
     <div id="msg"></div>
-  </div>
-  <div class="foot">Together for a Brighter Future</div>
+  </div></div>
+  <div class="foot">
+    <div class="fi"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.500-1-8-4-8-9V6z"/><path d="m9 12 2 2 4-4"/></svg><div><b>Secure &amp; Safe</b><small>Your data is protected</small></div></div>
+    <div class="fi"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.500"/><path d="M2 20a7 7 0 0 1 14 0M17 5a3.500 3.500 0 0 1 0 6.500M19 20a6 6 0 0 0-3-5"/></svg><div><b>Class Based Access</b><small>Each teacher sees only their own class</small></div></div>
+    <div class="fi"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c3 2.500 9 2.500 12 0v-5"/></svg><div><b>Admin Control</b><small>Full access &amp; editing rights</small></div></div>
+    <div class="tg">Together for a Brighter Future</div>
   </div>
 </section>
 
@@ -110,7 +155,7 @@ td input,td select{padding:6px 8px;font-size:13px}
 
 <!-- PORTAL -->
 <section id="app" hidden>
-  <header><img src="logo.png" alt=""><div><b>Aadam Son's</b><small id="who"></small></div><div class="sp"></div><img id="av" class="av" alt="" hidden><button id="logout">Logout</button></header>
+  <header><img src="emblem.png" alt=""><div><b>Aadam Son's</b><small id="who"></small></div><div class="sp"></div><img id="av" class="av" alt="" hidden><button id="logout">Logout</button></header>
   <main>
     <div class="tabs" id="tabs" hidden><button data-tab="stu" class="on">Students</button><button data-tab="tea">Teachers</button></div>
 
