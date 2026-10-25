@@ -155,7 +155,7 @@ header>img:first-child{height:50px;background:#fff;border-radius:50%;padding:4px
       <label>Designation</label><select id="pf_des"><option value="">Select designation</option><option>H.T</option><option>E.S.T</option><option>Primary</option></select><select id="pf_desA" hidden><option>Headmaster</option></select>
       <div id="su_cw"><label>Class (ek baar chunein, baad mein sirf admin badal sakta hai)</label><select id="su_class"></select></div>
       <label>Password (minimum 8 characters)</label><input id="su_pass" type="password" minlength="8" required>
-      <label>Confirm Password</label><input id="su_pass2" type="password" minlength="8" required>
+      <label style="font-weight:400;display:flex;gap:8px;align-items:center"><input type="checkbox" style="width:auto" onchange="$('su_pass').type=this.checked?'text':'password'">Show password</label>
       <button class="pri">Save and enter portal &rsaquo;</button>
       <button type="button" class="alt" id="su_out">Logout</button>
     </form>
@@ -277,7 +277,6 @@ function setStep(){
 $('prof_f').onsubmit=async e=>{e.preventDefault();
   const m=t=>$('su_msg').textContent=t,adm=me.role==='admin',p=$('su_pass').value;
   if(p.length<8)return m('Password must be at least 8 characters.');
-  if(p!==$('su_pass2').value)return m('Passwords do not match.');
   const des=$('pf_des').value;
   if(!adm&&!des)return m('Please select your designation.');
   if(!adm&&des!=='H.T'&&!$('su_class').value)return m('Please select your class.');
