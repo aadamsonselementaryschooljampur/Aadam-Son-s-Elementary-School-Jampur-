@@ -163,6 +163,8 @@ main>div:not([hidden]){animation:rise .45s both}
 .cb b{display:block;font-family:"Baloo 2",sans-serif;font-size:26px;line-height:1.1}.cb small{opacity:.85}
 .cb:hover{transform:translateY(-4px)}
 .vt{font-family:"Baloo 2",sans-serif;color:var(--navy);margin:0 0 12px}
+.cb.sel{box-shadow:0 0 0 3px var(--gold),0 10px 22px rgba(21,101,216,.35)}
+.miss{display:block;color:#c62828;font-size:12px}
 </style></head>
 <body>
 
@@ -242,6 +244,7 @@ main>div:not([hidden]){animation:rise .45s both}
     <button class="mi" data-v="prof"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="8" r="4"/></svg>Profile</button>
     <button class="mi on" data-v="dash"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</button>
     <button class="mi" data-v="class"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10 12 4l9 6-9 6z"/><path d="M7 12.5V17c3 2 7 2 10 0v-4.500"/></svg>Class</button>
+    <button class="mi" data-v="data" id="m_data" hidden><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Data</button>
     <button class="mi" data-v="search"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>Search</button>
     <button class="mi" data-v="add"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21a7 7 0 0 0-14 0"/><circle cx="9" cy="8" r="4"/><path d="M19 8v6M16 11h6"/></svg>Add Student</button>
     <button class="mi" data-v="tea" id="m_tea" hidden><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2 20a7 7 0 0 1 14 0M17 5a3.5 3.5 0 0 1 0 6.5M19 20a6 6 0 0 0-3-5"/></svg>Teachers</button>
@@ -262,6 +265,9 @@ main>div:not([hidden]){animation:rise .45s both}
         <label>Search (name or G.R No.)</label><input id="c_q" placeholder="Optional"></div>
         <div class="card" style="margin-top:16px"><div id="c_list"></div></div></div>
     </div>
+    <div id="v_data" hidden><h2 class="vt">Student Data</h2>
+      <div class="cgrid" style="grid-template-columns:1fr 1fr"><button class="cb sel" id="d_inc" type="button"><b id="n_inc">0</b><small>Incomplete Students</small></button><button class="cb" id="d_com" type="button"><b id="n_com">0</b><small>Complete Students</small></button></div>
+      <div class="card" style="margin-top:16px"><h2 id="dd_t"></h2><div id="dd_list"></div></div></div>
     <div id="v_search" hidden><div class="card"><h2>Search Student</h2><p class="sub">Both fields are optional. Use either one or both.</p>
       <div class="grid"><div><label>G.R No.</label><input id="q_gr" placeholder="e.g. 101"></div><div><label>Student Name</label><input id="q_name" placeholder="e.g. Ali"></div></div></div>
       <div class="card" style="margin-top:16px"><div id="q_res"></div></div></div>
@@ -274,7 +280,7 @@ main>div:not([hidden]){animation:rise .45s both}
           <div><label>Student's Name</label><input id="st_name" required></div>
           <div><label>Father's Name</label><input id="st_father" required></div>
           <div><label>D.O.B</label><input id="st_dob" type="date" required></div>
-          <div><label>B-Form</label><input id="st_bform" maxlength="15" inputmode="numeric" placeholder="12345-1234567-1"></div>
+          <div><label>B-Form (optional)</label><input id="st_bform" maxlength="15" inputmode="numeric" placeholder="12345-1234567-1"></div>
           <div><label>Class</label><select id="st_class"></select></div>
           <div><label>Current Class</label><select id="st_cur"></select></div>
           <div><label>Last School</label><input id="st_ls"></div>
@@ -396,13 +402,13 @@ async function boot(){
   $('filter').hidden=!admin;$('st_class').disabled=!admin;
   $('f_sub').textContent=admin?'Aap admin hain: kisi bhi class ka data add/edit kar sakte hain.':'Class: '+(me.class_name||'-')+'. Save hone ke baad sirf admin change kar sakta hai.';
   $('l_title').textContent=admin?'All Students':'Students of '+(me.class_name||'-');
-  resetForm();drawProfile();$('m_tea').hidden=!admin;view('dash');
+  resetForm();drawProfile();$('m_tea').hidden=!admin;$('m_data').hidden=!admin;view('dash');
 }
 function view(v){
-  ['dash','class','search','add','prof','tea'].forEach(x=>$('v_'+x).hidden=x!==v);
+  ['dash','class','data','search','add','prof','tea'].forEach(x=>$('v_'+x).hidden=x!==v);
   document.querySelectorAll('.mi[data-v]').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
   $('drawer').classList.remove('open');$('scrim').hidden=true;
-  if(v==='tea')loadTeachers();if(v==='dash'||v==='search'||v==='class')loadStudents();scrollTo(0,0);
+  if(v==='tea')loadTeachers();if(v==='dash'||v==='search'||v==='class'||v==='data')loadStudents();scrollTo(0,0);
 }
 document.querySelector('.dh').onclick=()=>view('prof');
 document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const r=b.getBoundingClientRect(),d=Math.max(r.width,r.height),x=document.createElement('span');x.className='rp';x.style.cssText=`width:${d}px;height:${d}px;left:${e.clientX-r.left-d/2}px;top:${e.clientY-r.top-d/2}px`;b.appendChild(x);setTimeout(()=>x.remove(),650)});
@@ -467,6 +473,18 @@ function drawClass(){
 }
 $('c_q').oninput=drawClass;
 $('c_back').onclick=()=>{curClass=null;$('c_q').value='';drawClassView()};
+const REQ=[['photo_url','Photo'],['gr_no','G.R No.'],['name','Name'],['father_name',"Father's Name"],['dob','D.O.B'],['b_form','B-Form'],['class_name','Class'],['current_class','Current Class'],['admission_date','Date of Admission'],['address','Address']];
+const missing=s=>REQ.filter(([k])=>!String(s[k]??'').trim()).map(x=>x[1]);
+let dsel='inc';
+function drawData(){
+  if(!me||me.role!=='admin')return;
+  const inc=students.filter(s=>missing(s).length),com=students.filter(s=>!missing(s).length),list=dsel==='inc'?inc:com;
+  $('n_inc').textContent=inc.length;$('n_com').textContent=com.length;
+  $('d_inc').classList.toggle('sel',dsel==='inc');$('d_com').classList.toggle('sel',dsel==='com');
+  $('dd_t').textContent=dsel==='inc'?'Incomplete Students':'Complete Students';
+  $('dd_list').innerHTML=list.length?list.map(s=>`<div class="li">${s.photo_url?`<img src="${esc(s.photo_url)}" alt="">`:`<div class="i0">${esc((s.name||'?')[0])}</div>`}<div style="flex:1;min-width:0"><b>${esc(s.name)}</b><small>${s.gr_no?'G.R '+esc(s.gr_no)+' - ':''}Class ${esc(s.class_name)}</small>${dsel==='inc'?`<span class="miss">Missing: ${esc(missing(s).join(', '))}</span>`:''}</div><button onclick="editS('${s.id}')">Edit</button></div>`).join(''):'<p class="sub">No students in this list.</p>';
+}
+$('d_inc').onclick=()=>{dsel='inc';drawData()};$('d_com').onclick=()=>{dsel='com';drawData()};
 function drawLatest(){
   const r=[...students].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).slice(0,10);
   $('latest').innerHTML=r.length?r.map(s=>`<div class="li">${s.photo_url?`<img src="${esc(s.photo_url)}" alt="">`:`<div class="i0">${esc((s.name||'?')[0])}</div>`}<div><b>${esc(s.name)}</b><small>${s.gr_no?'G.R '+esc(s.gr_no)+' - ':''}Class ${esc(s.class_name)}</small></div></div>`).join(''):'<p class="sub">No students added yet. Open the menu and tap Add Student.</p>';
@@ -488,7 +506,7 @@ async function loadStudents(){
     $('filter').innerHTML='<option value="">All classes</option>'+cl.map(c=>`<option>${esc(c)}</option>`).join('');
     $('filter').value=cl.includes(cur)?cur:'';
   }
-  drawLatest();drawStudents();drawSearch();drawClassView();
+  drawLatest();drawStudents();drawSearch();drawClassView();drawData();
 }
 $('filter').onchange=drawStudents;
 function drawStudents(){
