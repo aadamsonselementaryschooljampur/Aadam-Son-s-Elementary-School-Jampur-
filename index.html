@@ -519,11 +519,12 @@ const mins=t=>{const d=new Date(t);return d.getHours()*60+d.getMinutes()};
 const isLate=r=>!!(r&&r.in_time&&mins(r.in_time)>8*60+30),isEarly=r=>!!(r&&r.out_time&&mins(r.out_time)<13*60+30);
 let todayRow=null;
 const setIO=h=>document.querySelectorAll('.io-box').forEach(e=>e.innerHTML=h);
+const dur=r=>{const m=Math.max(0,Math.round((new Date(r.out_time)-new Date(r.in_time))/60000));return Math.floor(m/60)+'h '+m%60+'m'};
 function ioList(att,teachers){
   const m={};(att||[]).forEach(r=>m[r.teacher_id]=r);
   return (teachers||[]).length?teachers.map(t=>{const r=m[t.id];
     const chips=!r?'<span class="chip no">Not in</span>':`<span class="chip ${isLate(r)?'no':'in'}">${isLate(r)?'Late':'In'}</span>`+(r.out_time?` <span class="chip ${isEarly(r)?'no':'out'}">${isEarly(r)?'Too Early':'Out'}</span>`:'');
-    return `<div class="li"><img src="${esc(t.avatar_url||'emblem.png')}" alt=""><div style="flex:1;min-width:0"><b>${esc(t.full_name||t.email)}</b><small>In ${tm(r&&r.in_time)} - Out ${tm(r&&r.out_time)}</small></div><div style="text-align:right">${chips}</div></div>`}).join(''):'<p class="sub">No teachers yet.</p>';
+    return `<div class="li"><img src="${esc(t.avatar_url||'emblem.png')}" alt=""><div style="flex:1;min-width:0"><b>${esc(t.full_name||t.email)}</b><small>In ${tm(r&&r.in_time)} - Out ${tm(r&&r.out_time)}${r&&r.in_time&&r.out_time?' - '+dur(r):''}</small></div><div style="text-align:right">${chips}</div></div>`}).join(''):'<p class="sub">No teachers yet.</p>';
 }
 async function loadIO(){
   document.querySelectorAll('.io-date').forEach(e=>e.textContent=new Date().toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long'}));
