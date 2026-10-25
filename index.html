@@ -106,6 +106,7 @@ header>img:first-child{height:50px;background:#fff;border-radius:50%;padding:4px
 .li{display:flex;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid #e3eaf7}
 .li img,.li .i0{width:48px;height:48px;border-radius:50%;object-fit:cover;background:#eaf1fd;flex:none;display:grid;place-items:center;font-weight:700;color:var(--navy)}
 .li b{display:block}.li small{color:var(--mut)}
+.li button{padding:6px 12px;font-size:13px;background:#e8f0fe;color:var(--navy)}
 .pav{width:120px;height:120px;border-radius:50%;object-fit:cover;border:4px solid var(--gold);background:#eaf1fd}
 .kv{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid #e3eaf7;font-size:14px}.kv span{color:var(--mut)}
 </style></head>
@@ -185,6 +186,7 @@ header>img:first-child{height:50px;background:#fff;border-radius:50%;padding:4px
   <nav id="drawer"><div class="dh"><img id="d_av" alt=""><b id="d_name"></b><small id="d_sub"></small></div>
     <button class="mi" data-v="prof"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="8" r="4"/></svg>Profile</button>
     <button class="mi on" data-v="dash"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</button>
+    <button class="mi" data-v="search"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>Search</button>
     <button class="mi" data-v="add"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21a7 7 0 0 0-14 0"/><circle cx="9" cy="8" r="4"/><path d="M19 8v6M16 11h6"/></svg>Add Student</button>
     <button class="mi" data-v="tea" id="m_tea" hidden><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2 20a7 7 0 0 1 14 0M17 5a3.5 3.5 0 0 1 0 6.5M19 20a6 6 0 0 0-3-5"/></svg>Teachers</button>
     <button class="mi out" id="logout"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>Sign out</button>
@@ -196,6 +198,9 @@ header>img:first-child{height:50px;background:#fff;border-radius:50%;padding:4px
         <div class="row" style="margin:0"><h2 id="l_title">Students</h2><select id="filter" style="max-width:200px" hidden></select></div>
         <div class="tw"><table id="stable"></table></div>
       </div></div>
+    <div id="v_search" hidden><div class="card"><h2>Search Student</h2><p class="sub">Both fields are optional. Use either one or both.</p>
+      <div class="grid"><div><label>G.R No.</label><input id="q_gr" placeholder="e.g. 101"></div><div><label>Student Name</label><input id="q_name" placeholder="e.g. Ali"></div></div></div>
+      <div class="card" style="margin-top:16px"><div id="q_res"></div></div></div>
     <div id="v_add" hidden><div class="card">
         <h2 id="f_title">Add student</h2><p class="sub" id="f_sub"></p>
         <form id="sform">
@@ -333,10 +338,10 @@ async function boot(){
   resetForm();drawProfile();$('m_tea').hidden=!admin;view('dash');
 }
 function view(v){
-  ['dash','add','prof','tea'].forEach(x=>$('v_'+x).hidden=x!==v);
+  ['dash','search','add','prof','tea'].forEach(x=>$('v_'+x).hidden=x!==v);
   document.querySelectorAll('.mi[data-v]').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
   $('drawer').classList.remove('open');$('scrim').hidden=true;
-  if(v==='tea')loadTeachers();if(v==='dash')loadStudents();scrollTo(0,0);
+  if(v==='tea')loadTeachers();if(v==='dash'||v==='search')loadStudents();scrollTo(0,0);
 }
 $('burger').onclick=()=>{$('drawer').classList.add('open');$('scrim').hidden=false};
 $('scrim').onclick=()=>{$('drawer').classList.remove('open');$('scrim').hidden=true};
@@ -347,6 +352,13 @@ function drawProfile(){
   $('d_sub').textContent=me.role==='admin'?(me.designation||'Admin'):[me.designation,me.class_name].filter(Boolean).join(' - ');
   $('pr_rows').innerHTML=f("Father's Name",me.father_name)+f('C.N.I.C',me.cnic)+f('Caste',me.caste)+f('Designation',me.designation)+f('Class',me.class_name)+f('Email',me.email);
 }
+function drawSearch(){
+  const g=$('q_gr').value.trim().toLowerCase(),n=$('q_name').value.trim().toLowerCase(),adm=me.role==='admin';
+  const r=students.filter(s=>(!g||(s.gr_no||'').toLowerCase().includes(g))&&(!n||(s.name||'').toLowerCase().includes(n)));
+  $('q_res').innerHTML=(g||n?`<p class="sub">${r.length} found</p>`:'<p class="sub">Showing all students. Type a G.R No. or name to narrow down.</p>')+
+  r.slice(0,50).map(s=>`<div class="li">${s.photo_url?`<img src="${esc(s.photo_url)}" alt="">`:`<div class="i0">${esc((s.name||'?')[0])}</div>`}<div style="flex:1;min-width:0"><b>${esc(s.name)}</b><small>${s.gr_no?'G.R '+esc(s.gr_no)+' - ':''}Class ${esc(s.class_name)}${s.father_name?' - '+esc(s.father_name):''}</small></div>${adm?`<button onclick="editS('${s.id}')">Edit</button>`:''}</div>`).join('');
+}
+$('q_gr').oninput=$('q_name').oninput=drawSearch;
 function drawLatest(){
   const r=[...students].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).slice(0,10);
   $('latest').innerHTML=r.length?r.map(s=>`<div class="li">${s.photo_url?`<img src="${esc(s.photo_url)}" alt="">`:`<div class="i0">${esc((s.name||'?')[0])}</div>`}<div><b>${esc(s.name)}</b><small>${s.gr_no?'G.R '+esc(s.gr_no)+' - ':''}Class ${esc(s.class_name)}</small></div></div>`).join(''):'<p class="sub">No students added yet. Open the menu and tap Add Student.</p>';
@@ -368,7 +380,7 @@ async function loadStudents(){
     $('filter').innerHTML='<option value="">All classes</option>'+cl.map(c=>`<option>${esc(c)}</option>`).join('');
     $('filter').value=cl.includes(cur)?cur:'';
   }
-  drawLatest();drawStudents();
+  drawLatest();drawStudents();drawSearch();
 }
 $('filter').onchange=drawStudents;
 function drawStudents(){
