@@ -173,6 +173,8 @@ main>div:not([hidden]){animation:rise .45s both}
 .ib.out{background:linear-gradient(135deg,#ffd75e,#f5b81c);color:#0b2a8a;box-shadow:0 8px 18px rgba(245,184,28,.4)}
 .ib.red{background:linear-gradient(135deg,#b71c1c,#e53935);color:#fff;box-shadow:0 8px 18px rgba(229,57,53,.4)}
 .iob small{display:block;margin-top:8px;font-weight:600;color:var(--mut)}.iob small.rd{color:#c62828}
+.ib em{display:block;font-style:normal;font-size:19px;font-weight:600;margin-top:2px}
+.ib i{display:inline-block;font-style:normal;font-size:13px;font-weight:700;background:rgba(255,255,255,.25);padding:2px 10px;border-radius:99px;margin-top:4px}
 </style></head>
 <body>
 
@@ -515,7 +517,7 @@ const setIO=h=>document.querySelectorAll('.io-box').forEach(e=>e.innerHTML=h);
 function ioList(att,teachers){
   const m={};(att||[]).forEach(r=>m[r.teacher_id]=r);
   return (teachers||[]).length?teachers.map(t=>{const r=m[t.id];
-    const chips=!r?'<span class="chip no">Not in</span>':`<span class="chip ${isLate(r)?'no':'in'}">${isLate(r)?'Late':'In'}</span>`+(r.out_time?` <span class="chip ${isEarly(r)?'no':'out'}">${isEarly(r)?'Early out':'Out'}</span>`:'');
+    const chips=!r?'<span class="chip no">Not in</span>':`<span class="chip ${isLate(r)?'no':'in'}">${isLate(r)?'Late':'In'}</span>`+(r.out_time?` <span class="chip ${isEarly(r)?'no':'out'}">${isEarly(r)?'Too Early':'Out'}</span>`:'');
     return `<div class="li"><img src="${esc(t.avatar_url||'emblem.png')}" alt=""><div style="flex:1;min-width:0"><b>${esc(t.full_name||t.email)}</b><small>In ${tm(r&&r.in_time)} - Out ${tm(r&&r.out_time)}</small></div><div style="text-align:right">${chips}</div></div>`}).join(''):'<p class="sub">No teachers yet.</p>';
 }
 async function loadIO(){
@@ -531,8 +533,9 @@ async function loadIO(){
 }
 function drawIO(){
   const r=todayRow,late=isLate(r),early=isEarly(r);
-  setIO(`<div class="iob"><div><button class="ib ${late?'red':''}" onclick="markIO('in')">In</button><small class="${late?'rd':''}">${r?tm(r.in_time)+(late?' - Late':''):'Tap when you arrive'}</small></div>
-  <div><button class="ib out ${early?'red':''}" onclick="markIO('out')">Out</button><small class="${early?'rd':''}">${r&&r.out_time?tm(r.out_time)+(early?' - Early':''):'Tap when you leave'}</small></div></div>`);
+  const inT=r&&r.in_time,outT=r&&r.out_time;
+  setIO(`<div class="iob"><div><button class="ib ${late?'red':''}" onclick="markIO('in')">In${inT?`<em>${tm(r.in_time)}</em>${late?'<i>Late</i>':''}`:''}</button><small>${inT?'Marked for today':'Tap when you arrive'}</small></div>
+  <div><button class="ib out ${early?'red':''}" onclick="markIO('out')">Out${outT?`<em>${tm(r.out_time)}</em>${early?'<i>Too Early</i>':''}`:''}</button><small>${outT?'Marked for today':'Tap when you leave'}</small></div></div>`);
 }
 async function markIO(k){
   if(me.role==='admin')return;
