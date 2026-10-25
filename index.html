@@ -10,9 +10,18 @@
 *{box-sizing:border-box}
 body{margin:0;font-family:"Segoe UI",system-ui,sans-serif;color:var(--ink);background:linear-gradient(160deg,#dcebff,#f7fbff 60%,#fff7df);min-height:100vh}
 [hidden]{display:none!important}
-#auth{min-height:100vh;display:grid;grid-template-columns:1.1fr 1fr;align-items:center;gap:24px;padding:24px;max-width:1100px;margin:auto}
-.hero{text-align:center}.hero img{width:min(380px,80%)}
-.hero p{font-style:italic;color:var(--navy);font-weight:600;margin:8px 0 0}
+#auth{min-height:100vh;display:grid;grid-template-columns:auto 1fr;background:linear-gradient(180deg,#cfe6ff,#eaf4ff 70%,#fff)}
+.hero img{height:100vh;width:auto;display:block}
+.side{position:relative;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:90px 28px 14vh}
+.side .card{width:100%;max-width:460px}
+.tag{position:absolute;top:22px;right:28px;text-align:right;font-style:italic;font-weight:700;color:var(--navy);line-height:1.25;font-size:19px}
+.foot{position:absolute;left:0;right:0;bottom:0;height:11vh;background:var(--navy);color:var(--gold);display:flex;align-items:center;justify-content:center;font-style:italic;font-weight:600;font-size:18px}
+.fld{display:flex;align-items:center;gap:12px;border:1.5px solid #cfdaf0;border-radius:12px;padding:8px 14px;margin-top:12px;background:#fff}
+.fld:focus-within{border-color:var(--blue);box-shadow:0 0 0 3px rgba(21,101,216,.15)}
+.fld svg{flex:none;width:22px;height:22px;fill:none;stroke:var(--navy);stroke-width:2}
+.fld>div{flex:1;min-width:0}.fld label{margin:0;font-size:13px}
+.fld input{border:0;padding:2px 0;border-radius:0}.fld input:focus{box-shadow:none}
+.eye{background:none;padding:4px;color:var(--mut)}
 .card{background:#fff;border-radius:20px;padding:28px;box-shadow:0 18px 50px rgba(11,42,138,.15)}
 .card h2{margin:0 0 4px;color:var(--navy)}.card .sub{color:var(--mut);margin:0 0 18px;font-size:14px}
 label{display:block;font-size:13px;font-weight:600;margin:12px 0 4px}
@@ -41,13 +50,19 @@ td button{padding:6px 10px;font-size:13px;margin-right:4px;background:#e8f0fe;co
 td button.del{background:#fde8e8;color:#c62828}
 td input,td select{padding:6px 8px;font-size:13px}
 .tag{background:#fff3cf;color:#8a6200;padding:3px 10px;border-radius:99px;font-size:13px;font-weight:600}
-@media(max-width:800px){#auth{grid-template-columns:1fr}.hero img{width:200px}}
+@media(max-width:900px){#auth{grid-template-columns:1fr}.hero{height:58vw;overflow:hidden}.hero img{width:100%;height:auto}.side{padding:20px 16px 90px}.tag{position:static;text-align:center;margin-bottom:14px}.foot{height:60px}}
+#setup{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:linear-gradient(180deg,#cfe6ff,#eaf4ff 70%,#fff)}
+#setup .card{width:100%;max-width:440px}
+.ph{width:110px;height:110px;border-radius:50%;background:#eaf1fd center/cover;border:3px solid var(--gold);margin:10px auto;display:grid;place-items:center;color:var(--mut);font-size:13px;cursor:pointer;text-align:center}
+.thumb{width:40px;height:40px;border-radius:8px;object-fit:cover}
+.av{height:40px;width:40px;border-radius:50%;object-fit:cover;border:2px solid var(--gold)}
 </style></head>
 <body>
 
 <!-- LOGIN / REGISTER SCREEN -->
 <section id="auth">
-  <div class="hero"><img src="logo.png" alt="Aadam Son's Elementary School Jampur"><p>"Better Students, Brighter Future"</p></div>
+  <div class="hero"><img src="banner.jpg" alt="Aadam Son's Elementary School Jampur"></div>
+  <div class="side"><div class="tag">"Better Students,<br>Brighter Future"</div>
   <div class="card">
     <form id="login"><h2>Welcome back</h2><p class="sub">Login to Aadam Son's portal</p>
       <label>Email</label><input id="l_email" type="email" required placeholder="Enter your email address">
@@ -55,12 +70,9 @@ td input,td select{padding:6px 8px;font-size:13px}
       <button class="pri">Login</button>
       <div class="row"><button type="button" class="ghost" data-go="forgot">Forgot Password?</button><button type="button" class="ghost" data-go="register">Register</button></div>
     </form>
-    <form id="register" hidden><h2>Create New Account</h2><p class="sub">Join Aadam Son's Elementary School Jampur</p>
-      <label>Full Name</label><input id="r_name" required placeholder="Enter your full name">
+    <form id="register" hidden><h2>Create New Account</h2><p class="sub">Apni email likhein, 6-digit code email par aayega</p>
       <label>Email Address</label><input id="r_email" type="email" required placeholder="Enter your email address">
-      <label>Password</label><input id="r_pass" type="password" minlength="8" required placeholder="Minimum 8 characters">
-      <label>Confirm Password</label><input id="r_pass2" type="password" minlength="8" required placeholder="Re-enter your password">
-      <button class="pri">Register</button>
+      <button class="pri">Send code</button>
       <button type="button" class="alt" data-go="login">Already have an account? Login</button>
     </form>
     <form id="verify" hidden><h2>Enter 6-digit code</h2><p class="sub" id="v_sub"></p>
@@ -79,25 +91,45 @@ td input,td select{padding:6px 8px;font-size:13px}
     </form>
     <div id="msg"></div>
   </div>
+  <div class="foot">Together for a Brighter Future</div>
+  </div>
+</section>
+
+<section id="setup" hidden>
+  <div class="card"><h2>Teacher Profile</h2><p class="sub" id="su_mail"></p>
+    <form id="setup_f">
+      <label class="ph" id="su_ph"><span>Add photo</span><input type="file" id="su_file" accept="image/*" hidden></label>
+      <label>Teacher's Name</label><input id="su_name" required placeholder="Full name">
+      <div id="su_cw"><label>Class (baad mein sirf admin badal sakta hai)</label><select id="su_class"></select></div>
+      <label>Password (kam az kam 8 characters)</label><input id="su_pass" type="password" minlength="8" required>
+      <label>Confirm Password</label><input id="su_pass2" type="password" minlength="8" required>
+      <button class="pri">Save and enter portal</button>
+      <button type="button" class="alt" id="su_out">Logout</button>
+    </form><div id="su_msg" class="err" style="margin-top:12px;font-size:14px"></div></div>
 </section>
 
 <!-- PORTAL -->
 <section id="app" hidden>
-  <header><img src="logo.png" alt=""><div><b>Aadam Son's</b><small id="who"></small></div><div class="sp"></div><button id="logout">Logout</button></header>
+  <header><img src="logo.png" alt=""><div><b>Aadam Son's</b><small id="who"></small></div><div class="sp"></div><img id="av" class="av" alt="" hidden><button id="logout">Logout</button></header>
   <main>
     <div class="tabs" id="tabs" hidden><button data-tab="stu" class="on">Students</button><button data-tab="tea">Teachers</button></div>
 
     <div id="p_stu">
       <div class="card">
         <h2 id="f_title">Add student</h2><p class="sub" id="f_sub"></p>
-        <form id="sform"><div class="grid">
-          <div id="cwrap" hidden><label>Class</label><input id="s_class" placeholder="e.g. Class 3"></div>
-          <div><label>Roll No</label><input id="s_roll"></div>
-          <div><label>Student Name</label><input id="s_name" required></div>
-          <div><label>Father Name</label><input id="s_father"></div>
-          <div><label>Gender</label><select id="s_gender"><option>Boy</option><option>Girl</option></select></div>
-          <div><label>Date of Birth</label><input id="s_dob" type="date"></div>
-          <div><label>Phone</label><input id="s_phone" type="tel"></div>
+        <form id="sform">
+          <label class="ph" id="st_ph"><span>Student photo</span><input type="file" id="st_file" accept="image/*" hidden></label>
+          <div class="grid">
+          <div><label>Student's Name</label><input id="st_name" required></div>
+          <div><label>Father's Name</label><input id="st_father" required></div>
+          <div><label>D.O.B</label><input id="st_dob" type="date" required></div>
+          <div><label>B-Form</label><input id="st_bform" inputmode="numeric" placeholder="12345-1234567-1"></div>
+          <div><label>Class</label><select id="st_class"></select></div>
+          <div><label>Current Class</label><select id="st_cur"></select></div>
+          <div><label>Last School</label><input id="st_ls"></div>
+          <div><label>Last Class</label><select id="st_last"></select></div>
+          <div><label>Date of Admission</label><input id="st_adm" type="date"></div>
+          <div style="grid-column:1/-1"><label>Address</label><input id="st_addr"></div>
         </div><button class="pri" style="max-width:220px" id="s_btn">Save student</button></form>
       </div>
       <div class="card" style="margin-top:16px">
@@ -121,134 +153,160 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-let me = null, students = [], editId = null, pending = {email:'', type:'signup'}, recovering = false;
+const IC={t:'<path d="M20 21a8 8 0 0 0-16 0M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/>',e:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>',p:'<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',c:'<path d="M5 12l4 4 10-10"/>'};
+document.querySelectorAll('#auth label').forEach(l=>{const i=l.nextElementSibling,k=i.type==='password'?'p':i.type==='email'?'e':i.id==='v_code'?'c':'t';const w=document.createElement('div');w.className='fld';w.innerHTML=`<svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">${IC[k]}</svg><div></div>`;l.before(w);w.lastChild.append(l,i);if(k==='p'){const b=document.createElement('button');b.type='button';b.className='eye';b.textContent='👁';b.onclick=()=>{i.type=i.type==='password'?'text':'password'};w.append(b);}});
+const CLASSES=['ECCE','KG','One','Two','Three','Four','Five','Six','Seven','Eight'];
+let me=null,students=[],editId=null,pending={email:'',type:'email'},recovering=false;
+const forms=['login','register','verify','forgot','reset'];
+function go(p){forms.forEach(f=>$(f).hidden=f!==p);say('')}
+function say(t,ok){$('msg').textContent=t;$('msg').className=ok?'ok':'err'}
+document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>go(b.dataset.go));
+const opts=(el,blank)=>{el.innerHTML=(blank!=null?`<option value="">${blank}</option>`:'')+CLASSES.map(c=>`<option>${c}</option>`).join('')};
+opts($('su_class'),'Select class');opts($('st_class'),'Select class');opts($('st_cur'));opts($('st_last'),'Nil');
 
-const forms = ['login','register','verify','forgot','reset'];
-function go(p){ forms.forEach(f => $(f).hidden = f !== p); say(''); }
-function say(t, ok){ $('msg').textContent = t; $('msg').className = ok ? 'ok' : 'err'; }
-document.querySelectorAll('[data-go]').forEach(b => b.onclick = () => go(b.dataset.go));
+// photos
+function setPhoto(box,url){const b=$(box);b.style.backgroundImage=url?`url(${url})`:'';b.firstElementChild.hidden=!!url}
+[['su_file','su_ph'],['st_file','st_ph']].forEach(([f,b])=>$(f).onchange=e=>{const x=e.target.files[0];if(x)setPhoto(b,URL.createObjectURL(x))});
+async function upload(file){
+  if(!file)return null;
+  const im=await createImageBitmap(file),r=Math.min(1,500/Math.max(im.width,im.height)),c=document.createElement('canvas');
+  c.width=im.width*r;c.height=im.height*r;c.getContext('2d').drawImage(im,0,0,c.width,c.height);
+  const blob=await new Promise(res=>c.toBlob(res,'image/jpeg',.82)),path=`${me.id}/${Date.now()}.jpg`;
+  const {error}=await sb.storage.from('photos').upload(path,blob,{contentType:'image/jpeg'});
+  if(error)throw error;return sb.storage.from('photos').getPublicUrl(path).data.publicUrl;
+}
 
-$('register').onsubmit = async e => {
-  e.preventDefault();
-  if ($('r_pass').value.length < 8) return say('Password kam az kam 8 characters ka ho.');
-  if ($('r_pass').value !== $('r_pass2').value) return say('Dono passwords match nahi karte.');
-  const email = $('r_email').value.trim();
-  const { error } = await sb.auth.signUp({ email, password: $('r_pass').value, options: { data: { full_name: $('r_name').value.trim() } } });
-  if (error) return say(error.message);
-  pending = { email, type: 'signup' };
-  $('v_sub').textContent = email + ' par 6-digit code bheja gaya hai.';
-  go('verify');
+// register: email -> code
+$('register').onsubmit=async e=>{e.preventDefault();
+  const email=$('r_email').value.trim();
+  const {error}=await sb.auth.signInWithOtp({email,options:{shouldCreateUser:true}});
+  if(error)return say(error.message);
+  pending={email,type:'email'};$('v_sub').textContent=email+' par 6-digit code bheja gaya hai.';go('verify');
 };
-
-$('verify').onsubmit = async e => {
-  e.preventDefault();
-  const { error } = await sb.auth.verifyOtp({ email: pending.email, token: $('v_code').value.trim(), type: pending.type });
-  if (error) return say('Code ghalat ya expire ho gaya hai.');
-  if (pending.type === 'recovery') { recovering = true; go('reset'); }
+$('verify').onsubmit=async e=>{e.preventDefault();
+  const token=$('v_code').value.trim();
+  let {error}=await sb.auth.verifyOtp({email:pending.email,token,type:pending.type});
+  if(error&&pending.type==='email')({error}=await sb.auth.verifyOtp({email:pending.email,token,type:'signup'}));
+  if(error)return say('Code ghalat ya expire ho gaya hai.');
+  if(pending.type==='recovery'){recovering=true;go('reset')}
 };
-
-$('login').onsubmit = async e => {
-  e.preventDefault();
-  const { error } = await sb.auth.signInWithPassword({ email: $('l_email').value.trim(), password: $('l_pass').value });
-  if (error) say('Email ya password ghalat hai (ya email confirm nahi hui).');
+$('login').onsubmit=async e=>{e.preventDefault();
+  const {error}=await sb.auth.signInWithPassword({email:$('l_email').value.trim(),password:$('l_pass').value});
+  if(error)say('Email ya password ghalat hai.');
 };
-
-$('forgot').onsubmit = async e => {
-  e.preventDefault();
-  const email = $('f_email').value.trim();
-  const { error } = await sb.auth.resetPasswordForEmail(email);
-  if (error) return say(error.message);
-  pending = { email, type: 'recovery' };
-  $('v_sub').textContent = email + ' par reset code bheja gaya hai.';
-  go('verify');
+$('forgot').onsubmit=async e=>{e.preventDefault();
+  const email=$('f_email').value.trim();
+  const {error}=await sb.auth.resetPasswordForEmail(email);
+  if(error)return say(error.message);
+  pending={email,type:'recovery'};$('v_sub').textContent=email+' par reset code bheja gaya hai.';go('verify');
 };
-
-$('reset').onsubmit = async e => {
-  e.preventDefault();
-  const { error } = await sb.auth.updateUser({ password: $('n_pass').value });
-  if (error) return say(error.message);
-  recovering = false; boot();
+$('reset').onsubmit=async e=>{e.preventDefault();
+  const {error}=await sb.auth.updateUser({password:$('n_pass').value});
+  if(error)return say(error.message);
+  recovering=false;boot();
 };
+$('logout').onclick=$('su_out').onclick=()=>sb.auth.signOut();
+sb.auth.onAuthStateChange((ev)=>{if(!recovering&&ev!=='TOKEN_REFRESHED'&&ev!=='INITIAL_SESSION')setTimeout(boot,0)});
 
-$('logout').onclick = () => sb.auth.signOut();
-sb.auth.onAuthStateChange((_ev, session) => { if (!recovering) setTimeout(boot, 0); });
+// teacher first-time setup
+$('setup_f').onsubmit=async e=>{e.preventDefault();
+  const m=t=>$('su_msg').textContent=t,admin=me.role==='admin',p=$('su_pass').value;
+  if(p.length<8)return m('Password kam az kam 8 characters ka ho.');
+  if(p!==$('su_pass2').value)return m('Dono passwords match nahi karte.');
+  if(!admin&&!$('su_class').value)return m('Class select karein.');
+  try{
+    const url=await upload($('su_file').files[0]);
+    const {error:e1}=await sb.auth.updateUser({password:p});if(e1)throw e1;
+    const upd={full_name:$('su_name').value.trim(),setup_done:true,avatar_url:url};
+    if(!admin)upd.class_name=$('su_class').value;
+    const {error:e2}=await sb.from('profiles').update(upd).eq('id',me.id);if(e2)throw e2;
+    boot();
+  }catch(er){m(er.message)}
+};
 
 async function boot(){
-  const { data: { session } } = await sb.auth.getSession();
-  if (!session) { me = null; $('app').hidden = true; $('auth').hidden = false; go('login'); return; }
-  const { data } = await sb.from('profiles').select('*').eq('id', session.user.id).single();
-  me = data;
-  if (!me) { await sb.auth.signOut(); return; }
-  $('auth').hidden = true; $('app').hidden = false;
-  const admin = me.role === 'admin';
-  $('who').textContent = (me.full_name || me.email) + ' • ' + (admin ? 'Admin' : (me.class_name ? me.class_name : 'Class assign nahi hui'));
-  $('tabs').hidden = !admin; $('cwrap').hidden = !admin; $('filter').hidden = !admin;
-  $('f_sub').textContent = admin ? 'Aap admin hain: kisi bhi class ka data add/edit kar sakte hain.' : (me.class_name ? 'Class: ' + me.class_name + '. Save hone ke baad sirf admin change kar sakta hai.' : 'Admin ne abhi aapko class assign nahi ki.');
-  $('l_title').textContent = admin ? 'All Students' : 'Students of ' + (me.class_name || '-');
-  tab('stu'); loadStudents();
+  const {data:{session}}=await sb.auth.getSession();
+  if(!session){me=null;$('app').hidden=$('setup').hidden=true;$('auth').hidden=false;go('login');return}
+  const {data}=await sb.from('profiles').select('*').eq('id',session.user.id).single();
+  me=data;if(!me){await sb.auth.signOut();return}
+  $('auth').hidden=true;
+  if(!me.setup_done){$('app').hidden=true;$('setup').hidden=false;$('su_mail').textContent=me.email;$('su_cw').hidden=me.role==='admin';return}
+  $('setup').hidden=true;$('app').hidden=false;
+  const admin=me.role==='admin';
+  $('av').hidden=!me.avatar_url;if(me.avatar_url)$('av').src=me.avatar_url;
+  $('who').textContent=(me.full_name||me.email)+' \u2022 '+(admin?'Admin':(me.class_name||'Class assign nahi hui'));
+  $('tabs').hidden=!admin;$('filter').hidden=!admin;$('st_class').disabled=!admin;
+  $('f_sub').textContent=admin?'Aap admin hain: kisi bhi class ka data add/edit kar sakte hain.':'Class: '+(me.class_name||'-')+'. Save hone ke baad sirf admin change kar sakta hai.';
+  $('l_title').textContent=admin?'All Students':'Students of '+(me.class_name||'-');
+  resetForm();tab('stu');loadStudents();
 }
-
 function tab(t){
-  $('p_stu').hidden = t !== 'stu'; $('p_tea').hidden = t !== 'tea';
-  document.querySelectorAll('.tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === t));
-  if (t === 'tea') loadTeachers();
+  $('p_stu').hidden=t!=='stu';$('p_tea').hidden=t!=='tea';
+  document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));
+  if(t==='tea')loadTeachers();
 }
-document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => tab(b.dataset.tab));
+document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>tab(b.dataset.tab));
+
+function resetForm(){
+  editId=null;$('sform').reset();setPhoto('st_ph',null);
+  $('st_class').value=me.role==='admin'?'':(me.class_name||'');$('st_cur').value=$('st_class').value;
+  $('f_title').textContent='Add student';$('s_btn').textContent='Save student';
+}
+$('st_class').onchange=()=>{if(!editId)$('st_cur').value=$('st_class').value};
 
 async function loadStudents(){
-  const { data, error } = await sb.from('students').select('*').order('class_name').order('roll_no');
-  if (error) return alert(error.message);
-  students = data;
-  if (me.role === 'admin') {
-    const cur = $('filter').value;
-    const cl = [...new Set(students.map(s => s.class_name))];
-    $('filter').innerHTML = '<option value="">All classes</option>' + cl.map(c => `<option>${esc(c)}</option>`).join('');
-    $('filter').value = cl.includes(cur) ? cur : '';
+  const {data,error}=await sb.from('students').select('*').order('class_name').order('name');
+  if(error)return alert(error.message);
+  students=data;
+  if(me.role==='admin'){
+    const cur=$('filter').value,cl=[...new Set(students.map(s=>s.class_name))];
+    $('filter').innerHTML='<option value="">All classes</option>'+cl.map(c=>`<option>${esc(c)}</option>`).join('');
+    $('filter').value=cl.includes(cur)?cur:'';
   }
   drawStudents();
 }
-$('filter').onchange = drawStudents;
-
+$('filter').onchange=drawStudents;
 function drawStudents(){
-  const admin = me.role === 'admin', f = $('filter').value;
-  const rows = students.filter(s => !f || s.class_name === f);
-  $('stable').innerHTML = '<tr><th>Class</th><th>Roll</th><th>Name</th><th>Father</th><th>Gender</th><th>DOB</th><th>Phone</th>' + (admin ? '<th></th>' : '') + '</tr>' +
-    (rows.length ? rows.map(s => `<tr><td>${esc(s.class_name)}</td><td>${esc(s.roll_no)}</td><td>${esc(s.name)}</td><td>${esc(s.father_name)}</td><td>${esc(s.gender)}</td><td>${esc(s.dob)}</td><td>${esc(s.phone)}</td>` +
-      (admin ? `<td><button onclick="editS('${s.id}')">Edit</button><button class="del" onclick="delS('${s.id}')">Delete</button></td>` : '') + '</tr>').join('')
-      : `<tr><td colspan="8" style="color:var(--mut)">Abhi koi student nahi. Upar form se pehla student add karein.</td></tr>`);
+  const admin=me.role==='admin',f=$('filter').value,rows=students.filter(s=>!f||s.class_name===f);
+  $('stable').innerHTML='<tr><th></th><th>Student</th><th>Father</th><th>D.O.B</th><th>B-Form</th><th>Class</th><th>Current</th><th>Last School</th><th>Last Class</th><th>Admitted</th><th>Address</th>'+(admin?'<th></th>':'')+'</tr>'+
+  (rows.length?rows.map(s=>`<tr><td>${s.photo_url?`<img class="thumb" src="${esc(s.photo_url)}" alt="">`:''}</td><td>${esc(s.name)}</td><td>${esc(s.father_name)}</td><td>${esc(s.dob)}</td><td>${esc(s.b_form)}</td><td>${esc(s.class_name)}</td><td>${esc(s.current_class)}</td><td>${esc(s.last_school)}</td><td>${esc(s.last_class)}</td><td>${esc(s.admission_date)}</td><td>${esc(s.address)}</td>`+
+  (admin?`<td><button onclick="editS('${s.id}')">Edit</button><button class="del" onclick="delS('${s.id}')">Delete</button></td>`:'')+'</tr>').join('')
+  :'<tr><td colspan="12" style="color:var(--mut)">Abhi koi student nahi. Upar form se pehla student add karein.</td></tr>');
 }
 
-$('sform').onsubmit = async e => {
-  e.preventDefault();
-  const admin = me.role === 'admin';
-  const cls = admin ? $('s_class').value.trim() : me.class_name;
-  if (!cls) return alert(admin ? 'Class likhein.' : 'Pehle admin se class assign karwayein.');
-  const row = { class_name: cls, roll_no: $('s_roll').value.trim(), name: $('s_name').value.trim(), father_name: $('s_father').value.trim(),
-    gender: $('s_gender').value, dob: $('s_dob').value || null, phone: $('s_phone').value.trim() };
-  const { error } = editId ? await sb.from('students').update(row).eq('id', editId) : await sb.from('students').insert(row);
-  if (error) return alert(error.message);
-  editId = null; $('sform').reset(); $('f_title').textContent = 'Add student'; $('s_btn').textContent = 'Save student';
-  loadStudents();
+$('sform').onsubmit=async e=>{e.preventDefault();
+  const cls=$('st_class').value;
+  if(!cls)return alert(me.role==='admin'?'Class select karein.':'Pehle admin se class assign karwayein.');
+  try{
+    const url=await upload($('st_file').files[0]);
+    const row={class_name:cls,name:$('st_name').value.trim(),father_name:$('st_father').value.trim(),dob:$('st_dob').value||null,b_form:$('st_bform').value.trim(),
+      address:$('st_addr').value.trim(),last_school:$('st_ls').value.trim(),last_class:$('st_last').value,current_class:$('st_cur').value,admission_date:$('st_adm').value||null};
+    if(url)row.photo_url=url;
+    const {error}=editId?await sb.from('students').update(row).eq('id',editId):await sb.from('students').insert(row);
+    if(error)throw error;
+    resetForm();loadStudents();
+  }catch(er){alert(er.message)}
 };
-
-window.editS = id => {
-  const s = students.find(x => x.id === id); editId = id;
-  $('s_class').value = s.class_name; $('s_roll').value = s.roll_no || ''; $('s_name').value = s.name; $('s_father').value = s.father_name || '';
-  $('s_gender').value = s.gender || 'Boy'; $('s_dob').value = s.dob || ''; $('s_phone').value = s.phone || '';
-  $('f_title').textContent = 'Edit student'; $('s_btn').textContent = 'Update student'; scrollTo({top:0, behavior:'smooth'});
+window.editS=id=>{
+  const s=students.find(x=>x.id===id);editId=id;
+  $('st_name').value=s.name;$('st_father').value=s.father_name||'';$('st_dob').value=s.dob||'';$('st_bform').value=s.b_form||'';
+  $('st_class').value=s.class_name;$('st_cur').value=s.current_class||s.class_name;$('st_ls').value=s.last_school||'';$('st_last').value=s.last_class||'';
+  $('st_adm').value=s.admission_date||'';$('st_addr').value=s.address||'';setPhoto('st_ph',s.photo_url);
+  $('f_title').textContent='Edit student';$('s_btn').textContent='Update student';scrollTo({top:0,behavior:'smooth'});
 };
-window.delS = async id => { if (confirm('Is student ko delete karein?')) { await sb.from('students').delete().eq('id', id); loadStudents(); } };
+window.delS=async id=>{if(confirm('Is student ko delete karein?')){await sb.from('students').delete().eq('id',id);loadStudents()}};
 
 async function loadTeachers(){
-  const { data } = await sb.from('profiles').select('*').order('created_at');
-  $('ttable').innerHTML = '<tr><th>Name</th><th>Email</th><th>Class</th><th>Role</th><th></th></tr>' + data.map(p =>
-    `<tr><td>${esc(p.full_name)}</td><td>${esc(p.email)}</td><td><input id="c_${p.id}" value="${esc(p.class_name)}" placeholder="e.g. Class 3"></td>` +
-    `<td><select id="r_${p.id}"><option${p.role==='teacher'?' selected':''}>teacher</option><option${p.role==='admin'?' selected':''}>admin</option></select></td>` +
-    `<td><button onclick="saveT('${p.id}')">Save</button></td></tr>`).join('');
+  const {data}=await sb.from('profiles').select('*').order('created_at');
+  $('ttable').innerHTML='<tr><th></th><th>Name</th><th>Email</th><th>Class</th><th>Role</th><th></th></tr>'+data.map(p=>
+  `<tr><td>${p.avatar_url?`<img class="thumb" src="${esc(p.avatar_url)}" alt="">`:''}</td><td>${esc(p.full_name)}</td><td>${esc(p.email)}</td>`+
+  `<td><select id="c_${p.id}"><option value="">-</option>${CLASSES.map(c=>`<option${c===p.class_name?' selected':''}>${c}</option>`).join('')}</select></td>`+
+  `<td><select id="r_${p.id}"><option${p.role==='teacher'?' selected':''}>teacher</option><option${p.role==='admin'?' selected':''}>admin</option></select></td>`+
+  `<td><button onclick="saveT('${p.id}')">Save</button></td></tr>`).join('');
 }
-window.saveT = async id => {
-  const { error } = await sb.from('profiles').update({ class_name: $('c_'+id).value.trim() || null, role: $('r_'+id).value }).eq('id', id);
-  alert(error ? error.message : 'Saved');
+window.saveT=async id=>{
+  const {error}=await sb.from('profiles').update({class_name:$('c_'+id).value||null,role:$('r_'+id).value}).eq('id',id);
+  alert(error?error.message:'Saved');
 };
 
 boot();
