@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Aadam Son's Elementary School Jampur</title>
+<link rel="icon" href="emblem.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Baloo+2:wght@700;800&family=Caveat:wght@700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<style>
+:root{--navy:#0b2a8a;--blue:#1565d8;--gold:#f5b81c;--bg:#eef4fd;--ink:#14213d;--mut:#6b7a99}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Segoe UI",system-ui,sans-serif;color:var(--ink);background:linear-gradient(160deg,#dcebff,#f7fbff 60%,#fff7df);min-height:100vh}
+[hidden]{display:none!important}
+.fld{display:flex;align-items:center;gap:12px;border:1.5px solid #cfdaf0;border-radius:12px;padding:8px 14px;margin-top:12px;background:#fff}
+.fld:focus-within{border-color:var(--blue);box-shadow:0 0 0 3px rgba(21,101,216,.15)}
+.fld svg{flex:none;width:22px;height:22px;fill:none;stroke:var(--navy);stroke-width:2}
+.fld>div{flex:1;min-width:0}.fld label{margin:0;font-size:13px}
+.fld input{border:0;padding:2px 0;border-radius:0}.fld input:focus{box-shadow:none}
+.eye{background:none;padding:4px;color:var(--mut)}
+.card{background:#fff;border-radius:20px;padding:28px;box-shadow:0 18px 50px rgba(11,42,138,.15)}
+.card h2{margin:0 0 4px;color:var(--navy)}.card .sub{color:var(--mut);margin:0 0 18px;font-size:14px}
+label{display:block;font-size:13px;font-weight:600;margin:12px 0 4px}
+input,select{width:100%;padding:12px 14px;border:1.5px solid #cfdaf0;border-radius:10px;font-size:15px;background:#fff}
+input:focus,select:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(21,101,216,.15)}
+button{cursor:pointer;font-size:15px;border:0;border-radius:10px;padding:12px 16px;font-weight:600}
+.pri{width:100%;margin-top:18px;color:#fff;background:linear-gradient(90deg,var(--navy),var(--blue))}
+.ghost{background:none;color:var(--blue);padding:6px 0}
+.alt{width:100%;margin-top:10px;background:#fff;border:1.5px solid var(--blue);color:var(--blue)}
+.row{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
+#msg{margin-top:12px;font-size:14px;min-height:18px}.err{color:#c62828}.ok{color:#1b7f3b}
+header{display:flex;align-items:center;gap:12px;background:#fff;padding:10px 20px;box-shadow:0 2px 12px rgba(11,42,138,.1)}
+header img{height:48px}header b{color:var(--navy);font-size:18px}
+header .sp{flex:1}header small{display:block;color:var(--mut)}
+header button{background:var(--navy);color:#fff;padding:9px 14px}
+main{max-width:1100px;margin:20px auto;padding:0 16px}
+.tabs{display:flex;gap:8px;margin-bottom:14px}
+.tabs button{background:#fff;color:var(--navy);border:1.5px solid #cfdaf0}
+.tabs button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.tw{overflow-x:auto;margin-top:16px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:10px;text-align:left;border-bottom:1px solid #e3eaf7;white-space:nowrap}
+th{background:#f2f6fe;color:var(--navy)}
+td button{padding:6px 10px;font-size:13px;margin-right:4px;background:#e8f0fe;color:var(--navy)}
+td button.del{background:#fde8e8;color:#c62828}
+td input,td select{padding:6px 8px;font-size:13px}
+#setup{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:linear-gradient(180deg,#cfe6ff,#eaf4ff 70%,#fff)}
+#setup .card{width:100%;max-width:440px}
+.ph{width:110px;height:110px;border-radius:50%;background:#eaf1fd center/cover;border:3px solid var(--gold);margin:10px auto;display:grid;place-items:center;color:var(--mut);font-size:13px;cursor:pointer;text-align:center}
+.thumb{width:40px;height:40px;border-radius:8px;object-fit:cover}
+.av{height:40px;width:40px;border-radius:50%;object-fit:cover;border:2px solid var(--gold)}
+
+body{font-family:Poppins,"Segoe UI",system-ui,sans-serif}
+.card h2{font-family:"Baloo 2",Poppins,sans-serif}header b{font-family:"Abril Fatface",Georgia,serif;font-weight:400}
+header{background:linear-gradient(90deg,#08236f,#1565d8)}
+header b{color:#fff;font-size:22px}header small{color:#cfe1ff}header button{background:var(--gold);color:var(--navy)}
+header>img:first-child{height:50px;background:#fff;border-radius:50%;padding:4px}
+#auth,#setup{background:radial-gradient(900px 420px at 18% 0,#fff,transparent 60%),linear-gradient(180deg,#b3d8ff 0,#e4f2ff 55%,#fff 100%)}
+#auth{min-height:100vh;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(340px,480px);grid-template-rows:1fr auto;column-gap:2vw;padding:0 3vw;overflow:hidden}
+.left{display:flex;flex-direction:column;padding-top:3vh;min-height:0}
+.brand{display:flex;align-items:center;gap:clamp(10px,1.6vw,26px)}
+.brand img{height:clamp(84px,12vw,170px);filter:drop-shadow(0 6px 10px rgba(11,42,138,.25))}
+.ttl{font-family:"Abril Fatface","Playfair Display",Georgia,serif;font-weight:400;letter-spacing:.01em;font-size:clamp(44px,6.6vw,104px);line-height:.95;color:var(--navy);text-shadow:0 3px 0 #fff,0 8px 18px rgba(11,42,138,.28);margin:0}
+.rib{display:inline-block;margin-top:8px;padding:6px clamp(24px,3vw,52px);font-weight:700;font-size:clamp(16px,2.1vw,32px);color:var(--navy);background:linear-gradient(#ffd75e,#f5b81c);clip-path:polygon(0 0,100% 0,97% 50%,100% 100%,0 100%,3% 50%)}
+.lgs{margin:10px 0 0 6px;letter-spacing:.35em;color:var(--navy);font-weight:500;font-size:clamp(13px,1.5vw,20px)}
+.kids{flex:1;position:relative;min-height:220px}
+.kids img{position:absolute;left:0;bottom:0;height:100%;width:auto;max-width:100%;object-fit:contain;object-position:left bottom;-webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 30%),linear-gradient(to right,transparent 0,#000 7%,#000 78%,transparent 100%);-webkit-mask-composite:source-in;mask-image:linear-gradient(to bottom,transparent 0,#000 30%),linear-gradient(to right,transparent 0,#000 7%,#000 78%,transparent 100%);mask-composite:intersect}
+.side{position:relative;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:110px 0 24px}
+.side .card{width:100%;max-width:480px;border-radius:24px;box-shadow:0 22px 60px rgba(11,42,138,.22)}
+.tag{position:absolute;top:2.5vh;right:0;font-family:Caveat,cursive;font-weight:700;font-size:clamp(24px,2.6vw,38px);line-height:1;color:var(--navy);transform:rotate(-6deg);text-align:center}
+.hd{display:flex;gap:14px;align-items:center;margin-bottom:8px}
+.hd i{flex:none;width:58px;height:58px;border-radius:50%;background:linear-gradient(135deg,var(--navy),var(--blue));display:grid;place-items:center}
+.hd svg{width:28px;height:28px;stroke:#fff;fill:none;stroke-width:2}
+.hd .sub{margin:2px 0 0}
+.pri{display:flex;justify-content:center;align-items:center;gap:10px;border-radius:12px;font-size:16px;padding:14px;transition:transform .15s}
+.pri:hover{transform:translateY(-1px)}
+.or{display:flex;align-items:center;gap:10px;color:var(--mut);font-size:12px;margin-top:16px}
+.or:before,.or:after{content:"";flex:1;height:1px;background:#d9e3f5}
+.foot{grid-column:1/-1;margin:0 -3vw;background:linear-gradient(90deg,#08236f,#0b3aa8);color:#fff;display:flex;align-items:center;justify-content:space-between;gap:18px;padding:18px 4vw;border-radius:60px 60px 0 0/26px 26px 0 0}
+.fi{display:flex;gap:12px;align-items:center}
+.fi svg{width:46px;height:46px;flex:none;fill:none;stroke:#fff;stroke-width:1.6;border:2px solid rgba(255,255,255,.7);border-radius:50%;padding:9px}
+.fi b{display:block;font-size:15px}.fi small{display:block;font-size:12px;opacity:.85;max-width:180px}
+.tg{font-family:Caveat,cursive;color:var(--gold);font-size:32px;font-weight:700;transform:rotate(-4deg);white-space:nowrap}
+@media(max-width:900px){
+ #auth{grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto auto;padding:0 14px}.left,.side,.card{min-width:0}.side .card{padding:20px}.fi b{font-size:13px}.tg{font-size:26px}
+ .left{padding-top:16px}.brand img{height:84px}.ttl{font-size:44px}.rib{font-size:13px;padding:5px 22px;white-space:nowrap}.lgs{font-size:12px}
+ .kids{flex:none;height:62vw;min-height:0}
+ .side{padding:6px 0 24px}.tag{position:static;transform:none;margin-bottom:10px;font-size:26px}
+ .foot{margin:0 -14px;flex-wrap:wrap;justify-content:center;gap:12px 16px;padding:18px 14px}.fi svg{width:38px;height:38px;padding:7px}.fi small{display:none}.tg{width:100%;text-align:center}
+}
+.adm{display:flex;align-items:center;gap:12px;margin-top:16px;padding:6px 18px 6px 10px;background:#fff;border:2px solid var(--gold);border-radius:16px;box-shadow:0 10px 26px rgba(11,42,138,.15)}
+.adm img{height:58px;width:58px;display:block;flex:none}.adm div{line-height:1.25}
+.adm small{display:block;color:#8a6200;font-weight:600;font-size:12px}.adm b{color:var(--navy);font-size:15px}
+.bg{background:none!important;color:#fff!important;font-size:26px;padding:2px 10px!important;line-height:1}
+#scrim{position:fixed;inset:0;background:rgba(5,15,50,.5);z-index:40}
+#drawer{position:fixed;top:0;bottom:0;left:0;width:290px;max-width:84vw;background:#fff;z-index:50;transform:translateX(-100%);transition:transform .25s;display:flex;flex-direction:column;box-shadow:8px 0 30px rgba(0,0,0,.25);overflow-y:auto}
+#drawer.open{transform:none}
+.dh{background:linear-gradient(160deg,#08236f,#1565d8);color:#fff;padding:28px 20px;text-align:center;margin-bottom:8px}
+.dh img{width:92px;height:92px;border-radius:50%;object-fit:cover;border:3px solid var(--gold);background:#fff}
+.dh b{display:block;margin-top:10px;font-family:"Baloo 2",sans-serif;font-size:19px}.dh small{opacity:.85}
+.mi{display:flex;gap:14px;align-items:center;width:100%;background:none;color:var(--ink);text-align:left;padding:15px 22px;border-radius:0;font-size:16px}
+.mi svg{width:22px;height:22px;fill:none;stroke:var(--navy);stroke-width:2;flex:none}
+.mi.on{background:#eaf1fd;color:var(--navy)}
+.mi.out{margin-top:auto;border-top:1px solid #e3eaf7;color:#c62828}.mi.out svg{stroke:#c62828}
+.li{display:flex;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid #e3eaf7}
+.li img,.li .i0{width:48px;height:48px;border-radius:50%;object-fit:cover;background:#eaf1fd;flex:none;display:grid;place-items:center;font-weight:700;color:var(--navy)}
+.li b{display:block}.li small{color:var(--mut)}
+.li button{padding:6px 12px;font-size:13px;background:#e8f0fe;color:var(--navy)}
+.pav{width:120px;height:120px;border-radius:50%;object-fit:cover;border:4px solid var(--gold);background:#eaf1fd}
+.kv{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid #e3eaf7;font-size:14px}.kv span{color:var(--mut)}
+/* animations */
+@property --a{syntax:'<angle>';initial-value:0deg;inherits:false}
+@keyframes spin{to{--a:360deg}}
+@keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes fade{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:none}}
+@keyframes slidein{from{opacity:0;transform:translateX(-24px)}to{opacity:1;transform:none}}
+@keyframes pop{from{opacity:0;transform:scale(.5)}to{opacity:1;transform:none}}
+@keyframes float{50%{transform:translateY(-8px)}}
+@keyframes sweep{to{left:115%}}
+@keyframes scan{to{transform:translateY(calc(100vh + 260px))}}
+@keyframes rip{to{transform:scale(4);opacity:0}}
+button{position:relative;overflow:hidden;transition:transform .18s,box-shadow .25s,filter .2s}
+button:hover{filter:brightness(1.07)}button:active{transform:scale(.96)}
+.pri:hover{box-shadow:0 10px 24px rgba(21,101,216,.45);transform:translateY(-2px)}
+.rp{position:absolute;border-radius:50%;background:rgba(255,255,255,.55);transform:scale(0);animation:rip .6s ease-out;pointer-events:none}
+.alt .rp,.ghost .rp,.mi .rp,.li .rp,td .rp,.eye .rp{background:rgba(21,101,216,.25)}
+form:not([hidden]){animation:fade .4s both}
+main>div:not([hidden]){animation:rise .45s both}
+#drawer.open .mi{animation:slidein .4s both}
+#drawer.open .mi:nth-child(2){animation-delay:0.05s}
+#drawer.open .mi:nth-child(3){animation-delay:0.10s}
+#drawer.open .mi:nth-child(4){animation-delay:0.15s}
+#drawer.open .mi:nth-child(5){animation-delay:0.20s}
+#drawer.open .mi:nth-child(6){animation-delay:0.25s}
+#drawer.open .mi:nth-child(7){animation-delay:0.30s}
+#drawer.open .dh img{animation:pop .55s both}
+.dh{cursor:pointer}
+#auth{position:relative}
+#fx{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
+.left,.side,.foot{position:relative;z-index:2}
+.brand img{animation:float 4.5s ease-in-out infinite}
+.rib{position:relative;overflow:hidden}
+.rib::after{content:"";position:absolute;top:0;bottom:0;left:-90px;width:70px;background:linear-gradient(100deg,transparent,rgba(255,255,255,.75),transparent);animation:sweep 3.6s ease-in-out infinite}
+.side .card{border:3px solid transparent;background:linear-gradient(#fff,#fff) padding-box,conic-gradient(from var(--a),#1565d8,#8cc0ff,#f5b81c,#8cc0ff,#1565d8) border-box;animation:rise .8s both,spin 6s linear infinite}
+.tgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.tc{background:#fff;border-radius:18px;padding:18px;text-align:center;box-shadow:0 8px 24px rgba(11,42,138,.12);border-top:4px solid var(--gold);animation:rise .5s both}
+.tc>img{width:88px;height:88px;border-radius:50%;object-fit:cover;border:3px solid var(--blue);background:#eaf1fd}
+.tc>b{display:block;margin-top:8px;font-family:"Baloo 2",sans-serif;font-size:18px;color:var(--navy)}.tc>small{color:var(--mut);display:block}
+.tk{margin-top:10px;text-align:left}.te{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.te select{padding:8px;font-size:13px;flex:1;min-width:110px;width:auto}.te button{flex:1 1 100%}.te button{background:var(--navy);color:#fff;padding:8px 14px}
+@media(prefers-reduced-motion:reduce){*{animation:none!important}}
+/* menu blocks */
+@keyframes bump{40%{transform:scale(.93)}70%{transform:scale(1.05);box-shadow:0 0 0 4px var(--gold)}100%{transform:none}}
+.mi,.mi.on,.mi.out{background:linear-gradient(135deg,#0b3aa8,#1565d8);color:#fff;margin:6px 14px;width:calc(100% - 28px);border-radius:14px;padding:14px 18px;box-shadow:0 6px 14px rgba(21,101,216,.28);font-weight:600}
+.mi svg,.mi.out svg{stroke:#fff}
+.mi.on{box-shadow:0 0 0 3px var(--gold),0 8px 18px rgba(21,101,216,.4)}
+.mi.out{margin-top:auto;margin-bottom:16px;border-top:0;background:linear-gradient(135deg,#08236f,#0b3aa8)}
+.mi:hover{transform:translateX(4px)}
+.mi .rp{background:rgba(255,255,255,.5)}
+#drawer .mi.go{animation:bump .28s both;animation-delay:0s}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px}
+.cb{display:block;text-align:left;color:#fff;background:linear-gradient(135deg,#0b3aa8,#1565d8);border-radius:18px;padding:20px 18px;box-shadow:0 10px 22px rgba(21,101,216,.3);animation:rise .5s both}
+.cb b{display:block;font-family:"Baloo 2",sans-serif;font-size:26px;line-height:1.1}.cb small{opacity:.85}
+.cb:hover{transform:translateY(-4px)}
+.vt{font-family:"Baloo 2",sans-serif;color:var(--navy);margin:0 0 12px}
+.cb.sel{box-shadow:0 0 0 3px var(--gold),0 10px 22px rgba(21,101,216,.35)}
+.miss{display:block;color:#c62828;font-size:12px}
+</style></head>
+<body>
+
+<!-- LOGIN / REGISTER SCREEN -->
+<section id="auth">
+  <canvas id="fx"></canvas>
+  <div class="left">
+    <div class="brand"><img src="emblem.png" alt="">
+      <div><h1 class="ttl">Aadam Son's</h1><div class="rib">Elementary School Jampur</div><div class="lgs">Learn &bull; Grow &bull; Succeed</div></div></div>
+    <div class="kids"><img src="kids.jpg" alt="Students of Aadam Son's Elementary School"></div>
+  </div>
+  <div class="side"><div class="tag">&ldquo;Better Students<br>Brighter Future&rdquo;</div>
+  <div class="card">
+    <form id="login"><div class="hd"><i><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="8" r="4"/></svg></i><div><h2>Welcome Back</h2><p class="sub">Login to Aadam Son's portal</p></div></div>
+      <label>Email</label><input id="l_email" type="email" required placeholder="Enter your email address">
+      <label>Password</label><input id="l_pass" type="password" required placeholder="Enter your password">
+      <button class="pri">Login &rsaquo;</button>
+      <div class="row"><button type="button" class="ghost" data-go="forgot">Forgot Password?</button></div>
+      <div class="or">New teacher?</div>
+      <button type="button" class="alt" data-go="register">Register (Create new account)</button>
+    </form>
+    <form id="register" hidden><div class="hd"><i><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21a7 7 0 0 0-14 0"/><circle cx="9" cy="8" r="4"/><path d="M19 8v6M16 11h6"/></svg></i><div><h2>Create New Account</h2><p class="sub">Join Aadam Son's Elementary School Jampur</p></div></div>
+      <label>Email Address</label><input id="r_email" type="email" required placeholder="Enter your email address">
+      <button class="pri">Send code &rsaquo;</button>
+      <div class="or">Already have an account?</div>
+      <button type="button" class="alt" data-go="login">Login</button>
+    </form>
+    <form id="verify" hidden><div class="hd"><i><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></i><div><h2>Enter 6-digit code</h2><p class="sub"></p></div></div>
+      <p class="sub" id="v_sub"></p>
+      <label>Confirmation Code</label><input id="v_code" inputmode="numeric" maxlength="6" required placeholder="123456">
+      <button class="pri">Confirm &rsaquo;</button>
+      <button type="button" class="alt" data-go="login">Back to Login</button>
+    </form>
+    <form id="forgot" hidden><div class="hd"><i><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></i><div><h2>Forgot Password</h2><p class="sub">Email par 6-digit code bheja jayega</p></div></div>
+      <label>Email</label><input id="f_email" type="email" required placeholder="Enter your email address">
+      <button class="pri">Send code &rsaquo;</button>
+      <button type="button" class="alt" data-go="login">Back to Login</button>
+    </form>
+    <form id="reset" hidden><div class="hd"><i><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></i><div><h2>New Password</h2><p class="sub">Kam az kam 8 characters</p></div></div>
+      <label>New Password</label><input id="n_pass" type="password" minlength="8" required>
+      <button class="pri">Save password &rsaquo;</button>
+    </form>
+    <div id="msg"></div>
+  </div>
+  <div class="adm"><img src="admin.png" alt=""><div><small>Admin:</small><b>Muhammad Ajmal Solangi</b></div></div></div>
+  <div class="foot">
+    <div class="fi"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.500-1-8-4-8-9V6z"/><path d="m9 12 2 2 4-4"/></svg><div><b>Secure &amp; Safe</b><small>Your data is protected</small></div></div>
+    <div class="fi"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.500"/><path d="M2 20a7 7 0 0 1 14 0M17 5a3.500 3.500 0 0 1 0 6.500M19 20a6 6 0 0 0-3-5"/></svg><div><b>Class Based Access</b><small>Each teacher sees only their own class</small></div></div>
+    <div class="fi"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c3 2.500 9 2.500 12 0v-5"/></svg><div><b>Admin Control</b><small>Full access &amp; editing rights</small></div></div>
+    <div class="tg">Together for a Brighter Future</div>
+  </div>
+</section>
+
+<section id="setup" hidden>
+  <div class="card">
+    <form id="prof_f"><div style="text-align:center"><img src="emblem.png" alt="" style="height:84px"><div style="font-family:'Abril Fatface',Georgia,serif;font-size:30px;color:var(--navy)">Aadam Son's</div></div><h2>Complete Your Profile</h2><p class="sub" id="su_mail"></p>
+      <label class="ph" id="su_ph"><span>Profile picture</span><input type="file" id="su_file" accept="image/*" hidden></label>
+      <label>Name</label><input id="pf_name" required>
+      <label>Father's Name</label><input id="pf_father" required>
+      <label>C.N.I.C</label><input id="pf_cnic" required maxlength="15" inputmode="numeric" placeholder="12345-1234567-1" pattern="\d{5}-?\d{7}-?\d" title="13 digit CNIC">
+      <label>Caste</label><input id="pf_caste" required>
+      <label>Designation</label><select id="pf_des"><option value="">Select designation</option><option>H.T</option><option>E.S.T</option><option>Primary</option></select><select id="pf_desA" hidden><option>Headmaster</option></select>
+      <div id="su_cw"><label>Class (ek baar chunein, baad mein sirf admin badal sakta hai)</label><select id="su_class"></select></div>
+      <label>Password (minimum 8 characters)</label><input id="su_pass" type="password" minlength="8" required>
+      <label style="font-weight:400;display:flex;gap:8px;align-items:center"><input type="checkbox" style="width:auto" onchange="$('su_pass').type=this.checked?'text':'password'">Show password</label>
+      <button class="pri">Save and enter portal &rsaquo;</button>
+      <button type="button" class="alt" id="su_out">Logout</button>
+    </form>
+    <div id="su_msg" class="err" style="margin-top:12px;font-size:14px"></div>
+  </div>
+</section>
+
+<!-- PORTAL -->
+<section id="app" hidden>
+  <div id="scrim" hidden></div>
+  <nav id="drawer"><div class="dh"><img id="d_av" alt=""><b id="d_name"></b><small id="d_sub"></small></div>
+    <button class="mi" data-v="prof"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="8" r="4"/></svg>Profile</button>
+    <button class="mi on" data-v="dash"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</button>
+    <button class="mi" data-v="class"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10 12 4l9 6-9 6z"/><path d="M7 12.5V17c3 2 7 2 10 0v-4.500"/></svg><span id="m_class_t">Class</span></button>
+    <button class="mi" data-v="data" id="m_data" hidden><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Data</button>
+    <button class="mi" data-v="search"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>Search</button>
+    <button class="mi" data-v="add"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21a7 7 0 0 0-14 0"/><circle cx="9" cy="8" r="4"/><path d="M19 8v6M16 11h6"/></svg>Add Student</button>
+    <button class="mi" data-v="tea" id="m_tea" hidden><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2 20a7 7 0 0 1 14 0M17 5a3.5 3.5 0 0 1 0 6.5M19 20a6 6 0 0 0-3-5"/></svg>Teachers</button>
+    <button class="mi out" id="logout"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>Sign out</button>
+  </nav>
+  <header><button class="bg" id="burger" aria-label="Menu">&#9776;</button><img src="emblem.png" alt=""><div><b>Aadam Son's</b><small id="who"></small></div><div class="sp"></div><img id="av" class="av" alt="" hidden></header>
+  <main>
+    <div id="v_dash"><div class="card"><h2>Latest Students</h2><div id="latest"></div></div><div style="height:16px"></div>
+    <div class="card" style="margin-top:16px">
+        <div class="row" style="margin:0"><h2 id="l_title">Students</h2><select id="filter" style="max-width:200px" hidden></select></div>
+        <div class="tw"><table id="stable"></table></div>
+      </div></div>
+    <div id="v_class" hidden>
+      <h2 class="vt" id="c_head">Classes</h2>
+      <div id="cgrid" class="cgrid"></div>
+      <div id="c_none" class="card" hidden><p class="sub">No class assigned yet. Please contact the admin.</p></div>
+      <div id="cdet" hidden><div class="card"><div class="row" style="margin:0"><h2 id="c_title"></h2><button class="ghost" id="c_back" type="button">&lsaquo; All classes</button></div><p class="sub" id="c_count"></p>
+        <label>Search (name or G.R No.)</label><input id="c_q" placeholder="Optional"></div>
+        <div class="card" style="margin-top:16px"><div id="c_list"></div></div></div>
+    </div>
+    <div id="v_data" hidden><h2 class="vt">Student Data</h2>
+      <div class="cgrid" style="grid-template-columns:1fr 1fr"><button class="cb sel" id="d_inc" type="button"><b id="n_inc">0</b><small>Incomplete Students</small></button><button class="cb" id="d_com" type="button"><b id="n_com">0</b><small>Complete Students</small></button></div>
+      <div class="card" style="margin-top:16px"><h2 id="dd_t"></h2><div id="dd_list"></div></div></div>
+    <div id="v_search" hidden><div class="card"><h2>Search Student</h2><p class="sub">Both fields are optional. Use either one or both.</p>
+      <div class="grid"><div><label>G.R No.</label><input id="q_gr" placeholder="e.g. 101"></div><div><label>Student Name</label><input id="q_name" placeholder="e.g. Ali"></div></div></div>
+      <div class="card" style="margin-top:16px"><div id="q_res"></div></div></div>
+    <div id="v_add" hidden><div class="card">
+        <h2 id="f_title">Add student</h2><p class="sub" id="f_sub"></p>
+        <form id="sform">
+          <label class="ph" id="st_ph"><span>Student photo</span><input type="file" id="st_file" accept="image/*" hidden></label>
+          <div class="grid">
+          <div><label>G.R No.</label><input id="st_gr" required></div>
+          <div><label>Student's Name</label><input id="st_name" required></div>
+          <div><label>Father's Name</label><input id="st_father" required></div>
+          <div><label>D.O.B</label><input id="st_dob" type="date" required></div>
+          <div><label>B-Form (optional)</label><input id="st_bform" maxlength="15" inputmode="numeric" placeholder="12345-1234567-1"></div>
+          <div><label>Class</label><select id="st_class"></select></div>
+          <div><label>Current Class</label><select id="st_cur"></select></div>
+          <div><label>Last School</label><input id="st_ls"></div>
+          <div><label>Last Class</label><select id="st_last"></select></div>
+          <div><label>Date of Admission</label><input id="st_adm" type="date"></div>
+          <div style="grid-column:1/-1"><label>Address</label><input id="st_addr"></div>
+        </div><button class="pri" style="max-width:220px" id="s_btn">Save student</button></form>
+      </div></div>
+    <div id="v_prof" class="card" hidden style="max-width:520px;margin:auto"><div style="text-align:center"><img id="pr_av" class="pav" alt=""><h2 id="pr_name"></h2><p class="sub" id="pr_des"></p></div><div id="pr_rows"></div></div>
+    <div id="v_tea" hidden><h2 style="font-family:'Baloo 2',sans-serif;color:var(--navy);margin:0 0 12px">Teachers</h2><div id="tgrid" class="tgrid"></div></div>
+    <div style="display:flex;justify-content:center"><div class="adm"><img src="admin.png" alt=""><div><small>Admin:</small><b>Muhammad Ajmal Solangi</b></div></div></div>
+  </main>
+</section>
+
+<script>
+// ====== SETTINGS: Supabase > Project Settings > API se copy karein ======
+const SUPABASE_URL = 'https://tvdarnkwoqodashxbxjg.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR2ZGFybmt3b3FvZGFzaHhieGpnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI4NzY1NjQsImV4cCI6MjEwODQ1MjU2NH0.tJV2gB1Es7lgBvQlPfdfdI3WIy5SXZqaQj-Wazr1gK8';
+// ========================================================================
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const IC={t:'<path d="M20 21a8 8 0 0 0-16 0M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/>',e:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>',p:'<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',c:'<path d="M5 12l4 4 10-10"/>'};
+document.querySelectorAll('#auth label').forEach(l=>{const i=l.nextElementSibling,k=i.type==='password'?'p':i.type==='email'?'e':i.id==='v_code'?'c':'t';const w=document.createElement('div');w.className='fld';w.innerHTML=`<svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">${IC[k]}</svg><div></div>`;l.before(w);w.lastChild.append(l,i);if(k==='p'){const b=document.createElement('button');b.type='button';b.className='eye';b.textContent='👁';b.onclick=()=>{i.type=i.type==='password'?'text':'password'};w.append(b);}});
+const CLASSES=['ECCE','KG','One','Two','Three','Four','Five','Six','Seven','Eight'];
+let curClass=null,bootMsg='',me=null,students=[],editId=null,pending={email:'',type:'email'},recovering=false;
+const forms=['login','register','verify','forgot','reset'];
+function go(p){forms.forEach(f=>$(f).hidden=f!==p);say('')}
+function say(t,ok){$('msg').textContent=t;$('msg').className=ok?'ok':'err'}
+document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>go(b.dataset.go));
+const opts=(el,blank)=>{el.innerHTML=(blank!=null?`<option value="">${blank}</option>`:'')+CLASSES.map(c=>`<option>${c}</option>`).join('')};
+opts($('su_class'),'Select class');opts($('st_class'),'Select class');opts($('st_cur'));opts($('st_last'),'Nil');
+
+// photos
+function setPhoto(box,url){const b=$(box);b.style.backgroundImage=url?`url(${url})`:'';b.firstElementChild.hidden=!!url}
+[['su_file','su_ph'],['st_file','st_ph']].forEach(([f,b])=>$(f).onchange=e=>{const x=e.target.files[0];if(x)setPhoto(b,URL.createObjectURL(x))});
+async function upload(file){
+  if(!file)return null;
+  const im=await createImageBitmap(file),r=Math.min(1,500/Math.max(im.width,im.height)),c=document.createElement('canvas');
+  c.width=im.width*r;c.height=im.height*r;c.getContext('2d').drawImage(im,0,0,c.width,c.height);
+  const blob=await new Promise(res=>c.toBlob(res,'image/jpeg',.82)),path=`${me.id}/${Date.now()}.jpg`;
+  const {error}=await sb.storage.from('photos').upload(path,blob,{contentType:'image/jpeg'});
+  if(error)throw error;return sb.storage.from('photos').getPublicUrl(path).data.publicUrl;
+}
+
+// register: email -> code
+$('register').onsubmit=async e=>{e.preventDefault();
+  const email=$('r_email').value.trim();
+  const {error}=await sb.auth.signInWithOtp({email,options:{shouldCreateUser:true}});
+  if(error)return say(error.message);
+  pending={email,type:'email'};$('v_sub').textContent='Verification code sent';go('verify');
+};
+$('verify').onsubmit=async e=>{e.preventDefault();
+  const token=$('v_code').value.trim();
+  let {error}=await sb.auth.verifyOtp({email:pending.email,token,type:pending.type});
+  if(error&&pending.type==='email')({error}=await sb.auth.verifyOtp({email:pending.email,token,type:'signup'}));
+  if(error)return say('Code ghalat ya expire ho gaya hai.');
+  if(pending.type==='recovery'){recovering=true;go('reset')}
+};
+$('login').onsubmit=async e=>{e.preventDefault();
+  const {error}=await sb.auth.signInWithPassword({email:$('l_email').value.trim(),password:$('l_pass').value});
+  if(error)say('Email ya password ghalat hai.');
+};
+$('forgot').onsubmit=async e=>{e.preventDefault();
+  const email=$('f_email').value.trim();
+  const {error}=await sb.auth.resetPasswordForEmail(email);
+  if(error)return say(error.message);
+  pending={email,type:'recovery'};$('v_sub').textContent='Verification code sent';go('verify');
+};
+$('reset').onsubmit=async e=>{e.preventDefault();
+  const {error}=await sb.auth.updateUser({password:$('n_pass').value});
+  if(error)return say(error.message);
+  recovering=false;boot();
+};
+$('logout').onclick=$('su_out').onclick=()=>sb.auth.signOut();
+sb.auth.onAuthStateChange((ev)=>{if(!recovering&&ev!=='TOKEN_REFRESHED'&&ev!=='INITIAL_SESSION')setTimeout(boot,0)});
+
+// first-time profile (right after code verification)
+const fmt13=e=>{const d=e.target.value.replace(/\D/g,'').slice(0,13);let o=d.slice(0,5);if(d.length>5)o+='-'+d.slice(5,12);if(d.length>12)o+='-'+d.slice(12);e.target.value=o};
+$('pf_cnic').oninput=fmt13;$('st_bform').oninput=fmt13;
+$('pf_des').onchange=()=>{const ht=$('pf_des').value==='H.T';$('su_class').disabled=ht;if(ht)$('su_class').value=''};
+function setStep(){
+  $('su_class').disabled=false;
+  const adm=me.role==='admin';
+  $('su_msg').textContent=me._err?('Note: '+me._err):'';$('su_mail').textContent=me.email;
+  $('su_cw').hidden=adm;$('pf_des').hidden=adm;$('pf_desA').hidden=!adm;
+}
+$('prof_f').onsubmit=async e=>{e.preventDefault();
+  const m=t=>$('su_msg').textContent=t,adm=me.role==='admin',p=$('su_pass').value;
+  if(p.length<8)return m('Password must be at least 8 characters.');
+  const des=$('pf_des').value;
+  if(!adm&&!des)return m('Please select your designation.');
+  if(!adm&&des!=='H.T'&&!$('su_class').value)return m('Please select your class.');
+  try{
+    const url=await upload($('su_file').files[0]);
+    const {error:e1}=await sb.auth.updateUser({password:p});if(e1)throw e1;
+    const upd={full_name:$('pf_name').value.trim(),father_name:$('pf_father').value.trim(),cnic:$('pf_cnic').value.trim(),caste:$('pf_caste').value.trim(),
+      designation:adm?$('pf_desA').value:$('pf_des').value.trim(),pwd_set:true,setup_done:true};
+    if(!adm)upd.class_name=des==='H.T'?null:$('su_class').value;
+    if(url)upd.avatar_url=url;
+    const {error}=await (me._tmp?sb.from('profiles').upsert({id:me.id,email:me.email,...upd}):sb.from('profiles').update(upd).eq('id',me.id));if(error)throw error;
+    boot();
+  }catch(er){m(er.message)}
+};
+
+async function boot(){
+  const {data:{session}}=await sb.auth.getSession();
+  if(!session){me=null;$('app').hidden=$('setup').hidden=true;$('auth').hidden=false;go('login');if(bootMsg){say(bootMsg);bootMsg=''}return}
+  const uid=session.user.id,getP=()=>sb.from('profiles').select('*').eq('id',uid).maybeSingle();
+  let {data,error}=await getP();
+  if(!data){await new Promise(r=>setTimeout(r,900));({data,error}=await getP())}
+  me=data||{id:uid,email:session.user.email,role:'teacher',setup_done:false,pwd_set:false,_tmp:true,_err:error?error.message:''};
+  $('auth').hidden=true;
+  if(!me.setup_done){$('app').hidden=true;$('setup').hidden=false;setStep();return}
+  $('setup').hidden=true;$('app').hidden=false;
+  const admin=me.role==='admin';
+  $('av').hidden=!me.avatar_url;if(me.avatar_url)$('av').src=me.avatar_url;
+  $('who').textContent=(me.full_name||me.email)+' \u2022 '+(admin?(me.designation||'Admin'):[me.designation,me.class_name||'Class assign nahi hui'].filter(Boolean).join(' \u2022 '));
+  $('filter').hidden=!admin;$('st_class').disabled=!admin;
+  $('f_sub').textContent=admin?'Aap admin hain: kisi bhi class ka data add/edit kar sakte hain.':'Class: '+(me.class_name||'-')+'. Save hone ke baad sirf admin change kar sakta hai.';
+  $('l_title').textContent=admin?'All Students':'Students of '+(me.class_name||'-');
+  resetForm();drawProfile();$('m_tea').hidden=!admin;$('m_class_t').textContent=admin?'Classes':'Class';$('m_data').hidden=!admin;view('dash');
+}
+function view(v){
+  ['dash','class','data','search','add','prof','tea'].forEach(x=>$('v_'+x).hidden=x!==v);
+  document.querySelectorAll('.mi[data-v]').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
+  $('drawer').classList.remove('open');$('scrim').hidden=true;
+  if(v==='tea')loadTeachers();if(v==='dash'||v==='search'||v==='class'||v==='data')loadStudents();scrollTo(0,0);
+}
+document.querySelector('.dh').onclick=()=>view('prof');
+document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const r=b.getBoundingClientRect(),d=Math.max(r.width,r.height),x=document.createElement('span');x.className='rp';x.style.cssText=`width:${d}px;height:${d}px;left:${e.clientX-r.left-d/2}px;top:${e.clientY-r.top-d/2}px`;b.appendChild(x);setTimeout(()=>x.remove(),650)});
+// educational floating overlay on login page (slow and soft)
+(function(){
+  const cv=$('fx'),cx=cv.getContext('2d');if(matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+  const G=['A','B','C','a','b','c','1','2','3','4','+','=','×','÷','π','∑','√','∞','x²','E=mc²','α','β','ا','ب','پ','ت','★','✎','Aa','abc','123','H₂O'];
+  let W,H,items=[],last=0;
+  const mk=init=>({g:G[Math.random()*G.length|0],x:Math.random()*W,y:init?Math.random()*H:H+60,s:24+Math.random()*34,vy:5+Math.random()*9,sw:Math.random()*6.3,sa:12+Math.random()*22,rt:(Math.random()-.5)*.5,gold:Math.random()<.22,al:.16+Math.random()*.16});
+  function size(){const a=$('auth');W=cv.width=a.offsetWidth;H=cv.height=a.offsetHeight;items=Array.from({length:Math.max(14,Math.min(30,W/48|0))},()=>mk(true))}
+  size();addEventListener('resize',size);
+  function frame(t){
+    requestAnimationFrame(frame);if($('auth').hidden||t-last<33)return;last=t;
+    if(cv.height!==$('auth').offsetHeight)size();
+    cx.clearRect(0,0,W,H);cx.textAlign='center';cx.textBaseline='middle';
+    for(const it of items){
+      it.y-=it.vy*.033;if(it.y<-70)Object.assign(it,mk(false));
+      const x=it.x+Math.sin(t/2600+it.sw)*it.sa,fade=Math.min(1,Math.max(0,Math.min(it.y+60,H-it.y+60)/160)),c=it.gold?'245,184,28':'21,101,216';
+      cx.save();cx.translate(x,it.y);cx.rotate(Math.sin(t/3200+it.sw)*it.rt);
+      cx.globalAlpha=it.al*fade*(.8+.2*Math.sin(t/1800+it.sw));
+      const gr=cx.createRadialGradient(0,0,0,0,0,it.s*1.1);gr.addColorStop(0,'rgba('+c+',.22)');gr.addColorStop(1,'rgba('+c+',0)');
+      cx.fillStyle=gr;cx.beginPath();cx.arc(0,0,it.s*1.1,0,6.3);cx.fill();
+      cx.fillStyle='rgb('+c+')';cx.font='700 '+it.s+'px "Baloo 2",Poppins,serif';cx.fillText(it.g,0,0);cx.restore();
+    }
+  }
+  requestAnimationFrame(frame);
+})();
+$('burger').onclick=()=>{$('drawer').classList.add('open');$('scrim').hidden=false};
+$('scrim').onclick=()=>{$('drawer').classList.remove('open');$('scrim').hidden=true};
+document.querySelectorAll('.mi[data-v]').forEach(b=>b.onclick=()=>{
+  b.classList.add('go');
+  setTimeout(()=>{b.classList.remove('go');if(b.dataset.v==='add'&&editId)resetForm();if(b.dataset.v==='class')curClass=null;view(b.dataset.v)},260)});
+$('logout').addEventListener('click',()=>{$('logout').classList.add('go')});
+function drawProfile(){
+  const f=(k,v)=>`<div class="kv"><span>${k}</span><b>${esc(v||'-')}</b></div>`,nm=me.full_name||me.email;
+  $('pr_av').src=$('d_av').src=me.avatar_url||'emblem.png';$('pr_name').textContent=$('d_name').textContent=nm;$('pr_des').textContent=me.designation||'';
+  $('d_sub').textContent=me.role==='admin'?(me.designation||'Admin'):[me.designation,me.class_name].filter(Boolean).join(' - ');
+  $('pr_rows').innerHTML=f("Father's Name",me.father_name)+f('C.N.I.C',me.cnic)+f('Caste',me.caste)+f('Designation',me.designation)+f('Class',me.class_name)+f('Email',me.email);
+}
+function drawSearch(){
+  const g=$('q_gr').value.trim().toLowerCase(),n=$('q_name').value.trim().toLowerCase(),adm=me.role==='admin';
+  const r=students.filter(s=>(!g||(s.gr_no||'').toLowerCase().includes(g))&&(!n||(s.name||'').toLowerCase().includes(n)));
+  $('q_res').innerHTML=(g||n?`<p class="sub">${r.length} found</p>`:'<p class="sub">Showing all students. Type a G.R No. or name to narrow down.</p>')+
+  r.slice(0,50).map(s=>`<div class="li">${s.photo_url?`<img src="${esc(s.photo_url)}" alt="">`:`<div class="i0">${esc((s.name||'?')[0])}</div>`}<div style="flex:1;min-width:0"><b>${esc(s.name)}</b><small>${s.gr_no?'G.R '+esc(s.gr_no)+' - ':''}Class ${esc(s.class_name)}${s.father_name?' - '+esc(s.father_name):''}</small></div>${adm?`<button onclick="editS('${s.id}')">Edit</button>`:''}</div>`).join('');
+}
+$('q_gr').oninput=$('q_name').oninput=drawSearch;
+const stuItem=(s,adm)=>`<div class="li">${s.photo_url?`<img src="${esc(s.photo_url)}" alt="">`:`<div class="i0">${esc((s.name||'?')[0])}</div>`}<div style="flex:1;min-width:0"><b>${esc(s.name)}</b><small>${s.gr_no?'G.R '+esc(s.gr_no)+' - ':''}Class ${esc(s.class_name)}${s.father_name?' - '+esc(s.father_name):''}</small></div>${adm?`<button onclick="editS('${s.id}')">Edit</button>`:''}</div>`;
+function drawClassView(){
+  const adm=me.role==='admin';
+  if(!adm){curClass=me.class_name||null;$('cgrid').hidden=true;$('c_back').hidden=true;$('c_none').hidden=!!curClass;$('cdet').hidden=!curClass;$('c_head').textContent='My Class'}
+  else{$('c_none').hidden=true;$('c_back').hidden=false;$('cgrid').hidden=!!curClass;$('cdet').hidden=!curClass;$('c_head').textContent=curClass?'Class '+curClass:'All Classes'}
+  $('c_head').hidden=!!curClass;
+  if(curClass){$('c_title').textContent='Class '+curClass;drawClass()}
+  else if(adm)$('cgrid').innerHTML=CLASSES.map((c,i)=>`<button class="cb" style="animation-delay:${i*.05}s" onclick="openClass('${c}')"><b>${c}</b><small>${students.filter(s=>s.class_name===c).length} students</small></button>`).join('');
+}
+function openClass(c){curClass=c;$('c_q').value='';drawClassView();scrollTo(0,0)}
+function drawClass(){
+  const q=$('c_q').value.trim().toLowerCase(),all=students.filter(s=>s.class_name===curClass),adm=me.role==='admin';
+  const r=all.filter(s=>!q||(s.name||'').toLowerCase().includes(q)||(s.gr_no||'').toLowerCase().includes(q));
+  $('c_count').textContent=(q?r.length+' found of ':'')+all.length+' students';
+  $('c_list').innerHTML=r.length?r.map(s=>stuItem(s,adm)).join(''):'<p class="sub">No students found.</p>';
+}
+$('c_q').oninput=drawClass;
+$('c_back').onclick=()=>{curClass=null;$('c_q').value='';drawClassView()};
+const REQ=[['photo_url','Photo'],['gr_no','G.R No.'],['name','Name'],['father_name',"Father's Name"],['dob','D.O.B'],['b_form','B-Form'],['class_name','Class'],['current_class','Current Class'],['admission_date','Date of Admission'],['address','Address']];
+const missing=s=>REQ.filter(([k])=>!String(s[k]??'').trim()).map(x=>x[1]);
+let dsel='inc';
+function drawData(){
+  if(!me||me.role!=='admin')return;
+  const inc=students.filter(s=>missing(s).length),com=students.filter(s=>!missing(s).length),list=dsel==='inc'?inc:com;
+  $('n_inc').textContent=inc.length;$('n_com').textContent=com.length;
+  $('d_inc').classList.toggle('sel',dsel==='inc');$('d_com').classList.toggle('sel',dsel==='com');
+  $('dd_t').textContent=dsel==='inc'?'Incomplete Students':'Complete Students';
+  $('dd_list').innerHTML=list.length?list.map(s=>`<div class="li">${s.photo_url?`<img src="${esc(s.photo_url)}" alt="">`:`<div class="i0">${esc((s.name||'?')[0])}</div>`}<div style="flex:1;min-width:0"><b>${esc(s.name)}</b><small>${s.gr_no?'G.R '+esc(s.gr_no)+' - ':''}Class ${esc(s.class_name)}</small>${dsel==='inc'?`<span class="miss">Missing: ${esc(missing(s).join(', '))}</span>`:''}</div><button onclick="editS('${s.id}')">Edit</button></div>`).join(''):'<p class="sub">No students in this list.</p>';
+}
+$('d_inc').onclick=()=>{dsel='inc';drawData()};$('d_com').onclick=()=>{dsel='com';drawData()};
+function drawLatest(){
+  const r=[...students].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).slice(0,10);
+  $('latest').innerHTML=r.length?r.map(s=>`<div class="li">${s.photo_url?`<img src="${esc(s.photo_url)}" alt="">`:`<div class="i0">${esc((s.name||'?')[0])}</div>`}<div><b>${esc(s.name)}</b><small>${s.gr_no?'G.R '+esc(s.gr_no)+' - ':''}Class ${esc(s.class_name)}</small></div></div>`).join(''):'<p class="sub">No students added yet. Open the menu and tap Add Student.</p>';
+}
+
+function resetForm(){
+  editId=null;$('sform').reset();setPhoto('st_ph',null);
+  $('st_class').value=me.role==='admin'?'':(me.class_name||'');$('st_cur').value=$('st_class').value;
+  $('f_title').textContent='Add student';$('s_btn').textContent='Save student';
+}
+$('st_class').onchange=()=>{if(!editId)$('st_cur').value=$('st_class').value};
+
+async function loadStudents(){
+  const {data,error}=await sb.from('students').select('*').order('class_name').order('name');
+  if(error)return alert(error.message);
+  students=data;
+  if(me.role==='admin'){
+    const cur=$('filter').value,cl=[...new Set(students.map(s=>s.class_name))];
+    $('filter').innerHTML='<option value="">All classes</option>'+cl.map(c=>`<option>${esc(c)}</option>`).join('');
+    $('filter').value=cl.includes(cur)?cur:'';
+  }
+  drawLatest();drawStudents();drawSearch();drawClassView();drawData();
+}
+$('filter').onchange=drawStudents;
+function drawStudents(){
+  const admin=me.role==='admin',f=$('filter').value,rows=students.filter(s=>!f||s.class_name===f);
+  $('stable').innerHTML='<tr><th></th><th>G.R No.</th><th>Student</th><th>Father</th><th>D.O.B</th><th>B-Form</th><th>Class</th><th>Current</th><th>Last School</th><th>Last Class</th><th>Admitted</th><th>Address</th>'+(admin?'<th></th>':'')+'</tr>'+
+  (rows.length?rows.map(s=>`<tr><td>${s.photo_url?`<img class="thumb" src="${esc(s.photo_url)}" alt="">`:''}</td><td>${esc(s.gr_no)}</td><td>${esc(s.name)}</td><td>${esc(s.father_name)}</td><td>${esc(s.dob)}</td><td>${esc(s.b_form)}</td><td>${esc(s.class_name)}</td><td>${esc(s.current_class)}</td><td>${esc(s.last_school)}</td><td>${esc(s.last_class)}</td><td>${esc(s.admission_date)}</td><td>${esc(s.address)}</td>`+
+  (admin?`<td><button onclick="editS('${s.id}')">Edit</button><button class="del" onclick="delS('${s.id}')">Delete</button></td>`:'')+'</tr>').join('')
+  :'<tr><td colspan="12" style="color:var(--mut)">Abhi koi student nahi. Upar form se pehla student add karein.</td></tr>');
+}
+
+$('sform').onsubmit=async e=>{e.preventDefault();
+  const cls=$('st_class').value;
+  if(!cls)return alert(me.role==='admin'?'Class select karein.':'Pehle admin se class assign karwayein.');
+  try{
+    const url=await upload($('st_file').files[0]);
+    const row={gr_no:$('st_gr').value.trim(),class_name:cls,name:$('st_name').value.trim(),father_name:$('st_father').value.trim(),dob:$('st_dob').value||null,b_form:$('st_bform').value.trim(),
+      address:$('st_addr').value.trim(),last_school:$('st_ls').value.trim(),last_class:$('st_last').value,current_class:$('st_cur').value,admission_date:$('st_adm').value||null};
+    if(url)row.photo_url=url;
+    const {error}=editId?await sb.from('students').update(row).eq('id',editId):await sb.from('students').insert(row);
+    if(error)throw error;
+    resetForm();view('dash');
+  }catch(er){alert(er.message)}
+};
+window.editS=id=>{
+  const s=students.find(x=>x.id===id);editId=id;
+  $('st_gr').value=s.gr_no||'';$('st_name').value=s.name;$('st_father').value=s.father_name||'';$('st_dob').value=s.dob||'';$('st_bform').value=s.b_form||'';
+  $('st_class').value=s.class_name;$('st_cur').value=s.current_class||s.class_name;$('st_ls').value=s.last_school||'';$('st_last').value=s.last_class||'';
+  $('st_adm').value=s.admission_date||'';$('st_addr').value=s.address||'';setPhoto('st_ph',s.photo_url);
+  $('f_title').textContent='Edit student';$('s_btn').textContent='Update student';view('add');
+};
+window.delS=async id=>{if(confirm('Is student ko delete karein?')){await sb.from('students').delete().eq('id',id);loadStudents()}};
+
+async function loadTeachers(){
+  const {data,error}=await sb.from('profiles').select('*').order('created_at');
+  if(error)return alert(error.message);
+  const kv=(k,v)=>`<div class="kv"><span>${k}</span><b>${esc(v||'-')}</b></div>`;
+  $('tgrid').innerHTML=data.map((p,i)=>`<div class="tc" style="animation-delay:${i*.07}s"><img src="${esc(p.avatar_url||'emblem.png')}" alt=""><b>${esc(p.full_name||p.email)}</b>
+    <small>${esc([p.designation,p.class_name].filter(Boolean).join(' - ')||'Profile not completed')}</small>
+    <div class="tk">${kv("Father",p.father_name)}${kv('C.N.I.C',p.cnic)}${kv('Caste',p.caste)}${kv('Email',p.email)}</div>
+    <div class="te"><select id="c_${p.id}"><option value="">No class</option>${CLASSES.map(c=>`<option${c===p.class_name?' selected':''}>${c}</option>`).join('')}</select>
+    <select id="r_${p.id}"><option${p.role==='teacher'?' selected':''}>teacher</option><option${p.role==='admin'?' selected':''}>admin</option></select>
+    <button onclick="saveT('${p.id}')">Save</button></div></div>`).join('');
+}
+window.saveT=async id=>{
+  const {error}=await sb.from('profiles').update({class_name:$('c_'+id).value||null,role:$('r_'+id).value}).eq('id',id);
+  alert(error?error.message:'Saved');
+};
+
+boot();
+</script>
+</body></html>
