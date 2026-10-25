@@ -165,6 +165,9 @@ main>div:not([hidden]){animation:rise .45s both}
 .vt{font-family:"Baloo 2",sans-serif;color:var(--navy);margin:0 0 12px}
 .cb.sel{box-shadow:0 0 0 3px var(--gold),0 10px 22px rgba(21,101,216,.35)}
 .miss{display:block;color:#c62828;font-size:12px}
+.iov{display:flex;gap:12px;margin:12px 0}.iov>div{flex:1;background:#eaf1fd;border-radius:14px;padding:10px;text-align:center}
+.iov small{display:block;color:var(--mut)}.iov b{font-size:20px;color:var(--navy)}
+.chip{padding:3px 10px;border-radius:99px;font-size:12px;font-weight:600;white-space:nowrap}.chip.in{background:#dff5e5;color:#1b7f3b}.chip.out{background:#e3ecff;color:var(--navy)}.chip.no{background:#fde8e8;color:#c62828}
 </style></head>
 <body>
 
@@ -252,11 +255,14 @@ main>div:not([hidden]){animation:rise .45s both}
   </nav>
   <header><button class="bg" id="burger" aria-label="Menu">&#9776;</button><img src="emblem.png" alt=""><div><b>Aadam Son's</b><small id="who"></small></div><div class="sp"></div><img id="av" class="av" alt="" hidden></header>
   <main>
-    <div id="v_dash"><div class="card"><h2>Latest Students</h2><div id="latest"></div></div><div style="height:16px"></div>
+    <div id="v_dash">
+    <div class="card"><div class="row" style="margin:0"><h2>In &amp; Out</h2><small id="io_date" class="sub"></small></div><div id="io_body"></div></div>
+    <button class="cb" id="hc_btn" type="button" style="width:100%;margin:16px 0"><b>Head Count</b><small>Tap to open</small></button><div class="card"><h2>Latest Students</h2><div id="latest"></div></div><div style="height:16px"></div>
     <div class="card" style="margin-top:16px">
         <div class="row" style="margin:0"><h2 id="l_title">Students</h2><select id="filter" style="max-width:200px" hidden></select></div>
         <div class="tw"><table id="stable"></table></div>
       </div></div>
+    <div id="v_head" hidden><div class="card"><h2>Head Count</h2><p class="sub">Details will be added soon.</p><button class="alt" id="hc_back" type="button">&lsaquo; Back to Dashboard</button></div></div>
     <div id="v_class" hidden>
       <h2 class="vt" id="c_head">Classes</h2>
       <div id="cgrid" class="cgrid"></div>
@@ -405,10 +411,10 @@ async function boot(){
   resetForm();drawProfile();$('m_tea').hidden=!admin;$('m_class_t').textContent=admin?'Classes':'Class';$('m_data').hidden=!admin;view('dash');
 }
 function view(v){
-  ['dash','class','data','search','add','prof','tea'].forEach(x=>$('v_'+x).hidden=x!==v);
+  ['dash','head','class','data','search','add','prof','tea'].forEach(x=>$('v_'+x).hidden=x!==v);
   document.querySelectorAll('.mi[data-v]').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
   $('drawer').classList.remove('open');$('scrim').hidden=true;
-  if(v==='tea')loadTeachers();if(v==='dash'||v==='search'||v==='class'||v==='data')loadStudents();scrollTo(0,0);
+  if(v==='tea')loadTeachers();if(v==='dash')loadIO();if(v==='dash'||v==='search'||v==='class'||v==='data')loadStudents();scrollTo(0,0);
 }
 document.querySelector('.dh').onclick=()=>view('prof');
 document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const r=b.getBoundingClientRect(),d=Math.max(r.width,r.height),x=document.createElement('span');x.className='rp';x.style.cssText=`width:${d}px;height:${d}px;left:${e.clientX-r.left-d/2}px;top:${e.clientY-r.top-d/2}px`;b.appendChild(x);setTimeout(()=>x.remove(),650)});
@@ -485,6 +491,38 @@ function drawData(){
   $('dd_list').innerHTML=list.length?list.map(s=>`<div class="li">${s.photo_url?`<img src="${esc(s.photo_url)}" alt="">`:`<div class="i0">${esc((s.name||'?')[0])}</div>`}<div style="flex:1;min-width:0"><b>${esc(s.name)}</b><small>${s.gr_no?'G.R '+esc(s.gr_no)+' - ':''}Class ${esc(s.class_name)}</small>${dsel==='inc'?`<span class="miss">Missing: ${esc(missing(s).join(', '))}</span>`:''}</div><button onclick="editS('${s.id}')">Edit</button></div>`).join(''):'<p class="sub">No students in this list.</p>';
 }
 $('d_inc').onclick=()=>{dsel='inc';drawData()};$('d_com').onclick=()=>{dsel='com';drawData()};
+// In & Out
+const dayStr=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+const tm=t=>t?new Date(t).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}):'-';
+let todayRow=null;
+async function loadIO(){
+  $('io_date').textContent=new Date().toLocaleDateString(undefined,{weekday:'short',day:'numeric',month:'short'});
+  if(me.role==='admin'){
+    const [a,p]=await Promise.all([sb.from('attendance').select('*').eq('day',dayStr()),sb.from('profiles').select('id,full_name,email,avatar_url,designation,class_name').eq('role','teacher')]);
+    if(a.error||p.error)return $('io_body').innerHTML='<p class="sub">'+esc((a.error||p.error).message)+'</p>';
+    const m={};(a.data||[]).forEach(r=>m[r.teacher_id]=r);
+    $('io_body').innerHTML='<p class="sub">Teachers today</p>'+((p.data||[]).length?p.data.map(t=>{const r=m[t.id];
+      return `<div class="li"><img src="${esc(t.avatar_url||'emblem.png')}" alt=""><div style="flex:1;min-width:0"><b>${esc(t.full_name||t.email)}</b><small>In ${tm(r&&r.in_time)} - Out ${tm(r&&r.out_time)}</small></div><span class="chip ${!r?'no':r.out_time?'out':'in'}">${!r?'Not in':r.out_time?'Out':'In'}</span></div>`}).join(''):'<p class="sub">No teachers yet.</p>');
+    return;
+  }
+  const {data,error}=await sb.from('attendance').select('*').eq('teacher_id',me.id).eq('day',dayStr()).maybeSingle();
+  if(error)return $('io_body').innerHTML='<p class="sub">'+esc(error.message)+'</p>';
+  todayRow=data;drawIO();
+}
+function drawIO(){
+  const r=todayRow;
+  $('io_body').innerHTML=`<div class="iov"><div><small>In</small><b>${tm(r&&r.in_time)}</b></div><div><small>Out</small><b>${tm(r&&r.out_time)}</b></div></div>`+
+    (!r?`<button class="cb" style="width:100%" onclick="markIO('in')"><b>Mark In</b><small>Tap when you arrive</small></button>`
+    :!r.out_time?`<button class="cb" style="width:100%" onclick="markIO('out')"><b>Mark Out</b><small>Tap when you leave</small></button>`
+    :'<p class="sub">All done for today.</p>');
+}
+async function markIO(k){
+  const now=new Date().toISOString();
+  const res=k==='in'?await sb.from('attendance').insert({teacher_id:me.id,day:dayStr(),in_time:now}).select().maybeSingle():await sb.from('attendance').update({out_time:now}).eq('id',todayRow.id).select().maybeSingle();
+  if(res.error)return alert(res.error.message);
+  loadIO();
+}
+$('hc_btn').onclick=()=>view('head');$('hc_back').onclick=()=>view('dash');
 function drawLatest(){
   const r=[...students].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).slice(0,10);
   $('latest').innerHTML=r.length?r.map(s=>`<div class="li">${s.photo_url?`<img src="${esc(s.photo_url)}" alt="">`:`<div class="i0">${esc((s.name||'?')[0])}</div>`}<div><b>${esc(s.name)}</b><small>${s.gr_no?'G.R '+esc(s.gr_no)+' - ':''}Class ${esc(s.class_name)}</small></div></div>`).join(''):'<p class="sub">No students added yet. Open the menu and tap Add Student.</p>';
