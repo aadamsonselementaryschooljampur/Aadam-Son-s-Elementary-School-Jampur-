@@ -267,7 +267,7 @@ sb.auth.onAuthStateChange((ev)=>{if(!recovering&&ev!=='TOKEN_REFRESHED'&&ev!=='I
 // first-time profile (right after code verification)
 function setStep(){
   const adm=me.role==='admin';
-  $('su_msg').textContent='';$('su_mail').textContent=me.email;
+  $('su_msg').textContent=me._err?('Note: '+me._err):'';$('su_mail').textContent=me.email;
   $('su_cw').hidden=adm;$('pf_des').hidden=adm;$('pf_desA').hidden=!adm;
 }
 $('prof_f').onsubmit=async e=>{e.preventDefault();
@@ -282,7 +282,7 @@ $('prof_f').onsubmit=async e=>{e.preventDefault();
       designation:adm?$('pf_desA').value:$('pf_des').value.trim(),pwd_set:true,setup_done:true};
     if(!adm)upd.class_name=$('su_class').value;
     if(url)upd.avatar_url=url;
-    const {error}=await sb.from('profiles').update(upd).eq('id',me.id);if(error)throw error;
+    const {error}=await (me._tmp?sb.from('profiles').upsert({id:me.id,email:me.email,...upd}):sb.from('profiles').update(upd).eq('id',me.id));if(error)throw error;
     boot();
   }catch(er){m(er.message)}
 };
@@ -291,11 +291,9 @@ async function boot(){
   const {data:{session}}=await sb.auth.getSession();
   if(!session){me=null;$('app').hidden=$('setup').hidden=true;$('auth').hidden=false;go('login');if(bootMsg){say(bootMsg);bootMsg=''}return}
   const uid=session.user.id,getP=()=>sb.from('profiles').select('*').eq('id',uid).maybeSingle();
-  let {data}=await getP();
-  if(!data){await new Promise(r=>setTimeout(r,900));({data}=await getP())}
-  if(!data){({data}=await sb.from('profiles').insert({id:uid,email:session.user.email}).select().maybeSingle())}
-  me=data;
-  if(!me){bootMsg='Could not load your profile. Please run the latest SQL (update_v5) in Supabase and try again.';await sb.auth.signOut();return}
+  let {data,error}=await getP();
+  if(!data){await new Promise(r=>setTimeout(r,900));({data,error}=await getP())}
+  me=data||{id:uid,email:session.user.email,role:'teacher',setup_done:false,pwd_set:false,_tmp:true,_err:error?error.message:''};
   $('auth').hidden=true;
   if(!me.setup_done){$('app').hidden=true;$('setup').hidden=false;setStep();return}
   $('setup').hidden=true;$('app').hidden=false;
