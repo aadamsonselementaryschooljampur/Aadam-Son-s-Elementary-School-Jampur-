@@ -138,7 +138,6 @@ main>div:not([hidden]){animation:rise .45s both}
 .dh{cursor:pointer}
 #auth{position:relative}
 #fx{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
-#auth::after{content:"";position:absolute;left:0;right:0;top:-130px;height:130px;background:linear-gradient(180deg,transparent,rgba(21,101,216,.16),transparent);animation:scan 7s linear infinite;pointer-events:none;z-index:1}
 .left,.side,.foot{position:relative;z-index:2}
 .brand img{animation:float 4.5s ease-in-out infinite}
 .rib{position:relative;overflow:hidden}
@@ -150,6 +149,20 @@ main>div:not([hidden]){animation:rise .45s both}
 .tc>b{display:block;margin-top:8px;font-family:"Baloo 2",sans-serif;font-size:18px;color:var(--navy)}.tc>small{color:var(--mut);display:block}
 .tk{margin-top:10px;text-align:left}.te{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.te select{padding:8px;font-size:13px;flex:1;min-width:110px;width:auto}.te button{flex:1 1 100%}.te button{background:var(--navy);color:#fff;padding:8px 14px}
 @media(prefers-reduced-motion:reduce){*{animation:none!important}}
+/* menu blocks */
+@keyframes bump{40%{transform:scale(.93)}70%{transform:scale(1.05);box-shadow:0 0 0 4px var(--gold)}100%{transform:none}}
+.mi,.mi.on,.mi.out{background:linear-gradient(135deg,#0b3aa8,#1565d8);color:#fff;margin:6px 14px;width:calc(100% - 28px);border-radius:14px;padding:14px 18px;box-shadow:0 6px 14px rgba(21,101,216,.28);font-weight:600}
+.mi svg,.mi.out svg{stroke:#fff}
+.mi.on{box-shadow:0 0 0 3px var(--gold),0 8px 18px rgba(21,101,216,.4)}
+.mi.out{margin-top:auto;margin-bottom:16px;border-top:0;background:linear-gradient(135deg,#08236f,#0b3aa8)}
+.mi:hover{transform:translateX(4px)}
+.mi .rp{background:rgba(255,255,255,.5)}
+#drawer .mi.go{animation:bump .28s both;animation-delay:0s}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px}
+.cb{display:block;text-align:left;color:#fff;background:linear-gradient(135deg,#0b3aa8,#1565d8);border-radius:18px;padding:20px 18px;box-shadow:0 10px 22px rgba(21,101,216,.3);animation:rise .5s both}
+.cb b{display:block;font-family:"Baloo 2",sans-serif;font-size:26px;line-height:1.1}.cb small{opacity:.85}
+.cb:hover{transform:translateY(-4px)}
+.vt{font-family:"Baloo 2",sans-serif;color:var(--navy);margin:0 0 12px}
 </style></head>
 <body>
 
@@ -228,6 +241,7 @@ main>div:not([hidden]){animation:rise .45s both}
   <nav id="drawer"><div class="dh"><img id="d_av" alt=""><b id="d_name"></b><small id="d_sub"></small></div>
     <button class="mi" data-v="prof"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="8" r="4"/></svg>Profile</button>
     <button class="mi on" data-v="dash"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</button>
+    <button class="mi" data-v="class"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10 12 4l9 6-9 6z"/><path d="M7 12.5V17c3 2 7 2 10 0v-4.500"/></svg>Class</button>
     <button class="mi" data-v="search"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>Search</button>
     <button class="mi" data-v="add"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21a7 7 0 0 0-14 0"/><circle cx="9" cy="8" r="4"/><path d="M19 8v6M16 11h6"/></svg>Add Student</button>
     <button class="mi" data-v="tea" id="m_tea" hidden><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2 20a7 7 0 0 1 14 0M17 5a3.5 3.5 0 0 1 0 6.5M19 20a6 6 0 0 0-3-5"/></svg>Teachers</button>
@@ -240,6 +254,14 @@ main>div:not([hidden]){animation:rise .45s both}
         <div class="row" style="margin:0"><h2 id="l_title">Students</h2><select id="filter" style="max-width:200px" hidden></select></div>
         <div class="tw"><table id="stable"></table></div>
       </div></div>
+    <div id="v_class" hidden>
+      <h2 class="vt" id="c_head">Classes</h2>
+      <div id="cgrid" class="cgrid"></div>
+      <div id="c_none" class="card" hidden><p class="sub">No class assigned yet. Please contact the admin.</p></div>
+      <div id="cdet" hidden><div class="card"><div class="row" style="margin:0"><h2 id="c_title"></h2><button class="ghost" id="c_back" type="button">&lsaquo; All classes</button></div><p class="sub" id="c_count"></p>
+        <label>Search (name or G.R No.)</label><input id="c_q" placeholder="Optional"></div>
+        <div class="card" style="margin-top:16px"><div id="c_list"></div></div></div>
+    </div>
     <div id="v_search" hidden><div class="card"><h2>Search Student</h2><p class="sub">Both fields are optional. Use either one or both.</p>
       <div class="grid"><div><label>G.R No.</label><input id="q_gr" placeholder="e.g. 101"></div><div><label>Student Name</label><input id="q_name" placeholder="e.g. Ali"></div></div></div>
       <div class="card" style="margin-top:16px"><div id="q_res"></div></div></div>
@@ -278,7 +300,7 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 const IC={t:'<path d="M20 21a8 8 0 0 0-16 0M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/>',e:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>',p:'<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',c:'<path d="M5 12l4 4 10-10"/>'};
 document.querySelectorAll('#auth label').forEach(l=>{const i=l.nextElementSibling,k=i.type==='password'?'p':i.type==='email'?'e':i.id==='v_code'?'c':'t';const w=document.createElement('div');w.className='fld';w.innerHTML=`<svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">${IC[k]}</svg><div></div>`;l.before(w);w.lastChild.append(l,i);if(k==='p'){const b=document.createElement('button');b.type='button';b.className='eye';b.textContent='👁';b.onclick=()=>{i.type=i.type==='password'?'text':'password'};w.append(b);}});
 const CLASSES=['ECCE','KG','One','Two','Three','Four','Five','Six','Seven','Eight'];
-let bootMsg='',me=null,students=[],editId=null,pending={email:'',type:'email'},recovering=false;
+let curClass=null,bootMsg='',me=null,students=[],editId=null,pending={email:'',type:'email'},recovering=false;
 const forms=['login','register','verify','forgot','reset'];
 function go(p){forms.forEach(f=>$(f).hidden=f!==p);say('')}
 function say(t,ok){$('msg').textContent=t;$('msg').className=ok?'ok':'err'}
@@ -377,41 +399,43 @@ async function boot(){
   resetForm();drawProfile();$('m_tea').hidden=!admin;view('dash');
 }
 function view(v){
-  ['dash','search','add','prof','tea'].forEach(x=>$('v_'+x).hidden=x!==v);
+  ['dash','class','search','add','prof','tea'].forEach(x=>$('v_'+x).hidden=x!==v);
   document.querySelectorAll('.mi[data-v]').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
   $('drawer').classList.remove('open');$('scrim').hidden=true;
-  if(v==='tea')loadTeachers();if(v==='dash'||v==='search')loadStudents();scrollTo(0,0);
+  if(v==='tea')loadTeachers();if(v==='dash'||v==='search'||v==='class')loadStudents();scrollTo(0,0);
 }
 document.querySelector('.dh').onclick=()=>view('prof');
 document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const r=b.getBoundingClientRect(),d=Math.max(r.width,r.height),x=document.createElement('span');x.className='rp';x.style.cssText=`width:${d}px;height:${d}px;left:${e.clientX-r.left-d/2}px;top:${e.clientY-r.top-d/2}px`;b.appendChild(x);setTimeout(()=>x.remove(),650)});
-// digital overlay on login page
+// educational floating overlay on login page (slow and soft)
 (function(){
   const cv=$('fx'),cx=cv.getContext('2d');if(matchMedia('(prefers-reduced-motion:reduce)').matches)return;
-  let W,H,cols,drops,nodes,last=0;const FS=18;
-  function size(){const a=$('auth');W=cv.width=a.offsetWidth;H=cv.height=a.offsetHeight;cols=Math.ceil(W/FS);drops=Array.from({length:cols},()=>Math.random()*-40);
-    nodes=Array.from({length:Math.min(46,Math.floor(W/28))},()=>({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.5,vy:(Math.random()-.5)*.5}))}
+  const G=['A','B','C','a','b','c','1','2','3','4','+','=','×','÷','π','∑','√','∞','x²','E=mc²','α','β','ا','ب','پ','ت','★','✎','Aa','abc','123','H₂O'];
+  let W,H,items=[],last=0;
+  const mk=init=>({g:G[Math.random()*G.length|0],x:Math.random()*W,y:init?Math.random()*H:H+60,s:24+Math.random()*34,vy:5+Math.random()*9,sw:Math.random()*6.3,sa:12+Math.random()*22,rt:(Math.random()-.5)*.5,gold:Math.random()<.22,al:.16+Math.random()*.16});
+  function size(){const a=$('auth');W=cv.width=a.offsetWidth;H=cv.height=a.offsetHeight;items=Array.from({length:Math.max(14,Math.min(30,W/48|0))},()=>mk(true))}
   size();addEventListener('resize',size);
   function frame(t){
-    requestAnimationFrame(frame);if($('auth').hidden||t-last<42)return;last=t;
+    requestAnimationFrame(frame);if($('auth').hidden||t-last<33)return;last=t;
     if(cv.height!==$('auth').offsetHeight)size();
-    cx.clearRect(0,0,W,H);cx.font=FS+'px monospace';
-    for(let c=0;c<cols;c++){
-      const y=drops[c];
-      for(let k=0;k<9;k++){const ry=(y-k)*FS;if(ry<0||ry>H)continue;
-        cx.fillStyle=(c%11===0?'rgba(245,184,28,':'rgba(21,101,216,')+((1-k/9)*.35)+')';
-        cx.fillText(((c*7+Math.floor(y)*13+k+(t>>9))&1)?'1':'0',c*FS,ry)}
-      drops[c]+=.35+(c%5)*.08;if(drops[c]*FS>H+200)drops[c]=Math.random()*-30;
+    cx.clearRect(0,0,W,H);cx.textAlign='center';cx.textBaseline='middle';
+    for(const it of items){
+      it.y-=it.vy*.033;if(it.y<-70)Object.assign(it,mk(false));
+      const x=it.x+Math.sin(t/2600+it.sw)*it.sa,fade=Math.min(1,Math.max(0,Math.min(it.y+60,H-it.y+60)/160)),c=it.gold?'245,184,28':'21,101,216';
+      cx.save();cx.translate(x,it.y);cx.rotate(Math.sin(t/3200+it.sw)*it.rt);
+      cx.globalAlpha=it.al*fade*(.8+.2*Math.sin(t/1800+it.sw));
+      const gr=cx.createRadialGradient(0,0,0,0,0,it.s*1.1);gr.addColorStop(0,'rgba('+c+',.22)');gr.addColorStop(1,'rgba('+c+',0)');
+      cx.fillStyle=gr;cx.beginPath();cx.arc(0,0,it.s*1.1,0,6.3);cx.fill();
+      cx.fillStyle='rgb('+c+')';cx.font='700 '+it.s+'px "Baloo 2",Poppins,serif';cx.fillText(it.g,0,0);cx.restore();
     }
-    for(const n of nodes){n.x+=n.vx;n.y+=n.vy;if(n.x<0||n.x>W)n.vx*=-1;if(n.y<0||n.y>H)n.vy*=-1}
-    for(let i=0;i<nodes.length;i++){for(let j=i+1;j<nodes.length;j++){const dx=nodes[i].x-nodes[j].x,dy=nodes[i].y-nodes[j].y,d=Math.hypot(dx,dy);
-      if(d<130){cx.strokeStyle='rgba(21,101,216,'+(.22*(1-d/130))+')';cx.beginPath();cx.moveTo(nodes[i].x,nodes[i].y);cx.lineTo(nodes[j].x,nodes[j].y);cx.stroke()}}
-      cx.fillStyle='rgba(245,184,28,.7)';cx.beginPath();cx.arc(nodes[i].x,nodes[i].y,2.2,0,6.3);cx.fill()}
   }
   requestAnimationFrame(frame);
 })();
 $('burger').onclick=()=>{$('drawer').classList.add('open');$('scrim').hidden=false};
 $('scrim').onclick=()=>{$('drawer').classList.remove('open');$('scrim').hidden=true};
-document.querySelectorAll('.mi[data-v]').forEach(b=>b.onclick=()=>{if(b.dataset.v==='add'&&editId)resetForm();view(b.dataset.v)});
+document.querySelectorAll('.mi[data-v]').forEach(b=>b.onclick=()=>{
+  b.classList.add('go');
+  setTimeout(()=>{b.classList.remove('go');if(b.dataset.v==='add'&&editId)resetForm();if(b.dataset.v==='class')curClass=null;view(b.dataset.v)},260)});
+$('logout').addEventListener('click',()=>{$('logout').classList.add('go')});
 function drawProfile(){
   const f=(k,v)=>`<div class="kv"><span>${k}</span><b>${esc(v||'-')}</b></div>`,nm=me.full_name||me.email;
   $('pr_av').src=$('d_av').src=me.avatar_url||'emblem.png';$('pr_name').textContent=$('d_name').textContent=nm;$('pr_des').textContent=me.designation||'';
@@ -425,6 +449,24 @@ function drawSearch(){
   r.slice(0,50).map(s=>`<div class="li">${s.photo_url?`<img src="${esc(s.photo_url)}" alt="">`:`<div class="i0">${esc((s.name||'?')[0])}</div>`}<div style="flex:1;min-width:0"><b>${esc(s.name)}</b><small>${s.gr_no?'G.R '+esc(s.gr_no)+' - ':''}Class ${esc(s.class_name)}${s.father_name?' - '+esc(s.father_name):''}</small></div>${adm?`<button onclick="editS('${s.id}')">Edit</button>`:''}</div>`).join('');
 }
 $('q_gr').oninput=$('q_name').oninput=drawSearch;
+const stuItem=(s,adm)=>`<div class="li">${s.photo_url?`<img src="${esc(s.photo_url)}" alt="">`:`<div class="i0">${esc((s.name||'?')[0])}</div>`}<div style="flex:1;min-width:0"><b>${esc(s.name)}</b><small>${s.gr_no?'G.R '+esc(s.gr_no)+' - ':''}Class ${esc(s.class_name)}${s.father_name?' - '+esc(s.father_name):''}</small></div>${adm?`<button onclick="editS('${s.id}')">Edit</button>`:''}</div>`;
+function drawClassView(){
+  const adm=me.role==='admin';
+  if(!adm){curClass=me.class_name||null;$('cgrid').hidden=true;$('c_back').hidden=true;$('c_none').hidden=!!curClass;$('cdet').hidden=!curClass;$('c_head').textContent='My Class'}
+  else{$('c_none').hidden=true;$('c_back').hidden=false;$('cgrid').hidden=!!curClass;$('cdet').hidden=!curClass;$('c_head').textContent=curClass?'Class '+curClass:'All Classes'}
+  $('c_head').hidden=!!curClass;
+  if(curClass){$('c_title').textContent='Class '+curClass;drawClass()}
+  else if(adm)$('cgrid').innerHTML=CLASSES.map((c,i)=>`<button class="cb" style="animation-delay:${i*.05}s" onclick="openClass('${c}')"><b>${c}</b><small>${students.filter(s=>s.class_name===c).length} students</small></button>`).join('');
+}
+function openClass(c){curClass=c;$('c_q').value='';drawClassView();scrollTo(0,0)}
+function drawClass(){
+  const q=$('c_q').value.trim().toLowerCase(),all=students.filter(s=>s.class_name===curClass),adm=me.role==='admin';
+  const r=all.filter(s=>!q||(s.name||'').toLowerCase().includes(q)||(s.gr_no||'').toLowerCase().includes(q));
+  $('c_count').textContent=(q?r.length+' found of ':'')+all.length+' students';
+  $('c_list').innerHTML=r.length?r.map(s=>stuItem(s,adm)).join(''):'<p class="sub">No students found.</p>';
+}
+$('c_q').oninput=drawClass;
+$('c_back').onclick=()=>{curClass=null;$('c_q').value='';drawClassView()};
 function drawLatest(){
   const r=[...students].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).slice(0,10);
   $('latest').innerHTML=r.length?r.map(s=>`<div class="li">${s.photo_url?`<img src="${esc(s.photo_url)}" alt="">`:`<div class="i0">${esc((s.name||'?')[0])}</div>`}<div><b>${esc(s.name)}</b><small>${s.gr_no?'G.R '+esc(s.gr_no)+' - ':''}Class ${esc(s.class_name)}</small></div></div>`).join(''):'<p class="sub">No students added yet. Open the menu and tap Add Student.</p>';
@@ -446,7 +488,7 @@ async function loadStudents(){
     $('filter').innerHTML='<option value="">All classes</option>'+cl.map(c=>`<option>${esc(c)}</option>`).join('');
     $('filter').value=cl.includes(cur)?cur:'';
   }
-  drawLatest();drawStudents();drawSearch();
+  drawLatest();drawStudents();drawSearch();drawClassView();
 }
 $('filter').onchange=drawStudents;
 function drawStudents(){
