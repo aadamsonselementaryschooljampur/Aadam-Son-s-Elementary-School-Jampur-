@@ -92,6 +92,22 @@ header>img:first-child{height:50px;background:#fff;border-radius:50%;padding:4px
 .adm{display:flex;align-items:center;gap:12px;margin-top:16px;padding:6px 18px 6px 10px;background:#fff;border:2px solid var(--gold);border-radius:16px;box-shadow:0 10px 26px rgba(11,42,138,.15)}
 .adm img{height:58px;width:58px;display:block;flex:none}.adm div{line-height:1.25}
 .adm small{display:block;color:#8a6200;font-weight:600;font-size:12px}.adm b{color:var(--navy);font-size:15px}
+.bg{background:none!important;color:#fff!important;font-size:26px;padding:2px 10px!important;line-height:1}
+#scrim{position:fixed;inset:0;background:rgba(5,15,50,.5);z-index:40}
+#drawer{position:fixed;top:0;bottom:0;left:0;width:290px;max-width:84vw;background:#fff;z-index:50;transform:translateX(-100%);transition:transform .25s;display:flex;flex-direction:column;box-shadow:8px 0 30px rgba(0,0,0,.25);overflow-y:auto}
+#drawer.open{transform:none}
+.dh{background:linear-gradient(160deg,#08236f,#1565d8);color:#fff;padding:28px 20px;text-align:center;margin-bottom:8px}
+.dh img{width:92px;height:92px;border-radius:50%;object-fit:cover;border:3px solid var(--gold);background:#fff}
+.dh b{display:block;margin-top:10px;font-family:"Baloo 2",sans-serif;font-size:19px}.dh small{opacity:.85}
+.mi{display:flex;gap:14px;align-items:center;width:100%;background:none;color:var(--ink);text-align:left;padding:15px 22px;border-radius:0;font-size:16px}
+.mi svg{width:22px;height:22px;fill:none;stroke:var(--navy);stroke-width:2;flex:none}
+.mi.on{background:#eaf1fd;color:var(--navy)}
+.mi.out{margin-top:auto;border-top:1px solid #e3eaf7;color:#c62828}.mi.out svg{stroke:#c62828}
+.li{display:flex;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid #e3eaf7}
+.li img,.li .i0{width:48px;height:48px;border-radius:50%;object-fit:cover;background:#eaf1fd;flex:none;display:grid;place-items:center;font-weight:700;color:var(--navy)}
+.li b{display:block}.li small{color:var(--mut)}
+.pav{width:120px;height:120px;border-radius:50%;object-fit:cover;border:4px solid var(--gold);background:#eaf1fd}
+.kv{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid #e3eaf7;font-size:14px}.kv span{color:var(--mut)}
 </style></head>
 <body>
 
@@ -165,16 +181,27 @@ header>img:first-child{height:50px;background:#fff;border-radius:50%;padding:4px
 
 <!-- PORTAL -->
 <section id="app" hidden>
-  <header><img src="emblem.png" alt=""><div><b>Aadam Son's</b><small id="who"></small></div><div class="sp"></div><img id="av" class="av" alt="" hidden><button id="logout">Logout</button></header>
+  <div id="scrim" hidden></div>
+  <nav id="drawer"><div class="dh"><img id="d_av" alt=""><b id="d_name"></b><small id="d_sub"></small></div>
+    <button class="mi" data-v="prof"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="8" r="4"/></svg>Profile</button>
+    <button class="mi on" data-v="dash"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</button>
+    <button class="mi" data-v="add"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21a7 7 0 0 0-14 0"/><circle cx="9" cy="8" r="4"/><path d="M19 8v6M16 11h6"/></svg>Add Student</button>
+    <button class="mi" data-v="tea" id="m_tea" hidden><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2 20a7 7 0 0 1 14 0M17 5a3.5 3.5 0 0 1 0 6.5M19 20a6 6 0 0 0-3-5"/></svg>Teachers</button>
+    <button class="mi out" id="logout"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>Sign out</button>
+  </nav>
+  <header><button class="bg" id="burger" aria-label="Menu">&#9776;</button><img src="emblem.png" alt=""><div><b>Aadam Son's</b><small id="who"></small></div><div class="sp"></div><img id="av" class="av" alt="" hidden></header>
   <main>
-    <div class="tabs" id="tabs" hidden><button data-tab="stu" class="on">Students</button><button data-tab="tea">Teachers</button></div>
-
-    <div id="p_stu">
-      <div class="card">
+    <div id="v_dash"><div class="card"><h2>Latest Students</h2><div id="latest"></div></div><div style="height:16px"></div>
+    <div class="card" style="margin-top:16px">
+        <div class="row" style="margin:0"><h2 id="l_title">Students</h2><select id="filter" style="max-width:200px" hidden></select></div>
+        <div class="tw"><table id="stable"></table></div>
+      </div></div>
+    <div id="v_add" hidden><div class="card">
         <h2 id="f_title">Add student</h2><p class="sub" id="f_sub"></p>
         <form id="sform">
           <label class="ph" id="st_ph"><span>Student photo</span><input type="file" id="st_file" accept="image/*" hidden></label>
           <div class="grid">
+          <div><label>G.R No.</label><input id="st_gr" required></div>
           <div><label>Student's Name</label><input id="st_name" required></div>
           <div><label>Father's Name</label><input id="st_father" required></div>
           <div><label>D.O.B</label><input id="st_dob" type="date" required></div>
@@ -186,14 +213,9 @@ header>img:first-child{height:50px;background:#fff;border-radius:50%;padding:4px
           <div><label>Date of Admission</label><input id="st_adm" type="date"></div>
           <div style="grid-column:1/-1"><label>Address</label><input id="st_addr"></div>
         </div><button class="pri" style="max-width:220px" id="s_btn">Save student</button></form>
-      </div>
-      <div class="card" style="margin-top:16px">
-        <div class="row" style="margin:0"><h2 id="l_title">Students</h2><select id="filter" style="max-width:200px" hidden></select></div>
-        <div class="tw"><table id="stable"></table></div>
-      </div>
-    </div>
-
-    <div id="p_tea" class="card" hidden>
+      </div></div>
+    <div id="v_prof" class="card" hidden style="max-width:520px;margin:auto"><div style="text-align:center"><img id="pr_av" class="pav" alt=""><h2 id="pr_name"></h2><p class="sub" id="pr_des"></p></div><div id="pr_rows"></div></div>
+    <div id="v_tea" class="card" hidden>
       <h2>Teachers</h2><p class="sub">Har teacher ko class assign karein. Class assign hone tak teacher ko data nazar nahi aayega.</p>
       <div class="tw"><table id="ttable"></table></div>
     </div>
@@ -305,17 +327,30 @@ async function boot(){
   const admin=me.role==='admin';
   $('av').hidden=!me.avatar_url;if(me.avatar_url)$('av').src=me.avatar_url;
   $('who').textContent=(me.full_name||me.email)+' \u2022 '+(admin?(me.designation||'Admin'):[me.designation,me.class_name||'Class assign nahi hui'].filter(Boolean).join(' \u2022 '));
-  $('tabs').hidden=!admin;$('filter').hidden=!admin;$('st_class').disabled=!admin;
+  $('filter').hidden=!admin;$('st_class').disabled=!admin;
   $('f_sub').textContent=admin?'Aap admin hain: kisi bhi class ka data add/edit kar sakte hain.':'Class: '+(me.class_name||'-')+'. Save hone ke baad sirf admin change kar sakta hai.';
   $('l_title').textContent=admin?'All Students':'Students of '+(me.class_name||'-');
-  resetForm();tab('stu');loadStudents();
+  resetForm();drawProfile();$('m_tea').hidden=!admin;view('dash');
 }
-function tab(t){
-  $('p_stu').hidden=t!=='stu';$('p_tea').hidden=t!=='tea';
-  document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));
-  if(t==='tea')loadTeachers();
+function view(v){
+  ['dash','add','prof','tea'].forEach(x=>$('v_'+x).hidden=x!==v);
+  document.querySelectorAll('.mi[data-v]').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
+  $('drawer').classList.remove('open');$('scrim').hidden=true;
+  if(v==='tea')loadTeachers();if(v==='dash')loadStudents();scrollTo(0,0);
 }
-document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>tab(b.dataset.tab));
+$('burger').onclick=()=>{$('drawer').classList.add('open');$('scrim').hidden=false};
+$('scrim').onclick=()=>{$('drawer').classList.remove('open');$('scrim').hidden=true};
+document.querySelectorAll('.mi[data-v]').forEach(b=>b.onclick=()=>{if(b.dataset.v==='add'&&editId)resetForm();view(b.dataset.v)});
+function drawProfile(){
+  const f=(k,v)=>`<div class="kv"><span>${k}</span><b>${esc(v||'-')}</b></div>`,nm=me.full_name||me.email;
+  $('pr_av').src=$('d_av').src=me.avatar_url||'emblem.png';$('pr_name').textContent=$('d_name').textContent=nm;$('pr_des').textContent=me.designation||'';
+  $('d_sub').textContent=me.role==='admin'?(me.designation||'Admin'):[me.designation,me.class_name].filter(Boolean).join(' - ');
+  $('pr_rows').innerHTML=f("Father's Name",me.father_name)+f('C.N.I.C',me.cnic)+f('Caste',me.caste)+f('Designation',me.designation)+f('Class',me.class_name)+f('Email',me.email);
+}
+function drawLatest(){
+  const r=[...students].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).slice(0,10);
+  $('latest').innerHTML=r.length?r.map(s=>`<div class="li">${s.photo_url?`<img src="${esc(s.photo_url)}" alt="">`:`<div class="i0">${esc((s.name||'?')[0])}</div>`}<div><b>${esc(s.name)}</b><small>${s.gr_no?'G.R '+esc(s.gr_no)+' - ':''}Class ${esc(s.class_name)}</small></div></div>`).join(''):'<p class="sub">No students added yet. Open the menu and tap Add Student.</p>';
+}
 
 function resetForm(){
   editId=null;$('sform').reset();setPhoto('st_ph',null);
@@ -333,13 +368,13 @@ async function loadStudents(){
     $('filter').innerHTML='<option value="">All classes</option>'+cl.map(c=>`<option>${esc(c)}</option>`).join('');
     $('filter').value=cl.includes(cur)?cur:'';
   }
-  drawStudents();
+  drawLatest();drawStudents();
 }
 $('filter').onchange=drawStudents;
 function drawStudents(){
   const admin=me.role==='admin',f=$('filter').value,rows=students.filter(s=>!f||s.class_name===f);
-  $('stable').innerHTML='<tr><th></th><th>Student</th><th>Father</th><th>D.O.B</th><th>B-Form</th><th>Class</th><th>Current</th><th>Last School</th><th>Last Class</th><th>Admitted</th><th>Address</th>'+(admin?'<th></th>':'')+'</tr>'+
-  (rows.length?rows.map(s=>`<tr><td>${s.photo_url?`<img class="thumb" src="${esc(s.photo_url)}" alt="">`:''}</td><td>${esc(s.name)}</td><td>${esc(s.father_name)}</td><td>${esc(s.dob)}</td><td>${esc(s.b_form)}</td><td>${esc(s.class_name)}</td><td>${esc(s.current_class)}</td><td>${esc(s.last_school)}</td><td>${esc(s.last_class)}</td><td>${esc(s.admission_date)}</td><td>${esc(s.address)}</td>`+
+  $('stable').innerHTML='<tr><th></th><th>G.R No.</th><th>Student</th><th>Father</th><th>D.O.B</th><th>B-Form</th><th>Class</th><th>Current</th><th>Last School</th><th>Last Class</th><th>Admitted</th><th>Address</th>'+(admin?'<th></th>':'')+'</tr>'+
+  (rows.length?rows.map(s=>`<tr><td>${s.photo_url?`<img class="thumb" src="${esc(s.photo_url)}" alt="">`:''}</td><td>${esc(s.gr_no)}</td><td>${esc(s.name)}</td><td>${esc(s.father_name)}</td><td>${esc(s.dob)}</td><td>${esc(s.b_form)}</td><td>${esc(s.class_name)}</td><td>${esc(s.current_class)}</td><td>${esc(s.last_school)}</td><td>${esc(s.last_class)}</td><td>${esc(s.admission_date)}</td><td>${esc(s.address)}</td>`+
   (admin?`<td><button onclick="editS('${s.id}')">Edit</button><button class="del" onclick="delS('${s.id}')">Delete</button></td>`:'')+'</tr>').join('')
   :'<tr><td colspan="12" style="color:var(--mut)">Abhi koi student nahi. Upar form se pehla student add karein.</td></tr>');
 }
@@ -349,20 +384,20 @@ $('sform').onsubmit=async e=>{e.preventDefault();
   if(!cls)return alert(me.role==='admin'?'Class select karein.':'Pehle admin se class assign karwayein.');
   try{
     const url=await upload($('st_file').files[0]);
-    const row={class_name:cls,name:$('st_name').value.trim(),father_name:$('st_father').value.trim(),dob:$('st_dob').value||null,b_form:$('st_bform').value.trim(),
+    const row={gr_no:$('st_gr').value.trim(),class_name:cls,name:$('st_name').value.trim(),father_name:$('st_father').value.trim(),dob:$('st_dob').value||null,b_form:$('st_bform').value.trim(),
       address:$('st_addr').value.trim(),last_school:$('st_ls').value.trim(),last_class:$('st_last').value,current_class:$('st_cur').value,admission_date:$('st_adm').value||null};
     if(url)row.photo_url=url;
     const {error}=editId?await sb.from('students').update(row).eq('id',editId):await sb.from('students').insert(row);
     if(error)throw error;
-    resetForm();loadStudents();
+    resetForm();view('dash');
   }catch(er){alert(er.message)}
 };
 window.editS=id=>{
   const s=students.find(x=>x.id===id);editId=id;
-  $('st_name').value=s.name;$('st_father').value=s.father_name||'';$('st_dob').value=s.dob||'';$('st_bform').value=s.b_form||'';
+  $('st_gr').value=s.gr_no||'';$('st_name').value=s.name;$('st_father').value=s.father_name||'';$('st_dob').value=s.dob||'';$('st_bform').value=s.b_form||'';
   $('st_class').value=s.class_name;$('st_cur').value=s.current_class||s.class_name;$('st_ls').value=s.last_school||'';$('st_last').value=s.last_class||'';
   $('st_adm').value=s.admission_date||'';$('st_addr').value=s.address||'';setPhoto('st_ph',s.photo_url);
-  $('f_title').textContent='Edit student';$('s_btn').textContent='Update student';scrollTo({top:0,behavior:'smooth'});
+  $('f_title').textContent='Edit student';$('s_btn').textContent='Update student';view('add');
 };
 window.delS=async id=>{if(confirm('Is student ko delete karein?')){await sb.from('students').delete().eq('id',id);loadStudents()}};
 
