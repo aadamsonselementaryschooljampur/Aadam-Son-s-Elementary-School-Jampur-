@@ -204,8 +204,16 @@ main>div:not([hidden]){animation:rise .45s both}
 .bar{height:14px;border-radius:99px;background:#e3eaf7;overflow:hidden}
 .bar i{display:block;width:0;height:100%;border-radius:99px;background:linear-gradient(90deg,#1565d8,#2ecc71);transition:width .9s ease}
 .pc{font-family:"Baloo 2",sans-serif;font-size:34px;color:var(--navy);line-height:1.1}
+#toast{position:fixed;left:12px;right:12px;bottom:18px;z-index:100;padding:14px 16px;border-radius:14px;color:#fff;font-weight:600;font-size:14px;box-shadow:0 10px 30px rgba(0,0,0,.3);animation:rise .3s both}
+#toast.bad{background:linear-gradient(135deg,#b71c1c,#e53935)}#toast.ok{background:linear-gradient(135deg,#0b3aa8,#1565d8)}
+#pop{position:fixed;inset:0;background:rgba(5,15,50,.55);z-index:120;display:grid;place-items:center;padding:20px}
+#pop>div{background:#fff;border-radius:20px;padding:24px;max-width:360px;width:100%;text-align:center;animation:pop .3s both}
+#pop b{color:#c62828;display:block;font-size:22px;margin-bottom:8px;font-family:"Baloo 2",sans-serif}
+#pop p{color:#c62828;font-weight:600;margin:0 0 6px}
 </style></head>
 <body>
+<div id="toast" hidden></div>
+<div id="pop" hidden><div><b id="pop_h"></b><p id="pop_t"></p><button class="pri" type="button" onclick="document.getElementById('pop').hidden=true">OK</button></div></div>
 
 <!-- LOGIN / REGISTER SCREEN -->
 <section id="auth">
@@ -289,6 +297,7 @@ main>div:not([hidden]){animation:rise .45s both}
     <button class="mi" data-v="data" id="m_data" hidden><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Data</button>
     <button class="mi" data-v="tdata" id="m_tdata" hidden><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18"/></svg>Teachers' Data</button>
     <button class="mi" data-v="leave" id="m_leave" hidden><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18M9 15l2 2 4-4"/></svg>Teacher's Leave</button>
+    <button class="mi" data-v="loc" id="m_loc" hidden><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.2 7-11a7 7 0 0 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>School Location</button>
     <button class="mi" data-v="search"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>Search</button>
     <button class="mi" data-v="add"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21a7 7 0 0 0-14 0"/><circle cx="9" cy="8" r="4"/><path d="M19 8v6M16 11h6"/></svg>Add Student</button>
     <button class="mi" data-v="tea" id="m_tea" hidden><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2 20a7 7 0 0 1 14 0M17 5a3.5 3.5 0 0 1 0 6.5M19 20a6 6 0 0 0-3-5"/></svg>Teachers</button>
@@ -312,6 +321,12 @@ main>div:not([hidden]){animation:rise .45s both}
     <div id="v_leave" hidden><h2 class="vt">Teacher's Leave</h2>
       <div class="card"><p class="sub" style="margin:0 0 10px">Choose a date, then tap a leave type for the teacher. Tap again to cancel.</p><input type="date" id="lv_day"></div>
       <div id="lv_list" style="margin-top:16px"></div></div>
+    <div id="v_loc" hidden><h2 class="vt">School Location</h2>
+      <div class="card"><p class="sub">Attendance is accepted only inside this circle. Only the Headmaster can change it.</p>
+        <div class="grid"><div><label>Latitude</label><input id="lc_lat" inputmode="decimal" placeholder="e.g. 29.6420"></div><div><label>Longitude</label><input id="lc_lng" inputmode="decimal" placeholder="e.g. 70.5950"></div>
+        <div><label>Allowed radius (meters)</label><input id="lc_rad" inputmode="numeric" value="100"></div><div><label>Max GPS accuracy (meters)</label><input id="lc_acc" inputmode="numeric" value="50"></div></div>
+        <button class="alt" id="lc_here" type="button">Use my current location</button><button class="pri" id="lc_save" type="button">Save</button>
+        <p class="sub" id="lc_msg" style="margin-top:12px"></p></div></div>
     <div id="v_tdata" hidden><h2 class="vt">Teachers' Data</h2>
       <div class="card"><h2>In &amp; Out - Daily</h2><input type="date" id="td_day" style="margin:8px 0"><div id="td_list"></div></div>
       <h2 class="vt" style="margin-top:22px">Yearly Records</h2>
@@ -464,13 +479,13 @@ async function boot(){
   $('filter').hidden=!admin;$('st_class').disabled=!admin;
   $('f_sub').textContent=admin?'Aap admin hain: kisi bhi class ka data add/edit kar sakte hain.':'Class: '+(me.class_name||'-')+'. Save hone ke baad sirf admin change kar sakta hai.';
   $('l_title').textContent=admin?'All Students':'Students of '+(me.class_name||'-');
-  resetForm();drawProfile();$('m_tea').hidden=!admin;$('m_tdata').hidden=!admin;$('m_leave').hidden=!admin;$('m_class_t').textContent=admin?'Classes':'Class';$('m_data').hidden=!admin;view('dash');
+  resetForm();drawProfile();$('m_tea').hidden=!admin;$('m_tdata').hidden=!admin;$('m_leave').hidden=!admin;$('m_loc').hidden=!admin;$('m_class_t').textContent=admin?'Classes':'Class';$('m_data').hidden=!admin;view('dash');
 }
 function view(v){
-  ['dash','students','inout','head','class','data','tdata','leave','search','add','prof','tea'].forEach(x=>$('v_'+x).hidden=x!==v);
+  ['dash','students','inout','head','class','data','tdata','leave','loc','search','add','prof','tea'].forEach(x=>$('v_'+x).hidden=x!==v);
   document.querySelectorAll('.mi[data-v]').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
   $('drawer').classList.remove('open');$('scrim').hidden=true;
-  if(v==='tea')loadTeachers();if(v==='dash'||v==='inout')loadIO();if(v==='dash'||v==='head')loadHC();if(v==='leave'){if(!$('lv_day').value)$('lv_day').value=dayStr();loadLeave()}if(v==='tdata'){if(!$('td_day').value)$('td_day').value=dayStr();loadTD()}if(v==='dash'||v==='students'||v==='search'||v==='class'||v==='data')loadStudents();scrollTo(0,0);
+  if(v==='tea')loadTeachers();if(v==='dash'||v==='inout')loadIO();if(v==='dash'||v==='head')loadHC();if(v==='loc')loadLoc();if(v==='leave'){if(!$('lv_day').value)$('lv_day').value=dayStr();loadLeave()}if(v==='tdata'){if(!$('td_day').value)$('td_day').value=dayStr();loadTD()}if(v==='dash'||v==='students'||v==='search'||v==='class'||v==='data')loadStudents();scrollTo(0,0);
 }
 document.querySelector('.dh').onclick=()=>view('prof');
 document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const r=b.getBoundingClientRect(),d=Math.max(r.width,r.height),x=document.createElement('span');x.className='rp';x.style.cssText=`width:${d}px;height:${d}px;left:${e.clientX-r.left-d/2}px;top:${e.clientY-r.top-d/2}px`;b.appendChild(x);setTimeout(()=>x.remove(),650)});
@@ -579,16 +594,75 @@ function drawIO(){
   setIO(`<div class="iob"><div><button class="ib ${late?'red':''}" onclick="markIO('in')">In${inT?`<em>${tm(r.in_time)}</em>${late?'<i>Late</i>':''}`:''}</button><small>${inT?'Marked for today':'Tap when you arrive'}</small></div>
   <div><button class="ib out ${early?'red':''}" onclick="markIO('out')">Out${outT?`<em>${tm(r.out_time)}</em>${early?'<i>Too Early</i>':''}`:''}</button><small>${outT?'Marked for today':'Tap when you leave'}</small></div></div>`);
 }
-async function markIO(k){
-  const wd=new Date().getDay();if(wd===0||wd===6)return alert('Weekly holiday.');
-  if(todayLeave)return alert('You are on leave today.');
-  const r=todayRow,now=new Date().toISOString();
-  if(k==='in'&&r)return;
-  if(k==='out'){if(!r)return alert('Please mark In first.');if(r.out_time)return}
-  const res=k==='in'?await sb.from('attendance').insert({teacher_id:me.id,day:dayStr(),in_time:now}).select().maybeSingle():await sb.from('attendance').update({out_time:now}).eq('id',r.id).select().maybeSingle();
-  if(res.error)return alert(res.error.message);
-  loadIO();
+// ---- GPS-verified attendance (server decides; browser only collects the fix)
+let toastT;
+function toast(msg,bad=true){
+  if(bad){$('toast').hidden=true;$('pop_h').textContent=msg.startsWith('Go to')?'Go to school location':'Attendance not recorded';$('pop_t').textContent=msg;$('pop').hidden=false;return}
+  const t=$('toast');t.textContent=msg;t.className=bad?'bad':'ok';t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,bad?9000:3500)}
+function getFix(){return new Promise((res,rej)=>{
+  if(!navigator.geolocation)return rej({code:'UNSUPPORTED'});
+  navigator.geolocation.getCurrentPosition(res,e=>rej({code:e.code===1?'DENIED':e.code===3?'TIMEOUT':'UNAVAILABLE'}),{enableHighAccuracy:true,timeout:20000,maximumAge:0});
+})}
+function geoMsg(o){
+  const c=o&&o.code;
+  return ({
+    DENIED:'Location permission is blocked. Allow Location for this site in your browser settings, then tap again.',
+    UNAVAILABLE:'Could not get your location. Turn on GPS/Location, move near a window or outdoors, and try again.',
+    TIMEOUT:'Getting your location took too long. Turn on GPS/Location and try again.',
+    UNSUPPORTED:'This browser cannot provide location. Please use Chrome or Safari on your phone.',
+    STALE_LOCATION:'Your location reading is too old. Tap again to get a fresh reading.',
+    LOW_ACCURACY:`GPS is not accurate enough (about ${o&&o.accuracy_m} m, needs ${o&&o.max_accuracy_m} m or better). Move outdoors and wait a few seconds, then tap again.`,
+    OUTSIDE_RADIUS:`Go to the school location to mark In & Out. You are about ${o&&o.distance_m} m away (allowed: ${o&&o.radius_m} m).`,
+    NOT_CONFIGURED:'The school location has not been set yet. Please ask the Headmaster.',
+    NO_AUTH:'Your session has expired. Please log in again.',
+    ALREADY_IN:'You have already marked In today.',
+    ALREADY_OUT:'You have already marked Out today.',
+    NO_IN:'Please mark In first.',
+    ON_LEAVE:'You are on leave today.',
+    WEEKEND:'Weekly holiday.',
+    BAD_INPUT:'The location data was not valid. Please try again.',
+    NETWORK:'Could not reach the server. Check your internet and try again.'
+  })[c]||'Attendance could not be recorded. Please try again.';
 }
+let ioBusy=false;
+async function markIO(k){
+  if(ioBusy)return;
+  const wd=new Date().getDay();if(wd===0||wd===6)return toast('Weekly holiday.');
+  if(todayLeave)return toast('You are on leave today.');
+  const r=todayRow;
+  if(k==='in'&&r)return toast('You have already marked In today.');
+  if(k==='out'){if(!r)return toast('Please mark In first.');if(r.out_time)return toast('You have already marked Out today.')}
+  ioBusy=true;toast('Checking your location...',false);
+  try{
+    const p=await getFix();
+    const {data,error}=await sb.functions.invoke('mark-attendance',{body:{action:k,lat:p.coords.latitude,lng:p.coords.longitude,accuracy:p.coords.accuracy,fix_ts:p.timestamp}});
+    let out=data;if(error){try{out=await error.context.json()}catch(e){out={code:'NETWORK'}}}
+    if(!out||!out.ok)return toast(geoMsg(out));
+    toast((k==='in'?'In':'Out')+' recorded. You are '+out.distance_m+' m from school.',false);
+    loadIO();
+  }catch(e){toast(geoMsg(e))}
+  finally{ioBusy=false}
+}
+// ---- School location (admin only; enforced by RLS)
+async function loadLoc(){
+  const {data,error}=await sb.from('school_location').select('*').eq('id',1).maybeSingle();
+  if(error)return $('lc_msg').textContent=error.message;
+  if(data){$('lc_lat').value=data.lat;$('lc_lng').value=data.lng;$('lc_rad').value=data.radius_m;$('lc_acc').value=data.max_accuracy_m;$('lc_msg').textContent='Saved location is active.'}
+  else{$('lc_rad').value=100;$('lc_acc').value=50;$('lc_msg').textContent='Not set yet. Attendance is blocked until you save the school location.'}
+}
+$('lc_here').onclick=async()=>{
+  $('lc_msg').textContent='Getting your location...';
+  try{const p=await getFix();$('lc_lat').value=p.coords.latitude.toFixed(6);$('lc_lng').value=p.coords.longitude.toFixed(6);$('lc_msg').textContent='Filled from this device (accuracy about '+Math.round(p.coords.accuracy)+' m). Stand at the middle of the school for best results, then Save.'}
+  catch(e){$('lc_msg').textContent=geoMsg(e)}
+};
+$('lc_save').onclick=async()=>{
+  const lat=parseFloat($('lc_lat').value),lng=parseFloat($('lc_lng').value),rad=parseInt($('lc_rad').value,10),acc=parseInt($('lc_acc').value,10),m=t=>$('lc_msg').textContent=t;
+  if(!(lat>=-90&&lat<=90)||!(lng>=-180&&lng<=180))return m('Enter a valid latitude and longitude.');
+  if(!(rad>=10&&rad<=5000))return m('Radius must be between 10 and 5000 meters.');
+  if(!(acc>=5&&acc<=500))return m('Max GPS accuracy must be between 5 and 500 meters.');
+  const {error}=await sb.from('school_location').upsert({id:1,lat,lng,radius_m:rad,max_accuracy_m:acc,updated_at:new Date().toISOString(),updated_by:me.id});
+  m(error?error.message:'Saved. New attendance checks use this location immediately.');
+};
 let tdP=[];
 const pad2=n=>String(n).padStart(2,'0'),dsd=d=>d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());
 const MN=['January','February','March','April','May','June','July','August','September','October','November','December'];
