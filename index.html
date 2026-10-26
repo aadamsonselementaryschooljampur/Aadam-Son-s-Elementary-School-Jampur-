@@ -180,6 +180,17 @@ main>div:not([hidden]){animation:rise .45s both}
 .ib.out{background:linear-gradient(135deg,#ffe45c,#ffc800)}
 .ib.red{border-radius:34px}
 .row h2{line-height:1.2;margin-right:10px}
+#drawer .mi,#drawer .dh{flex:none}
+#drawer{-webkit-overflow-scrolling:touch}
+.lvc{background:#fff;border-radius:16px;padding:14px;margin-bottom:12px;box-shadow:0 6px 18px rgba(11,42,138,.1)}
+.lvc .li{border:0;padding:0 0 12px}.lvb{display:flex;gap:8px}
+.lb{flex:1;padding:12px 6px;border-radius:12px;background:#eaf1fd;color:var(--navy);font-weight:600;font-size:14px}
+.lb.on.sick{background:linear-gradient(135deg,#b71c1c,#e53935);color:#fff}
+.lb.on.casual{background:linear-gradient(135deg,#ffe45c,#ffc800);color:var(--navy)}
+.lvbox{border-radius:18px;padding:22px 14px;text-align:center;margin-top:12px;color:#fff}
+.lvbox b{display:block;font-family:"Baloo 2",sans-serif;font-size:26px}.lvbox small{opacity:.9}
+.lvbox.sick{background:linear-gradient(135deg,#b71c1c,#e53935)}.lvbox.casual{background:linear-gradient(135deg,#ffe45c,#ffc800);color:var(--navy)}
+.chip.lv{background:#fff3cf;color:#8a6200}
 </style></head>
 <body>
 
@@ -263,6 +274,7 @@ main>div:not([hidden]){animation:rise .45s both}
     <button class="mi" data-v="class"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10 12 4l9 6-9 6z"/><path d="M7 12.5V17c3 2 7 2 10 0v-4.500"/></svg><span id="m_class_t">Class</span></button>
     <button class="mi" data-v="data" id="m_data" hidden><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Data</button>
     <button class="mi" data-v="tdata" id="m_tdata" hidden><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18"/></svg>Teachers' Data</button>
+    <button class="mi" data-v="leave" id="m_leave" hidden><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18M9 15l2 2 4-4"/></svg>Teacher's Leave</button>
     <button class="mi" data-v="search"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>Search</button>
     <button class="mi" data-v="add"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21a7 7 0 0 0-14 0"/><circle cx="9" cy="8" r="4"/><path d="M19 8v6M16 11h6"/></svg>Add Student</button>
     <button class="mi" data-v="tea" id="m_tea" hidden><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2 20a7 7 0 0 1 14 0M17 5a3.5 3.5 0 0 1 0 6.5M19 20a6 6 0 0 0-3-5"/></svg>Teachers</button>
@@ -281,6 +293,9 @@ main>div:not([hidden]){animation:rise .45s both}
       </div></div>
     <div id="v_inout" hidden><div class="card"><h2>Teacher's In &amp; Out</h2><small class="sub io-date"></small><div class="io-box"></div></div></div>
     <div id="v_head" hidden><div class="card"><h2>Head Count</h2><div id="hc_body"></div></div></div>
+    <div id="v_leave" hidden><h2 class="vt">Teacher's Leave</h2>
+      <div class="card"><p class="sub" style="margin:0 0 10px">Choose a date, then tap a leave type for the teacher. Tap again to cancel.</p><input type="date" id="lv_day"></div>
+      <div id="lv_list" style="margin-top:16px"></div></div>
     <div id="v_tdata" hidden><h2 class="vt">Teachers' Data</h2>
       <div class="cgrid"><button class="cb sel" type="button"><b>In &amp; Out</b><small>Attendance records</small></button></div>
       <div class="card" style="margin-top:16px"><div class="row" style="margin:0"><h2>In &amp; Out</h2><input type="date" id="td_day" style="max-width:170px"></div><div id="td_list"></div></div></div>
@@ -429,13 +444,13 @@ async function boot(){
   $('filter').hidden=!admin;$('st_class').disabled=!admin;
   $('f_sub').textContent=admin?'Aap admin hain: kisi bhi class ka data add/edit kar sakte hain.':'Class: '+(me.class_name||'-')+'. Save hone ke baad sirf admin change kar sakta hai.';
   $('l_title').textContent=admin?'All Students':'Students of '+(me.class_name||'-');
-  resetForm();drawProfile();$('m_tea').hidden=!admin;$('m_tdata').hidden=!admin;$('m_class_t').textContent=admin?'Classes':'Class';$('m_data').hidden=!admin;view('dash');
+  resetForm();drawProfile();$('m_tea').hidden=!admin;$('m_tdata').hidden=!admin;$('m_leave').hidden=!admin;$('m_class_t').textContent=admin?'Classes':'Class';$('m_data').hidden=!admin;view('dash');
 }
 function view(v){
-  ['dash','inout','head','class','data','tdata','search','add','prof','tea'].forEach(x=>$('v_'+x).hidden=x!==v);
+  ['dash','inout','head','class','data','tdata','leave','search','add','prof','tea'].forEach(x=>$('v_'+x).hidden=x!==v);
   document.querySelectorAll('.mi[data-v]').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
   $('drawer').classList.remove('open');$('scrim').hidden=true;
-  if(v==='tea')loadTeachers();if(v==='dash'||v==='inout')loadIO();if(v==='dash'||v==='head')loadHC();if(v==='tdata'){if(!$('td_day').value)$('td_day').value=dayStr();loadTD()}if(v==='dash'||v==='search'||v==='class'||v==='data')loadStudents();scrollTo(0,0);
+  if(v==='tea')loadTeachers();if(v==='dash'||v==='inout')loadIO();if(v==='dash'||v==='head')loadHC();if(v==='leave'){if(!$('lv_day').value)$('lv_day').value=dayStr();loadLeave()}if(v==='tdata'){if(!$('td_day').value)$('td_day').value=dayStr();loadTD()}if(v==='dash'||v==='search'||v==='class'||v==='data')loadStudents();scrollTo(0,0);
 }
 document.querySelector('.dh').onclick=()=>view('prof');
 document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const r=b.getBoundingClientRect(),d=Math.max(r.width,r.height),x=document.createElement('span');x.className='rp';x.style.cssText=`width:${d}px;height:${d}px;left:${e.clientX-r.left-d/2}px;top:${e.clientY-r.top-d/2}px`;b.appendChild(x);setTimeout(()=>x.remove(),650)});
@@ -517,28 +532,32 @@ const dayStr=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMont
 const tm=t=>t?new Date(t).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}):'-';
 const mins=t=>{const d=new Date(t);return d.getHours()*60+d.getMinutes()};
 const isLate=r=>!!(r&&r.in_time&&mins(r.in_time)>8*60+30),isEarly=r=>!!(r&&r.out_time&&mins(r.out_time)<13*60+30);
-let todayRow=null;
+let todayRow=null,todayLeave=null;
 const setIO=h=>document.querySelectorAll('.io-box').forEach(e=>e.innerHTML=h);
 const dur=r=>{const m=Math.max(0,Math.round((new Date(r.out_time)-new Date(r.in_time))/60000));return Math.floor(m/60)+'h '+m%60+'m'};
-function ioList(att,teachers){
-  const m={};(att||[]).forEach(r=>m[r.teacher_id]=r);
-  return (teachers||[]).length?teachers.map(t=>{const r=m[t.id];
+function ioList(att,teachers,lv){
+  const m={},L={};(att||[]).forEach(r=>m[r.teacher_id]=r);(lv||[]).forEach(r=>L[r.teacher_id]=r.kind);
+  return (teachers||[]).length?teachers.map(t=>{const r=m[t.id],lk=L[t.id];
+    if(lk){const nm=lk==='sick'?'Sick Leave':'Casual Leave';return `<div class="li"><img src="${esc(t.avatar_url||'emblem.png')}" alt=""><div style="flex:1;min-width:0"><b>${esc(t.full_name||t.email)}</b><small>${nm}</small></div><span class="chip lv">${nm}</span></div>`}
     const chips=!r?'<span class="chip no">Not in</span>':`<span class="chip ${isLate(r)?'no':'in'}">${isLate(r)?'Late':'In'}</span>`+(r.out_time?` <span class="chip ${isEarly(r)?'no':'out'}">${isEarly(r)?'Too Early':'Out'}</span>`:'');
     return `<div class="li"><img src="${esc(t.avatar_url||'emblem.png')}" alt=""><div style="flex:1;min-width:0"><b>${esc(t.full_name||t.email)}</b><small>In ${tm(r&&r.in_time)} - Out ${tm(r&&r.out_time)}${r&&r.in_time&&r.out_time?' - '+dur(r):''}</small></div><div style="text-align:right">${chips}</div></div>`}).join(''):'<p class="sub">No teachers yet.</p>';
 }
 async function loadIO(){
   document.querySelectorAll('.io-date').forEach(e=>e.textContent=new Date().toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long'}));
+  if(me.role!=='admin'){const lv=await sb.from('leaves').select('*').eq('teacher_id',me.id).eq('day',dayStr()).maybeSingle();todayLeave=lv.data||null}else todayLeave=null;
   const {data,error}=await sb.from('attendance').select('*').eq('teacher_id',me.id).eq('day',dayStr()).maybeSingle();
   if(error)return setIO('<p class="sub">'+esc(error.message)+'</p>');
   todayRow=data;drawIO();
 }
 function drawIO(){
+  if(todayLeave){const k=todayLeave.kind;return setIO(`<div class="lvbox ${k}"><b>${k==='sick'?'Sick Leave':'Casual Leave'}</b><small>You are on leave today. In &amp; Out is not available.</small></div>`)}
   const r=todayRow,late=isLate(r),early=isEarly(r);
   const inT=r&&r.in_time,outT=r&&r.out_time;
   setIO(`<div class="iob"><div><button class="ib ${late?'red':''}" onclick="markIO('in')">In${inT?`<em>${tm(r.in_time)}</em>${late?'<i>Late</i>':''}`:''}</button><small>${inT?'Marked for today':'Tap when you arrive'}</small></div>
   <div><button class="ib out ${early?'red':''}" onclick="markIO('out')">Out${outT?`<em>${tm(r.out_time)}</em>${early?'<i>Too Early</i>':''}`:''}</button><small>${outT?'Marked for today':'Tap when you leave'}</small></div></div>`);
 }
 async function markIO(k){
+  if(todayLeave)return alert('You are on leave today.');
   const r=todayRow,now=new Date().toISOString();
   if(k==='in'&&r)return;
   if(k==='out'){if(!r)return alert('Please mark In first.');if(r.out_time)return}
@@ -548,9 +567,28 @@ async function markIO(k){
 }
 async function loadTD(){
   const day=$('td_day').value||dayStr();
-  const [a,p]=await Promise.all([sb.from('attendance').select('*').eq('day',day),sb.from('profiles').select('id,full_name,email,avatar_url')]);
-  $('td_list').innerHTML=(a.error||p.error)?'<p class="sub">'+esc((a.error||p.error).message)+'</p>':ioList(a.data,p.data);
+  const [a,p,l]=await Promise.all([sb.from('attendance').select('*').eq('day',day),sb.from('profiles').select('id,full_name,email,avatar_url'),sb.from('leaves').select('*').eq('day',day)]);
+  const er=a.error||p.error;
+  $('td_list').innerHTML=er?'<p class="sub">'+esc(er.message)+'</p>':ioList(a.data,p.data,l.data||[]);
 }
+// ---- Teacher's Leave (admin)
+let lvRows={};
+async function loadLeave(){
+  const day=$('lv_day').value||dayStr();
+  const [p,l]=await Promise.all([sb.from('profiles').select('id,full_name,email,avatar_url,class_name,designation').eq('role','teacher'),sb.from('leaves').select('*').eq('day',day)]);
+  const er=p.error||l.error;if(er)return $('lv_list').innerHTML='<p class="sub">'+esc(er.message)+'</p>';
+  lvRows={};(l.data||[]).forEach(r=>lvRows[r.teacher_id]=r);
+  $('lv_list').innerHTML=(p.data||[]).length?p.data.map(t=>{const k=lvRows[t.id]&&lvRows[t.id].kind;
+    return `<div class="lvc"><div class="li"><img src="${esc(t.avatar_url||'emblem.png')}" alt=""><div style="flex:1;min-width:0"><b>${esc(t.full_name||t.email)}</b><small>${esc([t.designation,t.class_name].filter(Boolean).join(' - '))}</small></div></div>
+    <div class="lvb"><button class="lb ${k==='sick'?'on sick':''}" onclick="setLeave('${t.id}','sick')">Sick Leave</button><button class="lb ${k==='casual'?'on casual':''}" onclick="setLeave('${t.id}','casual')">Casual Leave</button></div></div>`}).join(''):'<p class="sub">No teachers yet.</p>';
+}
+async function setLeave(id,kind){
+  const day=$('lv_day').value||dayStr(),cur=lvRows[id];
+  const res=cur&&cur.kind===kind?await sb.from('leaves').delete().eq('teacher_id',id).eq('day',day):await sb.from('leaves').upsert({teacher_id:id,day,kind},{onConflict:'teacher_id,day'});
+  if(res.error)return alert(res.error.message);
+  loadLeave();
+}
+$('lv_day').onchange=loadLeave;
 $('td_day').onchange=loadTD;
 
 // ---- Head Count
