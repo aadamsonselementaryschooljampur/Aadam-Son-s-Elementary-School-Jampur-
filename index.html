@@ -191,6 +191,14 @@ main>div:not([hidden]){animation:rise .45s both}
 .lvbox b{display:block;font-family:"Baloo 2",sans-serif;font-size:26px}.lvbox small{opacity:.9}
 .lvbox.sick{background:linear-gradient(135deg,#b71c1c,#e53935)}.lvbox.casual{background:linear-gradient(135deg,#ffe45c,#ffc800);color:var(--navy)}
 .chip.lv{background:#fff3cf;color:#8a6200}
+.lvbox.wk{background:linear-gradient(135deg,#0b3aa8,#1565d8)}
+.cb.dim{opacity:.4;pointer-events:none}
+.stats{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.st{padding:4px 10px;border-radius:99px;font-size:12px;font-weight:700}
+.st.g{background:#dff5e5;color:#1b7f3b}.st.r{background:#fde8e8;color:#c62828}.st.y{background:#fff3cf;color:#8a6200}.st.b{background:#e3ecff;color:var(--navy)}
+.dd{margin-top:6px}.dd .kv{font-size:13px}
+#drawer.open .mi{animation:slidein .4s backwards}
+.cb{animation:rise .5s backwards}
 </style></head>
 <body>
 
@@ -297,8 +305,12 @@ main>div:not([hidden]){animation:rise .45s both}
       <div class="card"><p class="sub" style="margin:0 0 10px">Choose a date, then tap a leave type for the teacher. Tap again to cancel.</p><input type="date" id="lv_day"></div>
       <div id="lv_list" style="margin-top:16px"></div></div>
     <div id="v_tdata" hidden><h2 class="vt">Teachers' Data</h2>
-      <div class="cgrid"><button class="cb sel" type="button"><b>In &amp; Out</b><small>Attendance records</small></button></div>
-      <div class="card" style="margin-top:16px"><div class="row" style="margin:0"><h2>In &amp; Out</h2><input type="date" id="td_day" style="max-width:170px"></div><div id="td_list"></div></div></div>
+      <div class="card"><h2>In &amp; Out - Daily</h2><input type="date" id="td_day" style="margin:8px 0"><div id="td_list"></div></div>
+      <h2 class="vt" style="margin-top:22px">Yearly Records</h2>
+      <div id="td_years" class="cgrid"></div>
+      <div id="td_ym" hidden><div class="row" style="margin:16px 0 10px"><h2 class="vt" id="td_ytitle" style="margin:0"></h2><button class="ghost" id="td_yback" type="button">&lsaquo; Years</button></div><div id="td_months" class="cgrid"></div></div>
+      <div id="td_rep" hidden><div class="row" style="margin:16px 0 10px"><h2 class="vt" id="td_rtitle" style="margin:0"></h2><button class="ghost" id="td_rback" type="button">&lsaquo; Months</button></div><div id="td_rlist"></div></div>
+    </div>
     <div id="v_class" hidden>
       <h2 class="vt" id="c_head">Classes</h2>
       <div id="cgrid" class="cgrid"></div>
@@ -478,12 +490,12 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)r
   }
   requestAnimationFrame(frame);
 })();
-$('burger').onclick=()=>{$('drawer').classList.add('open');$('scrim').hidden=false};
+$('burger').onclick=()=>{[...document.querySelectorAll('#drawer .mi:not([hidden])')].forEach((b,i)=>b.style.animationDelay=(i*.045)+'s');$('drawer').classList.add('open');$('scrim').hidden=false};
 $('scrim').onclick=()=>{$('drawer').classList.remove('open');$('scrim').hidden=true};
 document.querySelectorAll('.mi[data-v]').forEach(b=>b.onclick=()=>{
-  b.classList.add('go');
+  b.classList.add('go');b.style.animationDelay='0s';
   setTimeout(()=>{b.classList.remove('go');if(b.dataset.v==='add'&&editId)resetForm();if(b.dataset.v==='class')curClass=null;view(b.dataset.v)},260)});
-$('logout').addEventListener('click',()=>{$('logout').classList.add('go')});
+$('logout').onclick=()=>{$('logout').classList.add('go');$('logout').style.animationDelay='0s';setTimeout(()=>sb.auth.signOut(),280)};
 function drawProfile(){
   const f=(k,v)=>`<div class="kv"><span>${k}</span><b>${esc(v||'-')}</b></div>`,nm=me.full_name||me.email;
   $('pr_av').src=$('d_av').src=me.avatar_url||'emblem.png';$('pr_name').textContent=$('d_name').textContent=nm;$('pr_des').textContent=me.designation||'';
@@ -535,10 +547,11 @@ const isLate=r=>!!(r&&r.in_time&&mins(r.in_time)>8*60+30),isEarly=r=>!!(r&&r.out
 let todayRow=null,todayLeave=null;
 const setIO=h=>document.querySelectorAll('.io-box').forEach(e=>e.innerHTML=h);
 const dur=r=>{const m=Math.max(0,Math.round((new Date(r.out_time)-new Date(r.in_time))/60000));return Math.floor(m/60)+'h '+m%60+'m'};
-function ioList(att,teachers,lv){
+function ioList(att,teachers,lv,wk){
   const m={},L={};(att||[]).forEach(r=>m[r.teacher_id]=r);(lv||[]).forEach(r=>L[r.teacher_id]=r.kind);
   return (teachers||[]).length?teachers.map(t=>{const r=m[t.id],lk=L[t.id];
     if(lk){const nm=lk==='sick'?'Sick Leave':'Casual Leave';return `<div class="li"><img src="${esc(t.avatar_url||'emblem.png')}" alt=""><div style="flex:1;min-width:0"><b>${esc(t.full_name||t.email)}</b><small>${nm}</small></div><span class="chip lv">${nm}</span></div>`}
+    if(wk&&!r)return `<div class="li"><img src="${esc(t.avatar_url||'emblem.png')}" alt=""><div style="flex:1;min-width:0"><b>${esc(t.full_name||t.email)}</b><small>${wk}</small></div><span class="chip lv">${wk}</span></div>`;
     const chips=!r?'<span class="chip no">Not in</span>':`<span class="chip ${isLate(r)?'no':'in'}">${isLate(r)?'Late':'In'}</span>`+(r.out_time?` <span class="chip ${isEarly(r)?'no':'out'}">${isEarly(r)?'Too Early':'Out'}</span>`:'');
     return `<div class="li"><img src="${esc(t.avatar_url||'emblem.png')}" alt=""><div style="flex:1;min-width:0"><b>${esc(t.full_name||t.email)}</b><small>In ${tm(r&&r.in_time)} - Out ${tm(r&&r.out_time)}${r&&r.in_time&&r.out_time?' - '+dur(r):''}</small></div><div style="text-align:right">${chips}</div></div>`}).join(''):'<p class="sub">No teachers yet.</p>';
 }
@@ -550,6 +563,8 @@ async function loadIO(){
   todayRow=data;drawIO();
 }
 function drawIO(){
+  const wd=new Date().getDay();
+  if(wd===0||wd===6){const nm=wd===6?'Saturday Leave':'Sunday Leave';return setIO(`<div class="lvbox wk"><b>${nm}</b><small>Weekly holiday. In &amp; Out is not available.</small></div>`)}
   if(todayLeave){const k=todayLeave.kind;return setIO(`<div class="lvbox ${k}"><b>${k==='sick'?'Sick Leave':'Casual Leave'}</b><small>You are on leave today. In &amp; Out is not available.</small></div>`)}
   const r=todayRow,late=isLate(r),early=isEarly(r);
   const inT=r&&r.in_time,outT=r&&r.out_time;
@@ -557,6 +572,7 @@ function drawIO(){
   <div><button class="ib out ${early?'red':''}" onclick="markIO('out')">Out${outT?`<em>${tm(r.out_time)}</em>${early?'<i>Too Early</i>':''}`:''}</button><small>${outT?'Marked for today':'Tap when you leave'}</small></div></div>`);
 }
 async function markIO(k){
+  const wd=new Date().getDay();if(wd===0||wd===6)return alert('Weekly holiday.');
   if(todayLeave)return alert('You are on leave today.');
   const r=todayRow,now=new Date().toISOString();
   if(k==='in'&&r)return;
@@ -565,11 +581,49 @@ async function markIO(k){
   if(res.error)return alert(res.error.message);
   loadIO();
 }
+let tdP=[];
+const pad2=n=>String(n).padStart(2,'0'),dsd=d=>d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());
+const MN=['January','February','March','April','May','June','July','August','September','October','November','December'];
 async function loadTD(){
-  const day=$('td_day').value||dayStr();
-  const [a,p,l]=await Promise.all([sb.from('attendance').select('*').eq('day',day),sb.from('profiles').select('id,full_name,email,avatar_url'),sb.from('leaves').select('*').eq('day',day)]);
-  const er=a.error||p.error;
-  $('td_list').innerHTML=er?'<p class="sub">'+esc(er.message)+'</p>':ioList(a.data,p.data,l.data||[]);
+  const day=$('td_day').value||dayStr(),dw=new Date(day+'T00:00:00').getDay();
+  const [a,p,l]=await Promise.all([sb.from('attendance').select('*').eq('day',day),sb.from('profiles').select('id,full_name,email,avatar_url,created_at'),sb.from('leaves').select('*').eq('day',day)]);
+  const er=a.error||p.error;tdP=p.data||[];
+  $('td_list').innerHTML=er?'<p class="sub">'+esc(er.message)+'</p>':ioList(a.data,p.data,l.data||[],dw===6?'Saturday Leave':dw===0?'Sunday Leave':'');
+  drawYears();
+}
+function drawYears(){
+  const cy=new Date().getFullYear(),y0=Math.min(cy,...tdP.map(t=>t.created_at?new Date(t.created_at).getFullYear():cy)),ys=[];
+  for(let y=cy;y>=y0;y--)ys.push(y);
+  $('td_years').innerHTML=ys.map((y,i)=>`<button class="cb" style="animation-delay:${i*.06}s" onclick="openYear(${y})"><b>${y}</b><small>${y===cy?'Current year':'Tap to open'}</small></button>`).join('');
+  if(!tdYear){$('td_years').hidden=false;$('td_ym').hidden=true;$('td_rep').hidden=true}
+}
+let tdYear=null;
+function openYear(y){
+  tdYear=y;const now=new Date();
+  $('td_years').hidden=true;$('td_rep').hidden=true;$('td_ym').hidden=false;$('td_ytitle').textContent=String(y);
+  $('td_months').innerHTML=MN.map((m,i)=>`<button class="cb ${y===now.getFullYear()&&i>now.getMonth()||y>now.getFullYear()?'dim':''}" style="animation-delay:${i*.04}s" onclick="openMonth(${y},${i})"><b>${m}</b><small>${y}</small></button>`).join('');
+}
+$('td_yback').onclick=()=>{tdYear=null;$('td_ym').hidden=true;$('td_rep').hidden=true;$('td_years').hidden=false};
+$('td_rback').onclick=()=>{$('td_rep').hidden=true;$('td_ym').hidden=false};
+async function openMonth(y,m){
+  const last=new Date(y,m+1,0).getDate(),start=`${y}-${pad2(m+1)}-01`,end=`${y}-${pad2(m+1)}-${pad2(last)}`,today=dayStr();
+  $('td_ym').hidden=true;$('td_rep').hidden=false;$('td_rtitle').textContent=MN[m]+' '+y;$('td_rlist').innerHTML='<p class="sub">Loading...</p>';
+  const [a,l]=await Promise.all([sb.from('attendance').select('*').gte('day',start).lte('day',end),sb.from('leaves').select('*').gte('day',start).lte('day',end)]);
+  if(a.error||l.error)return $('td_rlist').innerHTML='<p class="sub">'+esc((a.error||l.error).message)+'</p>';
+  const A={},L={};(a.data||[]).forEach(r=>A[r.teacher_id+'|'+r.day]=r);(l.data||[]).forEach(r=>L[r.teacher_id+'|'+r.day]=r.kind);
+  $('td_rlist').innerHTML=tdP.map(t=>{
+    const from=t.created_at?dsd(new Date(t.created_at)):start;let pr=0,sk=0,cs=0,ab=0,lt=0,er=0,rows='';
+    for(let d=1;d<=last;d++){
+      const ds=`${y}-${pad2(m+1)}-${pad2(d)}`;if(ds>today||ds<from)continue;
+      const wd=new Date(y,m,d).getDay(),r=A[t.id+'|'+ds],lk=L[t.id+'|'+ds],lbl=d+' '+MN[m].slice(0,3);
+      if(r){pr++;if(isLate(r))lt++;if(isEarly(r))er++;rows+=`<div class="kv"><span>${lbl}</span><b>In ${tm(r.in_time)}${isLate(r)?' (Late)':''} - Out ${tm(r.out_time)}${isEarly(r)?' (Too Early)':''}</b></div>`}
+      else if(lk){lk==='sick'?sk++:cs++;rows+=`<div class="kv"><span>${lbl}</span><b>${lk==='sick'?'Sick Leave':'Casual Leave'}</b></div>`}
+      else if(wd===0||wd===6){continue}
+      else if(ds<today){ab++;rows+=`<div class="kv"><span>${lbl}</span><b style="color:#c62828">Absent</b></div>`}
+    }
+    return `<div class="lvc"><div class="li"><img src="${esc(t.avatar_url||'emblem.png')}" alt=""><div style="flex:1;min-width:0"><b>${esc(t.full_name||t.email)}</b></div></div>
+    <div class="stats"><span class="st g">Present ${pr}</span><span class="st y">Sick ${sk}</span><span class="st y">Casual ${cs}</span><span class="st r">Absent ${ab}</span><span class="st r">Late ${lt}</span><span class="st b">Too Early ${er}</span></div>
+    <button class="ghost" type="button" onclick="const n=this.nextElementSibling;n.hidden=!n.hidden">Daily details</button><div class="dd" hidden>${rows||'<p class="sub">No records.</p>'}</div></div>`}).join('')||'<p class="sub">No teachers yet.</p>';
 }
 // ---- Teacher's Leave (admin)
 let lvRows={};
