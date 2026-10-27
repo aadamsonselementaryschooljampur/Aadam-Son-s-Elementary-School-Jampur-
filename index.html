@@ -773,9 +773,9 @@ async function fetchHC(day){
   const {data}=await sb.from('head_count').select('*').eq('teacher_id',me.id).eq('day',day);return data||[];
 }
 async function loadHCBtn(){
-  const rows=await fetchHC(dayStr()),total=rows.reduce((a,r)=>a+(r.present||0),0);
+  const rows=await fetchHC(dayStr()),P=rows.reduce((a,r)=>a+(r.present||0),0),L=rows.reduce((a,r)=>a+(r.leave_count||0),0);
   const en=me.role==='admin'?rows.reduce((a,r)=>a+enr(r.class_name),0):enr(me.class_name);
-  $('hc_btn').hidden=!rows.length;$('hc_sub').textContent=`Present today: ${total}${en?' of '+en+' ('+pct(total,en)+'%)':''}`;
+  $('hc_btn').hidden=!rows.length;$('hc_sub').textContent=`Present ${P} - Leave ${L} - Absent ${p2(en-P-L)}`;
 }
 async function loadHC(){
   const adm=me.role==='admin',rows=await fetchHC(adm?($('hc_day').value||dayStr()):dayStr());
@@ -784,48 +784,51 @@ async function loadHC(){
 }
 function hcTeacherHTML(mine){
   if(!me.class_name)return '<p class="sub">No class assigned, so there is no head count to enter.</p>';
-  const c=gcnt(me.class_name),saved=hcSaved;hcSaved=false;
+  const c=gcnt(me.class_name),saved=hcSaved,L=mine?(mine.leave_count||0):0;hcSaved=false;
   return `<div class="lvt"><img src="${esc(me.avatar_url||'emblem.png')}" alt=""><div class="lvn"><div class="nm">${esc(me.full_name||me.email)}</div><div class="rt">( ${esc(me.designation||'-')} )<br>${esc(me.subject||'Class '+me.class_name)}</div></div></div>
   <h2 class="hct">Class ${esc(me.class_name)} Head Count</h2>
   <div class="hrow"><div class="pl g">On Roll Boys: ${c.b}</div><div class="pl bl">On Roll Girls: ${c.g}</div></div>
   <div class="hf"><div class="pl y">Present Boys:</div><input class="pv" id="hc_pb" type="number" min="0" inputmode="numeric" placeholder="00" value="${mine?mine.present_boys:''}"></div>
   <div class="hf"><div class="pl y">Present Girls:</div><input class="pv" id="hc_pg" type="number" min="0" inputmode="numeric" placeholder="00" value="${mine?mine.present_girls:''}"></div>
-  <div class="hf"><div class="pl y">Leave</div><div class="pv" id="hc_lv">${mine?p2(c.t-mine.present_boys-mine.present_girls):'00'}</div></div>
+  <div class="hf"><div class="pl y">Leave</div><input class="pv" id="hc_lv" type="number" min="0" inputmode="numeric" placeholder="00" value="${mine?L:''}"></div>
+  <div class="hf"><div class="pl y">Absent</div><div class="pv" id="hc_ab">${mine?p2(c.t-mine.present-L):'00'}</div></div>
+  <p class="sub">Students on leave are counted as present. Absent = on roll - present - leave.</p>
   ${c.u?`<p class="sub">${c.u} student(s) have no gender set. Ask the admin to complete them.</p>`:''}
   <button class="pri" onclick="saveHC()">Save Head Count</button>`+(saved?'<p class="ok" style="margin-top:12px">Saved. It now shows on your first screen.</p>':'')+
-  (mine?`<p class="sub" style="margin-top:12px">Present today: ${mine.present} of ${c.t} (${pct(mine.present,c.t)}%)</p>`:'');
+  (mine?`<p class="sub" style="margin-top:12px">Present ${mine.present} + Leave ${L} of ${c.t} students (${pct(mine.present+L,c.t)}%)</p>`:'');
 }
 function bindHC(){
-  const c=gcnt(me.class_name),f=()=>{$('hc_lv').textContent=p2(c.t-(parseInt($('hc_pb').value,10)||0)-(parseInt($('hc_pg').value,10)||0))};
-  $('hc_pb').oninput=$('hc_pg').oninput=f;
+  const c=gcnt(me.class_name),n=id=>parseInt($(id).value,10)||0,f=()=>{$('hc_ab').textContent=p2(c.t-n('hc_pb')-n('hc_pg')-n('hc_lv'))};
+  $('hc_pb').oninput=$('hc_pg').oninput=$('hc_lv').oninput=f;
 }
 async function saveHC(){
-  const c=gcnt(me.class_name),pb=parseInt($('hc_pb').value,10),pg=parseInt($('hc_pg').value,10);
-  if(isNaN(pb)||isNaN(pg)||pb<0||pg<0)return alert('Please enter Present Boys and Present Girls (use 0 if none).');
-  if(pb>c.b+c.u||pg>c.g+c.u||pb+pg>c.t)return alert('Present students cannot be more than the students on roll.');
-  const {error}=await sb.from('head_count').upsert({teacher_id:me.id,day:dayStr(),class_name:me.class_name,present:pb+pg,present_boys:pb,present_girls:pg,updated_at:new Date().toISOString()},{onConflict:'teacher_id,day'});
+  const c=gcnt(me.class_name),pb=parseInt($('hc_pb').value,10),pg=parseInt($('hc_pg').value,10),lv=parseInt($('hc_lv').value,10)||0;
+  if(isNaN(pb)||isNaN(pg)||pb<0||pg<0||lv<0)return alert('Please enter Present Boys and Present Girls (use 0 if none).');
+  if(pb>c.b+c.u||pg>c.g+c.u||pb+pg+lv>c.t)return alert('Present + Leave cannot be more than the students on roll.');
+  const {error}=await sb.from('head_count').upsert({teacher_id:me.id,day:dayStr(),class_name:me.class_name,present:pb+pg,present_boys:pb,present_girls:pg,leave_count:lv,updated_at:new Date().toISOString()},{onConflict:'teacher_id,day'});
   if(error)return alert(error.message);
   hcSaved=true;loadHC();
 }
 function hcAdminHTML(rows){
   const by={};rows.forEach(r=>(by[r.class_name]=by[r.class_name]||[]).push(r));
   return CLASSES.filter(c=>enr(c)||by[c]).map(c=>{
-    const g=gcnt(c),rs=by[c]||[],pb=rs.reduce((a,r)=>a+r.present_boys,0),pg=rs.reduce((a,r)=>a+r.present_girls,0),t=rs[0]&&hcNames[rs[0].teacher_id];
+    const g=gcnt(c),rs=by[c]||[],pb=rs.reduce((a,r)=>a+r.present_boys,0),pg=rs.reduce((a,r)=>a+r.present_girls,0),lv=rs.reduce((a,r)=>a+(r.leave_count||0),0),t=rs[0]&&hcNames[rs[0].teacher_id];
     return `<div class="hcc"><div class="row" style="margin:0 0 10px"><h3 class="gh" style="margin:0">Class ${c}</h3><small class="sub">${rs.length?esc((t&&(t.full_name||t.email))||''):'Not entered yet'}</small></div>
     <div class="hrow"><div class="pl g sm">On Roll Boys: ${g.b}</div><div class="pl bl sm">On Roll Girls: ${g.g}</div></div>
-    ${rs.length?`<div class="hrow"><div class="pl y sm">Present Boys: ${pb}</div><div class="pl y sm">Present Girls: ${pg}</div></div><div class="hrow"><div class="pl mr sm">Leave: ${p2(g.t-pb-pg)}</div></div>`:''}</div>`}).join('')||'<p class="sub">No classes yet.</p>';
+    ${rs.length?`<div class="hrow"><div class="pl y sm">Present Boys: ${pb}</div><div class="pl y sm">Present Girls: ${pg}</div></div><div class="hrow"><div class="pl y sm">Leave: ${p2(lv)}</div><div class="pl mr sm">Absent: ${p2(g.t-pb-pg-lv)}</div></div>`:''}</div>`}).join('')||'<p class="sub">No classes yet.</p>';
 }
 async function loadAllHC(){
   const rows=await fetchHC($('ao_day').value||dayStr()),rep=new Set(rows.map(r=>r.class_name)),cls=CLASSES.filter(c=>enr(c)||rep.has(c));
   const B=students.filter(s=>s.gender==='Boy').length,G=students.filter(s=>s.gender==='Girl').length,T=students.length;
-  const pb=rows.reduce((a,r)=>a+r.present_boys,0),pg=rows.reduce((a,r)=>a+r.present_girls,0),pr=pb+pg;
-  const repOn=[...rep].reduce((a,c)=>a+enr(c),0),ab=Math.max(0,repOn-pr),pend=cls.filter(c=>!rep.has(c));
+  const pb=rows.reduce((a,r)=>a+r.present_boys,0),pg=rows.reduce((a,r)=>a+r.present_girls,0),pr=pb+pg,L=rows.reduce((a,r)=>a+(r.leave_count||0),0);
+  const repOn=[...rep].reduce((a,c)=>a+enr(c),0),ab=Math.max(0,repOn-pr-L),pend=cls.filter(c=>!rep.has(c));
   $('ao_body').innerHTML=`<div class="hrow"><div class="pl g">On Roll Boys: ${B}</div><div class="pl bl">On Roll Girls: ${G}</div></div>
   <div class="hrow"><div class="pl y">Present Boys: ${pb}</div><div class="pl y">Present Girls: ${pg}</div></div>
-  <div class="hrow"><div class="pl g">Total Present: ${pr}</div><div class="pl mr">Total Absent: ${ab}</div></div>
-  <div class="pc">${pct(pr,repOn)}%</div><div class="bar"><i data-w="${pct(pr,repOn)}"></i></div>
-  <p class="sub" style="margin-top:8px">${T} students on roll in school. Classes reported: ${rep.size} of ${cls.length}${pend.length?' (waiting: '+pend.join(', ')+')':''}. Absent is counted only for reported classes.</p>
-  <div class="tw"><table><tr><th>Class</th><th>On Roll</th><th>Present</th><th>Absent</th></tr>${cls.map(c=>{const r=rows.filter(x=>x.class_name===c),p=r.reduce((a,x)=>a+x.present,0),n=enr(c);return `<tr><td>${c}</td><td>${n}</td><td>${r.length?p:'-'}</td><td>${r.length?p2(n-p):'-'}</td></tr>`}).join('')}</table></div>`;
+  <div class="hrow"><div class="pl g">Total Present: ${pr}</div><div class="pl y">Total Leave: ${L}</div></div>
+  <div class="hrow"><div class="pl mr">Total Absent: ${ab}</div></div>
+  <div class="pc">${pct(pr+L,repOn)}%</div><div class="bar"><i data-w="${pct(pr+L,repOn)}"></i></div>
+  <p class="sub" style="margin-top:8px">${T} students on roll in school. Classes reported: ${rep.size} of ${cls.length}${pend.length?' (waiting: '+pend.join(', ')+')':''}. Students on leave are counted as present. Absent = on roll - present - leave, for reported classes only.</p>
+  <div class="tw"><table><tr><th>Class</th><th>On Roll</th><th>Present</th><th>Leave</th><th>Absent</th></tr>${cls.map(c=>{const r=rows.filter(x=>x.class_name===c),p=r.reduce((a,x)=>a+x.present,0),l=r.reduce((a,x)=>a+(x.leave_count||0),0),n=enr(c);return `<tr><td>${c}</td><td>${n}</td><td>${r.length?p:'-'}</td><td>${r.length?l:'-'}</td><td>${r.length?p2(n-p-l):'-'}</td></tr>`}).join('')}</table></div>`;
   barAnim();
 }
 $('hc_btn').onclick=()=>view('head');$('hc_day').onchange=loadHC;$('ao_day').onchange=loadAllHC;
