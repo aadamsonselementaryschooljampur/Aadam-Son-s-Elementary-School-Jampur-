@@ -222,6 +222,15 @@ main>div:not([hidden]){animation:rise .45s both}
 .lp.cas{background:#0a1fb8}.lp.sck{background:#fbff0f}
 .lp.on{box-shadow:0 0 0 3px #fff,0 0 0 6px #f5b81c,0 7px 14px rgba(0,0,0,.3)}
 .lvt.has .lp:not(.on){opacity:.4}
+.hct{font-family:Anton,Impact,sans-serif;font-weight:400;color:#0a1fb8;text-align:center;font-size:30px;margin:6px 0 16px;letter-spacing:.02em}
+.hrow{display:flex;gap:12px;margin:0 0 14px}.hrow>*{flex:1}
+.pl{border-radius:999px;padding:14px 10px;text-align:center;font-family:Anton,Impact,sans-serif;font-size:19px;color:#fff;text-shadow:-1.5px -1.5px 0 #000,1.5px -1.5px 0 #000,-1.5px 1.5px 0 #000,1.5px 1.5px 0 #000,0 2px 0 #000;box-shadow:0 7px 14px rgba(0,0,0,.28),inset 0 2px 4px rgba(255,255,255,.35)}
+.pl.g{background:#4caf50}.pl.bl{background:#0a1fb8}.pl.y{background:#fbff0f}.pl.mr{background:#8a0f4f}.pl.sm{font-size:15px;padding:11px 8px}
+.hf{display:flex;gap:12px;align-items:center;margin-bottom:14px}.hf .pl{flex:1.5}.hf .pv{flex:1;min-width:0}
+.pv{border:0;display:block;width:100%;border-radius:999px;padding:13px 8px;text-align:center;font-family:Anton,Impact,sans-serif;font-size:24px;color:#fff;background:#8a0f4f;text-shadow:-1.5px -1.5px 0 #000,1.5px -1.5px 0 #000,-1.5px 1.5px 0 #000,1.5px 1.5px 0 #000;box-shadow:0 7px 14px rgba(0,0,0,.28)}
+input.pv::placeholder{color:rgba(255,255,255,.55)}input.pv:focus{box-shadow:0 0 0 3px var(--gold),0 7px 14px rgba(0,0,0,.28)}
+input.pv::-webkit-inner-spin-button{display:none}input.pv{-moz-appearance:textfield}
+.hcc{background:#f6f9ff;border-radius:16px;padding:14px;margin-bottom:14px}
 </style></head>
 <body>
 <div id="toast" hidden></div>
@@ -303,7 +312,8 @@ main>div:not([hidden]){animation:rise .45s both}
     <button class="mi" data-v="prof"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="8" r="4"/></svg>Profile</button>
     <button class="mi on" data-v="dash"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</button>
     <button class="mi" data-v="inout"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>In &amp; Out</button>
-    <button class="mi" data-v="head"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2 20a7 7 0 0 1 14 0M17 5a3.5 3.5 0 0 1 0 6.5M19 20a6 6 0 0 0-3-5"/></svg>Head Count</button>
+    <button class="mi" data-v="head"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2 20a7 7 0 0 1 14 0M17 5a3.5 3.5 0 0 1 0 6.5M19 20a6 6 0 0 0-3-5"/></svg><span id="m_hc_t">Head Count</span></button>
+    <button class="mi" data-v="allhc" id="m_allhc" hidden><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>All Over Head Count</button>
     <button class="mi" data-v="students"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c3 2.5 9 2.5 12 0v-5"/></svg>Students</button>
     <button class="mi" data-v="class"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10 12 4l9 6-9 6z"/><path d="M7 12.5V17c3 2 7 2 10 0v-4.500"/></svg><span id="m_class_t">Class</span></button>
     <button class="mi" data-v="data" id="m_data" hidden><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Data</button>
@@ -329,7 +339,8 @@ main>div:not([hidden]){animation:rise .45s both}
         <div class="tw"><table id="stable"></table></div>
       </div></div>
     <div id="v_inout" hidden><div class="card"><h2>Teacher's In &amp; Out</h2><small class="sub io-date"></small><div class="io-box"></div></div></div>
-    <div id="v_head" hidden><div class="card"><h2>Head Count</h2><div id="hc_body"></div></div></div>
+    <div id="v_head" hidden><div class="card"><h2 id="hc_h">Head Count</h2><div id="hc_dayw" hidden><input type="date" id="hc_day" style="margin:8px 0 14px"></div><div id="hc_body"></div></div></div>
+    <div id="v_allhc" hidden><div class="card"><h2>All Over Head Count</h2><input type="date" id="ao_day" style="margin:8px 0 14px"><div id="ao_body"></div></div></div>
     <div id="v_leave" hidden><h2 class="vt">Teacher's Leave</h2>
       <div class="card"><p class="sub" style="margin:0 0 10px">Choose a date, then tap a leave type for the teacher. Tap again to cancel.</p><input type="date" id="lv_day"></div>
       <div id="lv_list" style="margin-top:16px"></div></div>
@@ -367,6 +378,7 @@ main>div:not([hidden]){animation:rise .45s both}
           <div class="grid">
           <div><label>G.R No.</label><input id="st_gr" required></div>
           <div><label>Student's Name</label><input id="st_name" required></div>
+          <div><label>Gender</label><select id="st_gender" required><option value="">Select</option><option>Boy</option><option>Girl</option></select></div>
           <div><label>Father's Name</label><input id="st_father" required></div>
           <div><label>D.O.B</label><input id="st_dob" type="date" required></div>
           <div><label>B-Form (optional)</label><input id="st_bform" maxlength="15" inputmode="numeric" placeholder="12345-1234567-1"></div>
@@ -491,13 +503,13 @@ async function boot(){
   $('filter').hidden=!admin;$('st_class').disabled=!admin;
   $('f_sub').textContent=admin?'Aap admin hain: kisi bhi class ka data add/edit kar sakte hain.':'Class: '+(me.class_name||'-')+'. Save hone ke baad sirf admin change kar sakta hai.';
   $('l_title').textContent=admin?'All Students':'Students of '+(me.class_name||'-');
-  resetForm();drawProfile();$('m_tea').hidden=!admin;$('m_tdata').hidden=!admin;$('m_leave').hidden=!admin;$('m_loc').hidden=!admin;$('m_class_t').textContent=admin?'Classes':'Class';$('m_data').hidden=!admin;view('dash');
+  resetForm();drawProfile();$('m_tea').hidden=!admin;$('m_tdata').hidden=!admin;$('m_leave').hidden=!admin;$('m_allhc').hidden=!admin;$('m_hc_t').textContent=admin?'All Head Count':'Head Count';$('hc_dayw').hidden=!admin;$('hc_h').hidden=!admin;$('hc_h').textContent='All Head Count';$('m_loc').hidden=!admin;$('m_class_t').textContent=admin?'Classes':'Class';$('m_data').hidden=!admin;view('dash');
 }
 function view(v){
-  ['dash','students','inout','head','class','data','tdata','leave','loc','search','add','prof','tea'].forEach(x=>$('v_'+x).hidden=x!==v);
+  ['dash','students','inout','head','allhc','class','data','tdata','leave','loc','search','add','prof','tea'].forEach(x=>$('v_'+x).hidden=x!==v);
   document.querySelectorAll('.mi[data-v]').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
   $('drawer').classList.remove('open');$('scrim').hidden=true;
-  if(v==='tea')loadTeachers();if(v==='dash'||v==='inout')loadIO();if(v==='dash'||v==='head')loadHC();if(v==='loc')loadLoc();if(v==='leave'){if(!$('lv_day').value)$('lv_day').value=dayStr();loadLeave()}if(v==='tdata'){if(!$('td_day').value)$('td_day').value=dayStr();loadTD()}if(v==='dash'||v==='students'||v==='search'||v==='class'||v==='data')loadStudents();scrollTo(0,0);
+  if(v==='tea')loadTeachers();if(v==='dash'||v==='inout')loadIO();if(v==='dash')loadHCBtn();if(v==='head'){if(me.role==='admin'&&!$('hc_day').value)$('hc_day').value=dayStr();loadHC()}if(v==='allhc'){if(!$('ao_day').value)$('ao_day').value=dayStr();loadAllHC()}if(v==='loc')loadLoc();if(v==='leave'){if(!$('lv_day').value)$('lv_day').value=dayStr();loadLeave()}if(v==='tdata'){if(!$('td_day').value)$('td_day').value=dayStr();loadTD()}if(v==='dash'||v==='students'||v==='search'||v==='class'||v==='data')loadStudents();scrollTo(0,0);
 }
 document.querySelector('.dh').onclick=()=>view('prof');
 document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const r=b.getBoundingClientRect(),d=Math.max(r.width,r.height),x=document.createElement('span');x.className='rp';x.style.cssText=`width:${d}px;height:${d}px;left:${e.clientX-r.left-d/2}px;top:${e.clientY-r.top-d/2}px`;b.appendChild(x);setTimeout(()=>x.remove(),650)});
@@ -562,7 +574,7 @@ function drawClass(){
 }
 $('c_q').oninput=drawClass;
 $('c_back').onclick=()=>{curClass=null;$('c_q').value='';drawClassView()};
-const REQ=[['photo_url','Photo'],['gr_no','G.R No.'],['name','Name'],['father_name',"Father's Name"],['dob','D.O.B'],['b_form','B-Form'],['class_name','Class'],['current_class','Current Class'],['admission_date','Date of Admission'],['address','Address']];
+const REQ=[['photo_url','Photo'],['gr_no','G.R No.'],['name','Name'],['gender','Gender'],['father_name',"Father's Name"],['dob','D.O.B'],['b_form','B-Form'],['class_name','Class'],['current_class','Current Class'],['admission_date','Date of Admission'],['address','Address']];
 const missing=s=>REQ.filter(([k])=>!String(s[k]??'').trim()).map(x=>x[1]);
 let dsel='inc';
 function drawData(){
@@ -747,51 +759,76 @@ async function setLeave(id,kind){
 $('lv_day').onchange=loadLeave;
 $('td_day').onchange=loadTD;
 
-// ---- Head Count
-let hcRows=[],hcNames={},hcSaved=false;
-async function loadHC(){
-  if(!students.length)await loadStudents();
-  const day=dayStr();
-  if(me.role==='admin'){
-    const [h,p]=await Promise.all([sb.from('head_count').select('*').eq('day',day),sb.from('profiles').select('id,full_name,email').eq('role','teacher')]);
-    hcRows=h.data||[];hcNames={};(p.data||[]).forEach(t=>hcNames[t.id]=t.full_name||t.email);
-  }else{
-    const {data}=await sb.from('head_count').select('*').eq('teacher_id',me.id).eq('day',day);hcRows=data||[];
-  }
-  const total=hcRows.reduce((a,r)=>a+(r.present||0),0);
-  const en=me.role==='admin'?hcRows.reduce((a,r)=>a+enr(r.class_name),0):enr(me.class_name);
-  $('hc_btn').hidden=!hcRows.length;$('hc_sub').textContent=`Present today: ${total}${en?' of '+en+' ('+pct(total,en)+'%)':''}`;
-  drawHC();
-}
-const enr=c=>students.filter(s=>s.class_name===c).length,pct=(p,n)=>n?Math.round(p*100/n):0;
+// ---- Head Count (boys / girls)
+let hcNames={},hcSaved=false;
+const gcnt=c=>{const l=students.filter(s=>s.class_name===c),b=l.filter(s=>s.gender==='Boy').length,g=l.filter(s=>s.gender==='Girl').length;return{b,g,t:l.length,u:l.length-b-g}};
+const enr=c=>gcnt(c).t,pct=(p,n)=>n?Math.round(p*100/n):0,p2=n=>String(Math.max(0,n)).padStart(2,'0');
 const barAnim=()=>requestAnimationFrame(()=>requestAnimationFrame(()=>document.querySelectorAll('.bar i[data-w]').forEach(e=>e.style.width=e.dataset.w+'%')));
-function drawHC(){
-  const total=hcRows.reduce((a,r)=>a+(r.present||0),0);
+async function fetchHC(day){
+  if(!students.length)await loadStudents();
   if(me.role==='admin'){
-    const en=hcRows.reduce((a,r)=>a+enr(r.class_name),0);
-    $('hc_body').innerHTML=`<p class="sub">Today's present students (classes reported so far)</p><div class="pc">${pct(total,en)}%</div><div class="bar"><i data-w="${pct(total,en)}"></i></div><p class="sub" style="margin-top:8px">${total} present of ${en} enrolled</p>`+
-    (hcRows.length?hcRows.map(r=>{const n=enr(r.class_name);return `<div class="li" style="display:block"><div style="display:flex;justify-content:space-between"><b>Class ${esc(r.class_name||'-')}</b><b>${r.present} / ${n} (${pct(r.present,n)}%)</b></div><small style="color:var(--mut)">${esc(hcNames[r.teacher_id]||'')}</small><div class="bar" style="margin-top:6px"><i data-w="${pct(r.present,n)}"></i></div></div>`}).join(''):'<p class="sub">No head count entered yet today.</p>');
-    return barAnim();
+    const [h,p]=await Promise.all([sb.from('head_count').select('*').eq('day',day),sb.from('profiles').select('id,full_name,email')]);
+    hcNames={};(p.data||[]).forEach(t=>hcNames[t.id]=t);return h.data||[];
   }
-  if(!me.class_name){$('hc_body').innerHTML='<p class="sub">No class assigned, so there is no head count to enter.</p>';return}
-  const mine=hcRows[0],n=enr(me.class_name),p=mine?mine.present:null,list=students.filter(s=>s.class_name===me.class_name);
-  $('hc_body').innerHTML=`<p class="sub">Class ${esc(me.class_name)} - ${new Date().toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long'})}</p>
-  <div class="hcs"><div><small>Students</small><b>${n}</b></div><div><small>Present</small><b>${p===null?'-':p}</b></div><div><small>Absent</small><b>${p===null?'-':Math.max(0,n-p)}</b></div></div>
-  <div class="pc">${p===null?'--':pct(p,n)+'%'}</div><div class="bar"><i data-w="${p===null?0:pct(p,n)}"></i></div>
-  <p class="sub" style="margin-top:8px">${p===null?'Enter today\'s present students below.':p+' of '+n+' students are present today'}</p>
-  <label>Total present students</label><input id="hc_in" type="number" min="0" max="${n||''}" inputmode="numeric" value="${mine?mine.present:''}" placeholder="e.g. 28"><button class="pri" onclick="saveHC()">Save</button>`+(hcSaved?'<p class="ok" style="margin-top:12px">Saved. It now shows on your first screen.</p>':'')+
-  `<h2 style="margin-top:22px">My Class Students</h2>`+(list.length?list.map(x=>stuItem(x,false)).join(''):'<p class="sub">No students added yet.</p>');
-  hcSaved=false;barAnim();
+  const {data}=await sb.from('head_count').select('*').eq('teacher_id',me.id).eq('day',day);return data||[];
+}
+async function loadHCBtn(){
+  const rows=await fetchHC(dayStr()),total=rows.reduce((a,r)=>a+(r.present||0),0);
+  const en=me.role==='admin'?rows.reduce((a,r)=>a+enr(r.class_name),0):enr(me.class_name);
+  $('hc_btn').hidden=!rows.length;$('hc_sub').textContent=`Present today: ${total}${en?' of '+en+' ('+pct(total,en)+'%)':''}`;
+}
+async function loadHC(){
+  const adm=me.role==='admin',rows=await fetchHC(adm?($('hc_day').value||dayStr()):dayStr());
+  $('hc_body').innerHTML=adm?hcAdminHTML(rows):hcTeacherHTML(rows[0]);
+  if(!adm&&me.class_name)bindHC();
+}
+function hcTeacherHTML(mine){
+  if(!me.class_name)return '<p class="sub">No class assigned, so there is no head count to enter.</p>';
+  const c=gcnt(me.class_name),saved=hcSaved;hcSaved=false;
+  return `<div class="lvt"><img src="${esc(me.avatar_url||'emblem.png')}" alt=""><div class="lvn"><div class="nm">${esc(me.full_name||me.email)}</div><div class="rt">( ${esc(me.designation||'-')} )<br>${esc(me.subject||'Class '+me.class_name)}</div></div></div>
+  <h2 class="hct">Class ${esc(me.class_name)} Head Count</h2>
+  <div class="hrow"><div class="pl g">On Roll Boys: ${c.b}</div><div class="pl bl">On Roll Girls: ${c.g}</div></div>
+  <div class="hf"><div class="pl y">Present Boys:</div><input class="pv" id="hc_pb" type="number" min="0" inputmode="numeric" placeholder="00" value="${mine?mine.present_boys:''}"></div>
+  <div class="hf"><div class="pl y">Present Girls:</div><input class="pv" id="hc_pg" type="number" min="0" inputmode="numeric" placeholder="00" value="${mine?mine.present_girls:''}"></div>
+  <div class="hf"><div class="pl y">Leave</div><div class="pv" id="hc_lv">${mine?p2(c.t-mine.present_boys-mine.present_girls):'00'}</div></div>
+  ${c.u?`<p class="sub">${c.u} student(s) have no gender set. Ask the admin to complete them.</p>`:''}
+  <button class="pri" onclick="saveHC()">Save Head Count</button>`+(saved?'<p class="ok" style="margin-top:12px">Saved. It now shows on your first screen.</p>':'')+
+  (mine?`<p class="sub" style="margin-top:12px">Present today: ${mine.present} of ${c.t} (${pct(mine.present,c.t)}%)</p>`:'');
+}
+function bindHC(){
+  const c=gcnt(me.class_name),f=()=>{$('hc_lv').textContent=p2(c.t-(parseInt($('hc_pb').value,10)||0)-(parseInt($('hc_pg').value,10)||0))};
+  $('hc_pb').oninput=$('hc_pg').oninput=f;
 }
 async function saveHC(){
-  const v=parseInt($('hc_in').value,10);
-  if(isNaN(v)||v<0)return alert('Please enter total present students.');
-  const n=enr(me.class_name);if(n&&v>n)return alert('Present students cannot be more than the '+n+' students in your class.');
-  const {error}=await sb.from('head_count').upsert({teacher_id:me.id,day:dayStr(),class_name:me.class_name,present:v,updated_at:new Date().toISOString()},{onConflict:'teacher_id,day'});
+  const c=gcnt(me.class_name),pb=parseInt($('hc_pb').value,10),pg=parseInt($('hc_pg').value,10);
+  if(isNaN(pb)||isNaN(pg)||pb<0||pg<0)return alert('Please enter Present Boys and Present Girls (use 0 if none).');
+  if(pb>c.b+c.u||pg>c.g+c.u||pb+pg>c.t)return alert('Present students cannot be more than the students on roll.');
+  const {error}=await sb.from('head_count').upsert({teacher_id:me.id,day:dayStr(),class_name:me.class_name,present:pb+pg,present_boys:pb,present_girls:pg,updated_at:new Date().toISOString()},{onConflict:'teacher_id,day'});
   if(error)return alert(error.message);
   hcSaved=true;loadHC();
 }
-$('hc_btn').onclick=()=>view('head');
+function hcAdminHTML(rows){
+  const by={};rows.forEach(r=>(by[r.class_name]=by[r.class_name]||[]).push(r));
+  return CLASSES.filter(c=>enr(c)||by[c]).map(c=>{
+    const g=gcnt(c),rs=by[c]||[],pb=rs.reduce((a,r)=>a+r.present_boys,0),pg=rs.reduce((a,r)=>a+r.present_girls,0),t=rs[0]&&hcNames[rs[0].teacher_id];
+    return `<div class="hcc"><div class="row" style="margin:0 0 10px"><h3 class="gh" style="margin:0">Class ${c}</h3><small class="sub">${rs.length?esc((t&&(t.full_name||t.email))||''):'Not entered yet'}</small></div>
+    <div class="hrow"><div class="pl g sm">On Roll Boys: ${g.b}</div><div class="pl bl sm">On Roll Girls: ${g.g}</div></div>
+    ${rs.length?`<div class="hrow"><div class="pl y sm">Present Boys: ${pb}</div><div class="pl y sm">Present Girls: ${pg}</div></div><div class="hrow"><div class="pl mr sm">Leave: ${p2(g.t-pb-pg)}</div></div>`:''}</div>`}).join('')||'<p class="sub">No classes yet.</p>';
+}
+async function loadAllHC(){
+  const rows=await fetchHC($('ao_day').value||dayStr()),rep=new Set(rows.map(r=>r.class_name)),cls=CLASSES.filter(c=>enr(c)||rep.has(c));
+  const B=students.filter(s=>s.gender==='Boy').length,G=students.filter(s=>s.gender==='Girl').length,T=students.length;
+  const pb=rows.reduce((a,r)=>a+r.present_boys,0),pg=rows.reduce((a,r)=>a+r.present_girls,0),pr=pb+pg;
+  const repOn=[...rep].reduce((a,c)=>a+enr(c),0),ab=Math.max(0,repOn-pr),pend=cls.filter(c=>!rep.has(c));
+  $('ao_body').innerHTML=`<div class="hrow"><div class="pl g">On Roll Boys: ${B}</div><div class="pl bl">On Roll Girls: ${G}</div></div>
+  <div class="hrow"><div class="pl y">Present Boys: ${pb}</div><div class="pl y">Present Girls: ${pg}</div></div>
+  <div class="hrow"><div class="pl g">Total Present: ${pr}</div><div class="pl mr">Total Absent: ${ab}</div></div>
+  <div class="pc">${pct(pr,repOn)}%</div><div class="bar"><i data-w="${pct(pr,repOn)}"></i></div>
+  <p class="sub" style="margin-top:8px">${T} students on roll in school. Classes reported: ${rep.size} of ${cls.length}${pend.length?' (waiting: '+pend.join(', ')+')':''}. Absent is counted only for reported classes.</p>
+  <div class="tw"><table><tr><th>Class</th><th>On Roll</th><th>Present</th><th>Absent</th></tr>${cls.map(c=>{const r=rows.filter(x=>x.class_name===c),p=r.reduce((a,x)=>a+x.present,0),n=enr(c);return `<tr><td>${c}</td><td>${n}</td><td>${r.length?p:'-'}</td><td>${r.length?p2(n-p):'-'}</td></tr>`}).join('')}</table></div>`;
+  barAnim();
+}
+$('hc_btn').onclick=()=>view('head');$('hc_day').onchange=loadHC;$('ao_day').onchange=loadAllHC;
 function drawLatest(){
   const r=[...students].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).slice(0,10);
   $('latest').innerHTML=r.length?r.map(s=>`<div class="li">${s.photo_url?`<img src="${esc(s.photo_url)}" alt="">`:`<div class="i0">${esc((s.name||'?')[0])}</div>`}<div><b>${esc(s.name)}</b><small>${s.gr_no?'G.R '+esc(s.gr_no)+' - ':''}Class ${esc(s.class_name)}</small></div></div>`).join(''):'<p class="sub">No students added yet. Open the menu and tap Add Student.</p>';
@@ -818,8 +855,8 @@ async function loadStudents(){
 $('filter').onchange=drawStudents;
 function drawStudents(){
   const admin=me.role==='admin',f=$('filter').value,rows=students.filter(s=>!f||s.class_name===f);
-  $('stable').innerHTML='<tr><th></th><th>G.R No.</th><th>Student</th><th>Father</th><th>D.O.B</th><th>B-Form</th><th>Class</th><th>Current</th><th>Last School</th><th>Last Class</th><th>Admitted</th><th>Address</th>'+(admin?'<th></th>':'')+'</tr>'+
-  (rows.length?rows.map(s=>`<tr><td>${s.photo_url?`<img class="thumb" src="${esc(s.photo_url)}" alt="">`:''}</td><td>${esc(s.gr_no)}</td><td>${esc(s.name)}</td><td>${esc(s.father_name)}</td><td>${esc(s.dob)}</td><td>${esc(s.b_form)}</td><td>${esc(s.class_name)}</td><td>${esc(s.current_class)}</td><td>${esc(s.last_school)}</td><td>${esc(s.last_class)}</td><td>${esc(s.admission_date)}</td><td>${esc(s.address)}</td>`+
+  $('stable').innerHTML='<tr><th></th><th>G.R No.</th><th>Student</th><th>Gender</th><th>Father</th><th>D.O.B</th><th>B-Form</th><th>Class</th><th>Current</th><th>Last School</th><th>Last Class</th><th>Admitted</th><th>Address</th>'+(admin?'<th></th>':'')+'</tr>'+
+  (rows.length?rows.map(s=>`<tr><td>${s.photo_url?`<img class="thumb" src="${esc(s.photo_url)}" alt="">`:''}</td><td>${esc(s.gr_no)}</td><td>${esc(s.name)}</td><td>${esc(s.gender)}</td><td>${esc(s.father_name)}</td><td>${esc(s.dob)}</td><td>${esc(s.b_form)}</td><td>${esc(s.class_name)}</td><td>${esc(s.current_class)}</td><td>${esc(s.last_school)}</td><td>${esc(s.last_class)}</td><td>${esc(s.admission_date)}</td><td>${esc(s.address)}</td>`+
   (admin?`<td><button onclick="editS('${s.id}')">Edit</button><button class="del" onclick="delS('${s.id}')">Delete</button></td>`:'')+'</tr>').join('')
   :'<tr><td colspan="12" style="color:var(--mut)">Abhi koi student nahi. Upar form se pehla student add karein.</td></tr>');
 }
@@ -829,7 +866,7 @@ $('sform').onsubmit=async e=>{e.preventDefault();
   if(!cls)return alert(me.role==='admin'?'Class select karein.':'Pehle admin se class assign karwayein.');
   try{
     const url=await upload($('st_file').files[0]);
-    const row={gr_no:$('st_gr').value.trim(),class_name:cls,name:$('st_name').value.trim(),father_name:$('st_father').value.trim(),dob:$('st_dob').value||null,b_form:$('st_bform').value.trim(),
+    const row={gender:$('st_gender').value,gr_no:$('st_gr').value.trim(),class_name:cls,name:$('st_name').value.trim(),father_name:$('st_father').value.trim(),dob:$('st_dob').value||null,b_form:$('st_bform').value.trim(),
       address:$('st_addr').value.trim(),last_school:$('st_ls').value.trim(),last_class:$('st_last').value,current_class:$('st_cur').value,admission_date:$('st_adm').value||null};
     if(url)row.photo_url=url;
     const {error}=editId?await sb.from('students').update(row).eq('id',editId):await sb.from('students').insert(row);
@@ -839,7 +876,7 @@ $('sform').onsubmit=async e=>{e.preventDefault();
 };
 window.editS=id=>{
   const s=students.find(x=>x.id===id);editId=id;
-  $('st_gr').value=s.gr_no||'';$('st_name').value=s.name;$('st_father').value=s.father_name||'';$('st_dob').value=s.dob||'';$('st_bform').value=s.b_form||'';
+  $('st_gr').value=s.gr_no||'';$('st_gender').value=s.gender||'';$('st_name').value=s.name;$('st_father').value=s.father_name||'';$('st_dob').value=s.dob||'';$('st_bform').value=s.b_form||'';
   $('st_class').value=s.class_name;$('st_cur').value=s.current_class||s.class_name;$('st_ls').value=s.last_school||'';$('st_last').value=s.last_class||'';
   $('st_adm').value=s.admission_date||'';$('st_addr').value=s.address||'';setPhoto('st_ph',s.photo_url);
   $('f_title').textContent='Edit student';$('s_btn').textContent='Update student';view('add');
