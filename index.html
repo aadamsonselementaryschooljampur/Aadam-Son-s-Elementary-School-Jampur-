@@ -5,7 +5,7 @@
 <title>Aadam Son's Elementary School Jampur</title>
 <link rel="icon" href="emblem.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Baloo+2:wght@700;800&family=Caveat:wght@700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Abril+Fatface&family=Baloo+2:wght@700;800&family=Caveat:wght@700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <style>
 :root{--navy:#0b2a8a;--blue:#1565d8;--gold:#f5b81c;--bg:#eef4fd;--ink:#14213d;--mut:#6b7a99}
@@ -210,6 +210,18 @@ main>div:not([hidden]){animation:rise .45s both}
 #pop>div{background:#fff;border-radius:20px;padding:24px;max-width:360px;width:100%;text-align:center;animation:pop .3s both}
 #pop b{color:#c62828;display:block;font-size:22px;margin-bottom:8px;font-family:"Baloo 2",sans-serif}
 #pop p{color:#c62828;font-weight:600;margin:0 0 6px}
+.gh{font-family:Anton,Impact,sans-serif;letter-spacing:.06em;font-weight:400;color:var(--navy);margin:22px 0 10px;font-size:18px}
+.lvt{position:relative;padding-top:11px;margin-bottom:20px;animation:rise .5s backwards}
+.lvt>img{position:absolute;left:0;top:0;width:84px;height:84px;border-radius:50%;object-fit:cover;border:4px solid #fff;box-shadow:0 6px 16px rgba(0,0,0,.28);background:#eaf1fd;z-index:2}
+.lvn{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-left:44px;min-height:62px;padding:8px 16px 8px 54px;background:#2196f3;border-radius:0 34px 34px 0;color:#fff;box-shadow:0 8px 18px rgba(33,150,243,.35)}
+.lvn .nm{font-family:Anton,Impact,sans-serif;font-size:23px;line-height:1.08;letter-spacing:.3px;min-width:0;word-break:break-word}
+.lvn .rt{flex:none;text-align:center;font-family:Anton,Impact,sans-serif;font-size:14px;line-height:1.15;max-width:44%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lvb2{display:flex;gap:12px;margin:12px 0 0 74px}
+.lp{flex:1;border-radius:999px;padding:12px 6px;font-family:Anton,Impact,sans-serif;font-size:16px;letter-spacing:.3px;color:#fff;
+ text-shadow:-1.5px -1.5px 0 #000,1.5px -1.5px 0 #000,-1.5px 1.5px 0 #000,1.5px 1.5px 0 #000,0 2px 0 #000;box-shadow:0 7px 14px rgba(0,0,0,.3),inset 0 2px 4px rgba(255,255,255,.35)}
+.lp.cas{background:#0a1fb8}.lp.sck{background:#fbff0f}
+.lp.on{box-shadow:0 0 0 3px #fff,0 0 0 6px #f5b81c,0 7px 14px rgba(0,0,0,.3)}
+.lvt.has .lp:not(.on){opacity:.4}
 </style></head>
 <body>
 <div id="toast" hidden></div>
@@ -580,7 +592,7 @@ function ioList(att,teachers,lv,wk){
 }
 async function loadIO(){
   document.querySelectorAll('.io-date').forEach(e=>e.textContent=new Date().toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long'}));
-  if(me.role!=='admin'){const lv=await sb.from('leaves').select('*').eq('teacher_id',me.id).eq('day',dayStr()).maybeSingle();todayLeave=lv.data||null}else todayLeave=null;
+  {const lv=await sb.from('leaves').select('*').eq('teacher_id',me.id).eq('day',dayStr()).maybeSingle();todayLeave=lv.data||null}
   const {data,error}=await sb.from('attendance').select('*').eq('teacher_id',me.id).eq('day',dayStr()).maybeSingle();
   if(error)return setIO('<p class="sub">'+esc(error.message)+'</p>');
   todayRow=data;drawIO();
@@ -709,14 +721,22 @@ async function openMonth(y,m){
 }
 // ---- Teacher's Leave (admin)
 let lvRows={};
+const CIx=c=>{const i=CLASSES.indexOf(c);return i<0?99:i};
+const GRx=t=>t.role==='admin'?0:t.designation==='H.T'?1:t.designation==='E.S.T'?2:t.designation==='Primary'?3:4;
+const GRN=['Headmaster','H.T','E.S.T','Primary','Others'];
 async function loadLeave(){
   const day=$('lv_day').value||dayStr();
-  const [p,l]=await Promise.all([sb.from('profiles').select('id,full_name,email,avatar_url,class_name,designation').eq('role','teacher'),sb.from('leaves').select('*').eq('day',day)]);
+  const [p,l]=await Promise.all([sb.from('profiles').select('id,full_name,email,avatar_url,class_name,designation,subject,role'),sb.from('leaves').select('*').eq('day',day)]);
   const er=p.error||l.error;if(er)return $('lv_list').innerHTML='<p class="sub">'+esc(er.message)+'</p>';
   lvRows={};(l.data||[]).forEach(r=>lvRows[r.teacher_id]=r);
-  $('lv_list').innerHTML=(p.data||[]).length?p.data.map(t=>{const k=lvRows[t.id]&&lvRows[t.id].kind;
-    return `<div class="lvc"><div class="li"><img src="${esc(t.avatar_url||'emblem.png')}" alt=""><div style="flex:1;min-width:0"><b>${esc(t.full_name||t.email)}</b><small>${esc([t.designation,t.class_name].filter(Boolean).join(' - '))}</small></div></div>
-    <div class="lvb"><button class="lb ${k==='sick'?'on sick':''}" onclick="setLeave('${t.id}','sick')">Sick Leave</button><button class="lb ${k==='casual'?'on casual':''}" onclick="setLeave('${t.id}','casual')">Casual Leave</button></div></div>`}).join(''):'<p class="sub">No teachers yet.</p>';
+  const list=(p.data||[]).slice().sort((a,b)=>GRx(a)-GRx(b)||CIx(a.class_name)-CIx(b.class_name)||String(a.full_name||a.email).localeCompare(String(b.full_name||b.email)));
+  let last=-1,n=0;
+  $('lv_list').innerHTML=list.length?list.map(t=>{
+    const g=GRx(t),k=lvRows[t.id]&&lvRows[t.id].kind,head=g!==last?`<h3 class="gh">${GRN[g]}</h3>`:'';last=g;
+    const des=t.role==='admin'?'Headmaster':(t.designation||'-'),sub=t.subject||(t.class_name?'Class '+t.class_name:'');
+    return head+`<div class="lvt ${k?'has':''}" style="animation-delay:${(n++)*.05}s"><img src="${esc(t.avatar_url||'emblem.png')}" alt="">
+      <div class="lvn"><div class="nm">${esc(t.full_name||t.email)}</div><div class="rt">( ${esc(des)} )<br>${esc(sub)}</div></div>
+      <div class="lvb2"><button class="lp cas ${k==='casual'?'on':''}" onclick="setLeave('${t.id}','casual')">${k==='casual'?'&#10003; ':''}Casual Leave</button><button class="lp sck ${k==='sick'?'on':''}" onclick="setLeave('${t.id}','sick')">${k==='sick'?'&#10003; ':''}Sick Leave</button></div></div>`}).join(''):'<p class="sub">No teachers yet.</p>';
 }
 async function setLeave(id,kind){
   const day=$('lv_day').value||dayStr(),cur=lvRows[id];
