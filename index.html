@@ -236,6 +236,10 @@ input.pv::-webkit-inner-spin-button{display:none}input.pv{-moz-appearance:textfi
 .lp.pre{background:#0a1fb8}.lp.lve{background:#fbff0f}
 .sa-box .lvt{margin-bottom:16px}
 .pi{display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid #e3eaf7}.pi img,.pi .i0{width:38px;height:38px;border-radius:50%;object-fit:cover;background:#eaf1fd;display:grid;place-items:center;font-weight:700;color:var(--navy);flex:none}
+input[type=date]{display:block;width:100%;min-width:0;box-sizing:border-box;height:44px;min-height:44px;padding:0 14px;font-size:15px;font-family:inherit;line-height:42px;background:#fff;text-align:left;-webkit-appearance:none;appearance:none}
+input[type=date]::-webkit-date-and-time-value{text-align:left;min-height:42px;line-height:42px}
+input[type=date]::-webkit-calendar-picker-indicator{width:22px;height:22px;opacity:.7}
+.grid>div{min-width:0}
 </style></head>
 <body>
 <div id="toast" hidden></div>
@@ -299,6 +303,7 @@ input.pv::-webkit-inner-spin-button{display:none}input.pv{-moz-appearance:textfi
       <label>Father's Name</label><input id="pf_father" required>
       <label>C.N.I.C</label><input id="pf_cnic" required maxlength="15" inputmode="numeric" placeholder="12345-1234567-1" pattern="\d{5}-?\d{7}-?\d" title="13 digit CNIC">
       <label>Caste</label><input id="pf_caste" required>
+      <label>Gender</label><select id="pf_gender" required><option value="">Select gender</option><option>Male</option><option>Female</option></select>
       <label>Designation</label><select id="pf_des"><option value="">Select designation</option><option>H.T</option><option>E.S.T</option><option>Primary</option></select><select id="pf_desA" hidden><option>Headmaster</option></select>
       <div id="su_cw"><label>Class (ek baar chunein, baad mein sirf admin badal sakta hai)</label><select id="su_class"></select></div>
       <label>Password (minimum 8 characters)</label><input id="su_pass" type="password" minlength="8" required>
@@ -334,6 +339,8 @@ input.pv::-webkit-inner-spin-button{display:none}input.pv{-moz-appearance:textfi
   <header><button class="bg" id="burger" aria-label="Menu">&#9776;</button><img src="emblem.png" alt=""><div><b>Aadam Son's</b><small id="who"></small></div><div class="sp"></div><img id="av" class="av" alt="" hidden></header>
   <main>
     <div id="v_dash">
+    <div class="card" id="gn_card" hidden style="margin-bottom:16px"><h2>Please set your Gender</h2><p class="sub">Choose Male or Female. You can set it only once; the admin can change it later.</p>
+      <select id="gn_sel"><option value="">Select gender</option><option>Male</option><option>Female</option></select><button class="pri" id="gn_btn" type="button">Save</button></div>
     <div class="card"><h2>Teacher's In &amp; Out</h2><small class="sub io-date"></small><div class="io-box"></div></div>
     <div class="card" id="sa_card" hidden style="margin-top:16px"><h2>Students' Attendance</h2><small class="sub sa-sub"></small><div class="sa-box"></div></div>
     <button class="cb" id="hc_btn" type="button" hidden style="width:100%;margin:16px 0"><b>Head Count</b><small id="hc_sub"></small></button>
@@ -386,7 +393,7 @@ input.pv::-webkit-inner-spin-button{display:none}input.pv{-moz-appearance:textfi
           <div class="grid">
           <div><label>G.R No.</label><input id="st_gr" required></div>
           <div><label>Student's Name</label><input id="st_name" required></div>
-          <div><label>Gender</label><select id="st_gender" required><option value="">Select</option><option>Boy</option><option>Girl</option></select></div>
+          <div><label>Gender</label><select id="st_gender" required><option value="">Select</option><option>Male</option><option>Female</option></select></div>
           <div><label>Father's Name</label><input id="st_father" required></div>
           <div><label>D.O.B</label><input id="st_dob" type="date" required></div>
           <div><label>B-Form (optional)</label><input id="st_bform" maxlength="15" inputmode="numeric" placeholder="12345-1234567-1"></div>
@@ -486,7 +493,7 @@ $('prof_f').onsubmit=async e=>{e.preventDefault();
   try{
     const url=await upload($('su_file').files[0]);
     const {error:e1}=await sb.auth.updateUser({password:p});if(e1)throw e1;
-    const upd={full_name:$('pf_name').value.trim(),father_name:$('pf_father').value.trim(),cnic:$('pf_cnic').value.trim(),caste:$('pf_caste').value.trim(),
+    const upd={full_name:$('pf_name').value.trim(),father_name:$('pf_father').value.trim(),cnic:$('pf_cnic').value.trim(),caste:$('pf_caste').value.trim(),gender:$('pf_gender').value,
       designation:adm?$('pf_desA').value:$('pf_des').value.trim(),pwd_set:true,setup_done:true};
     if(!adm)upd.class_name=des==='H.T'?null:$('su_class').value;
     if(url)upd.avatar_url=url;
@@ -511,7 +518,7 @@ async function boot(){
   $('filter').hidden=!admin;$('st_class').disabled=!admin;
   $('f_sub').textContent=admin?'Aap admin hain: kisi bhi class ka data add/edit kar sakte hain.':'Class: '+(me.class_name||'-')+'. Save hone ke baad sirf admin change kar sakta hai.';
   $('l_title').textContent=admin?'All Students':'Students of '+(me.class_name||'-');
-  resetForm();drawProfile();$('m_tea').hidden=!admin;$('m_tdata').hidden=!admin;$('m_leave').hidden=!admin;$('m_sa').hidden=admin||!me.class_name;$('m_allhc').hidden=!admin;$('m_hc_t').textContent=admin?'All Head Count':'Head Count';$('hc_dayw').hidden=!admin;$('hc_h').hidden=!admin;$('hc_h').textContent='All Head Count';$('m_loc').hidden=!admin;$('m_class_t').textContent=admin?'Classes':'Class';$('m_data').hidden=!admin;view('dash');
+  resetForm();drawProfile();$('gn_card').hidden=!!me.gender;$('m_tea').hidden=!admin;$('m_tdata').hidden=!admin;$('m_leave').hidden=!admin;$('m_sa').hidden=admin||!me.class_name;$('m_allhc').hidden=!admin;$('m_hc_t').textContent=admin?'All Head Count':'Head Count';$('hc_dayw').hidden=!admin;$('hc_h').hidden=!admin;$('hc_h').textContent='All Head Count';$('m_loc').hidden=!admin;$('m_class_t').textContent=admin?'Classes':'Class';$('m_data').hidden=!admin;view('dash');
 }
 function view(v){
   ['dash','students','sattend','inout','head','allhc','class','data','tdata','leave','loc','search','add','prof','tea'].forEach(x=>$('v_'+x).hidden=x!==v);
@@ -545,6 +552,8 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)r
   }
   requestAnimationFrame(frame);
 })();
+$('gn_btn').onclick=async()=>{const g=$('gn_sel').value;if(!g)return toast('Please select Male or Female.');const {error}=await sb.rpc('set_my_gender',{p:g});if(error)return toast(error.message);me.gender=g;$('gn_card').hidden=true;drawProfile()};
+document.querySelectorAll('input[type=date]').forEach(i=>i.addEventListener('click',()=>{try{i.showPicker()}catch(e){}}));
 $('burger').onclick=()=>{[...document.querySelectorAll('#drawer .mi:not([hidden])')].forEach((b,i)=>b.style.animationDelay=(i*.045)+'s');$('drawer').classList.add('open');$('scrim').hidden=false};
 $('scrim').onclick=()=>{$('drawer').classList.remove('open');$('scrim').hidden=true};
 document.querySelectorAll('.mi[data-v]').forEach(b=>b.onclick=()=>{
@@ -555,7 +564,7 @@ function drawProfile(){
   const f=(k,v)=>`<div class="kv"><span>${k}</span><b>${esc(v||'-')}</b></div>`,nm=me.full_name||me.email;
   $('pr_av').src=$('d_av').src=me.avatar_url||'emblem.png';$('pr_name').textContent=$('d_name').textContent=nm;$('pr_des').textContent=me.designation||'';
   $('d_sub').textContent=me.role==='admin'?(me.designation||'Admin'):[me.designation,me.class_name].filter(Boolean).join(' - ');
-  $('pr_rows').innerHTML=f("Father's Name",me.father_name)+f('C.N.I.C',me.cnic)+f('Caste',me.caste)+f('Designation',me.designation)+f('Class',me.class_name)+f('Email',me.email);
+  $('pr_rows').innerHTML=f("Father's Name",me.father_name)+f('C.N.I.C',me.cnic)+f('Caste',me.caste)+f('Gender',me.gender)+f('Designation',me.designation)+f('Class',me.class_name)+f('Email',me.email);
 }
 function drawSearch(){
   const g=$('q_gr').value.trim().toLowerCase(),n=$('q_name').value.trim().toLowerCase(),adm=me.role==='admin';
@@ -746,7 +755,7 @@ const GRx=t=>t.role==='admin'?0:t.designation==='H.T'?1:t.designation==='E.S.T'?
 const GRN=['Headmaster','H.T','E.S.T','Primary','Others'];
 async function loadLeave(){
   const day=$('lv_day').value||dayStr();
-  const [p,l]=await Promise.all([sb.from('profiles').select('id,full_name,email,avatar_url,class_name,designation,subject,role'),sb.from('leaves').select('*').eq('day',day)]);
+  const [p,l]=await Promise.all([sb.from('profiles').select('id,full_name,email,avatar_url,class_name,designation,subject,role,gender'),sb.from('leaves').select('*').eq('day',day)]);
   const er=p.error||l.error;if(er)return $('lv_list').innerHTML='<p class="sub">'+esc(er.message)+'</p>';
   lvRows={};(l.data||[]).forEach(r=>lvRows[r.teacher_id]=r);
   const list=(p.data||[]).slice().sort((a,b)=>GRx(a)-GRx(b)||CIx(a.class_name)-CIx(b.class_name)||String(a.full_name||a.email).localeCompare(String(b.full_name||b.email)));
@@ -755,7 +764,7 @@ async function loadLeave(){
     const g=GRx(t),k=lvRows[t.id]&&lvRows[t.id].kind,head=g!==last?`<h3 class="gh">${GRN[g]}</h3>`:'';last=g;
     const des=t.role==='admin'?'Headmaster':(t.designation||'-'),sub=t.subject||(t.class_name?'Class '+t.class_name:'');
     return head+`<div class="lvt ${k?'has':''}" style="animation-delay:${(n++)*.05}s"><img src="${esc(t.avatar_url||'emblem.png')}" alt="">
-      <div class="lvn"><div class="nm">${esc(t.full_name||t.email)}</div><div class="rt">( ${esc(des)} )<br>${esc(sub)}</div></div>
+      <div class="lvn"><div class="nm">${hon(t)}${esc(t.full_name||t.email)}</div><div class="rt">( ${esc(des)} )<br>${esc(sub)}</div></div>
       <div class="lvb2"><button class="lp cas ${k==='casual'?'on':''}" onclick="setLeave('${t.id}','casual')">${k==='casual'?'&#10003; ':''}Casual Leave</button><button class="lp sck ${k==='sick'?'on':''}" onclick="setLeave('${t.id}','sick')">${k==='sick'?'&#10003; ':''}Sick Leave</button></div></div>`}).join(''):'<p class="sub">No teachers yet.</p>';
 }
 async function setLeave(id,kind){
@@ -769,7 +778,9 @@ $('td_day').onchange=loadTD;
 
 // ---- Students' Attendance (teacher taps) -> Head Count is calculated from it
 let saMap={},hcNames={};
-const gcnt=c=>{const l=students.filter(s=>s.class_name===c),b=l.filter(s=>s.gender==='Boy').length,g=l.filter(s=>s.gender==='Girl').length;return{b,g,t:l.length,u:l.length-b-g}};
+const gnorm=g=>g==='Boy'?'Male':g==='Girl'?'Female':(g||''),isM=s=>gnorm(s.gender)==='Male',isF=s=>gnorm(s.gender)==='Female';
+const hon=t=>t&&t.gender==='Male'?'Sir, ':t&&t.gender==='Female'?'Madam, ':'';
+const gcnt=c=>{const l=students.filter(s=>s.class_name===c),b=l.filter(s=>isM(s)).length,g=l.filter(s=>isF(s)).length;return{b,g,t:l.length,u:l.length-b-g}};
 const enr=c=>gcnt(c).t,pct=(p,n)=>n?Math.round(p*100/n):0,p2=n=>String(Math.max(0,n)).padStart(2,'0');
 const barAnim=()=>requestAnimationFrame(()=>requestAnimationFrame(()=>document.querySelectorAll('.bar i[data-w]').forEach(e=>e.style.width=e.dataset.w+'%')));
 const byGr=(a,b)=>String(a.gr_no||'').localeCompare(String(b.gr_no||''),undefined,{numeric:true})||String(a.name).localeCompare(String(b.name));
@@ -787,7 +798,7 @@ function drawSA(){
   const P=list.filter(s=>saMap[s.id]==='present').length,L=list.filter(s=>saMap[s.id]==='leave').length;
   document.querySelectorAll('.sa-sub').forEach(e=>e.textContent=`Class ${me.class_name} - Present ${P} - Leave ${L} - Absent ${list.length-P-L}`);
   const html=list.length?list.map(s=>{const k=saMap[s.id];
-    return `<div class="lvt still ${k?'has':''}">${stuPhoto(s)}<div class="lvn"><div class="nm">${esc(s.name)}</div><div class="rt">${s.gr_no?'G.R '+esc(s.gr_no):''}<br>${esc(s.gender||'')}</div></div>
+    return `<div class="lvt still ${k?'has':''}">${stuPhoto(s)}<div class="lvn"><div class="nm">${esc(s.name)}</div><div class="rt">${s.gr_no?'G.R '+esc(s.gr_no):''}<br>${esc(gnorm(s.gender))}</div></div>
     <div class="lvb2"><button class="lp pre ${k==='present'?'on':''}" onclick="markSA('${s.id}','present')">${k==='present'?'&#10003; ':''}Present</button><button class="lp lve ${k==='leave'?'on':''}" onclick="markSA('${s.id}','leave')">${k==='leave'?'&#10003; ':''}Leave</button></div></div>`}).join(''):'<p class="sub">No students in your class yet. Add them from Add Student.</p>';
   document.querySelectorAll('.sa-box').forEach(e=>e.innerHTML=html);
 }
@@ -800,8 +811,8 @@ async function markSA(id,st){
 // ---- Head Count (automatic)
 function hcStats(c,rows){
   const st=students.filter(s=>s.class_name===c),m={};rows.filter(r=>r.class_name===c).forEach(r=>m[r.student_id]=r.status);
-  const P=st.filter(s=>m[s.id]==='present'),pb=P.filter(s=>s.gender==='Boy').length,pg=P.filter(s=>s.gender==='Girl').length;
-  return{b:st.filter(s=>s.gender==='Boy').length,g:st.filter(s=>s.gender==='Girl').length,t:st.length,pb,pg,pn:P.length,lv:st.filter(s=>m[s.id]==='leave').length,ab:st.length-P.length-st.filter(s=>m[s.id]==='leave').length,list:P.sort(byGr),any:Object.keys(m).length>0};
+  const P=st.filter(s=>m[s.id]==='present'),pb=P.filter(s=>isM(s)).length,pg=P.filter(s=>isF(s)).length;
+  return{b:st.filter(s=>isM(s)).length,g:st.filter(s=>isF(s)).length,t:st.length,pb,pg,pn:P.length,lv:st.filter(s=>m[s.id]==='leave').length,ab:st.length-P.length-st.filter(s=>m[s.id]==='leave').length,list:P.sort(byGr),any:Object.keys(m).length>0};
 }
 async function fetchHC(day){
   if(!students.length)await loadStudents();
@@ -822,7 +833,7 @@ const pI=s=>`<div class="pi">${s.photo_url?`<img src="${esc(s.photo_url)}" alt="
 function hcTeacherHTML(rows){
   if(!me.class_name)return '<p class="sub">No class assigned, so there is no head count.</p>';
   const x=hcStats(me.class_name,rows),unk=x.pn-x.pb-x.pg;
-  return `<div class="lvt"><img src="${esc(me.avatar_url||'emblem.png')}" alt=""><div class="lvn"><div class="nm">${esc(me.full_name||me.email)}</div><div class="rt">( ${esc(me.designation||'-')} )<br>${esc(me.subject||'Class '+me.class_name)}</div></div></div>
+  return `<div class="lvt"><img src="${esc(me.avatar_url||'emblem.png')}" alt=""><div class="lvn"><div class="nm">${hon(me)}${esc(me.full_name||me.email)}</div><div class="rt">( ${esc(me.designation||'-')} )<br>${esc(me.subject||'Class '+me.class_name)}</div></div></div>
   <h2 class="hct">Class ${esc(me.class_name)} Head Count</h2>
   <div class="hrow"><div class="pl g">On Roll Boys: ${x.b}</div><div class="pl bl">On Roll Girls: ${x.g}</div></div>
   <div class="hf"><div class="pl y">Present Boys:</div><div class="pv">${p2(x.pb)}</div></div>
@@ -846,7 +857,7 @@ function hcAdminHTML(rows){
 async function loadAllHC(){
   const rows=await fetchHC($('ao_day').value||dayStr()),cls=CLASSES.filter(c=>enr(c)||rows.some(r=>r.class_name===c));
   const st=cls.map(c=>({c,...hcStats(c,rows)})),rep=st.filter(x=>x.any),pend=st.filter(x=>!x.any).map(x=>x.c);
-  const B=students.filter(s=>s.gender==='Boy').length,G=students.filter(s=>s.gender==='Girl').length,sum=(l,k)=>l.reduce((a,x)=>a+x[k],0);
+  const B=students.filter(s=>isM(s)).length,G=students.filter(s=>isF(s)).length,sum=(l,k)=>l.reduce((a,x)=>a+x[k],0);
   const pb=sum(rep,'pb'),pg=sum(rep,'pg'),pr=sum(rep,'pn'),L=sum(rep,'lv'),ab=sum(rep,'ab'),repOn=sum(rep,'t');
   $('ao_body').innerHTML=`<div class="hrow"><div class="pl g">On Roll Boys: ${B}</div><div class="pl bl">On Roll Girls: ${G}</div></div>
   <div class="hrow"><div class="pl y">Present Boys: ${pb}</div><div class="pl y">Present Girls: ${pg}</div></div>
@@ -885,7 +896,7 @@ $('filter').onchange=drawStudents;
 function drawStudents(){
   const admin=me.role==='admin',f=$('filter').value,rows=students.filter(s=>!f||s.class_name===f);
   $('stable').innerHTML='<tr><th></th><th>G.R No.</th><th>Student</th><th>Gender</th><th>Father</th><th>D.O.B</th><th>B-Form</th><th>Class</th><th>Current</th><th>Last School</th><th>Last Class</th><th>Admitted</th><th>Address</th>'+(admin?'<th></th>':'')+'</tr>'+
-  (rows.length?rows.map(s=>`<tr><td>${s.photo_url?`<img class="thumb" src="${esc(s.photo_url)}" alt="">`:''}</td><td>${esc(s.gr_no)}</td><td>${esc(s.name)}</td><td>${esc(s.gender)}</td><td>${esc(s.father_name)}</td><td>${esc(s.dob)}</td><td>${esc(s.b_form)}</td><td>${esc(s.class_name)}</td><td>${esc(s.current_class)}</td><td>${esc(s.last_school)}</td><td>${esc(s.last_class)}</td><td>${esc(s.admission_date)}</td><td>${esc(s.address)}</td>`+
+  (rows.length?rows.map(s=>`<tr><td>${s.photo_url?`<img class="thumb" src="${esc(s.photo_url)}" alt="">`:''}</td><td>${esc(s.gr_no)}</td><td>${esc(s.name)}</td><td>${esc(gnorm(s.gender))}</td><td>${esc(s.father_name)}</td><td>${esc(s.dob)}</td><td>${esc(s.b_form)}</td><td>${esc(s.class_name)}</td><td>${esc(s.current_class)}</td><td>${esc(s.last_school)}</td><td>${esc(s.last_class)}</td><td>${esc(s.admission_date)}</td><td>${esc(s.address)}</td>`+
   (admin?`<td><button onclick="editS('${s.id}')">Edit</button><button class="del" onclick="delS('${s.id}')">Delete</button></td>`:'')+'</tr>').join('')
   :'<tr><td colspan="12" style="color:var(--mut)">Abhi koi student nahi. Upar form se pehla student add karein.</td></tr>');
 }
@@ -905,7 +916,7 @@ $('sform').onsubmit=async e=>{e.preventDefault();
 };
 window.editS=id=>{
   const s=students.find(x=>x.id===id);editId=id;
-  $('st_gr').value=s.gr_no||'';$('st_gender').value=s.gender||'';$('st_name').value=s.name;$('st_father').value=s.father_name||'';$('st_dob').value=s.dob||'';$('st_bform').value=s.b_form||'';
+  $('st_gr').value=s.gr_no||'';$('st_gender').value=gnorm(s.gender);$('st_name').value=s.name;$('st_father').value=s.father_name||'';$('st_dob').value=s.dob||'';$('st_bform').value=s.b_form||'';
   $('st_class').value=s.class_name;$('st_cur').value=s.current_class||s.class_name;$('st_ls').value=s.last_school||'';$('st_last').value=s.last_class||'';
   $('st_adm').value=s.admission_date||'';$('st_addr').value=s.address||'';setPhoto('st_ph',s.photo_url);
   $('f_title').textContent='Edit student';$('s_btn').textContent='Update student';view('add');
@@ -918,13 +929,14 @@ async function loadTeachers(){
   const kv=(k,v)=>`<div class="kv"><span>${k}</span><b>${esc(v||'-')}</b></div>`;
   $('tgrid').innerHTML=data.map((p,i)=>`<div class="tc" style="animation-delay:${i*.07}s"><img src="${esc(p.avatar_url||'emblem.png')}" alt=""><b>${esc(p.full_name||p.email)}</b>
     <small>${esc([p.designation,p.class_name].filter(Boolean).join(' - ')||'Profile not completed')}</small>
-    <div class="tk">${kv("Father",p.father_name)}${kv('C.N.I.C',p.cnic)}${kv('Caste',p.caste)}${kv('Email',p.email)}</div>
+    <div class="tk">${kv("Father",p.father_name)}${kv('C.N.I.C',p.cnic)}${kv('Caste',p.caste)}${kv('Gender',p.gender)}${kv('Email',p.email)}</div>
     <div class="te"><select id="c_${p.id}"><option value="">No class</option>${CLASSES.map(c=>`<option${c===p.class_name?' selected':''}>${c}</option>`).join('')}</select>
     <select id="r_${p.id}"><option${p.role==='teacher'?' selected':''}>teacher</option><option${p.role==='admin'?' selected':''}>admin</option></select>
+    <select id="g_${p.id}"><option value="">Gender</option><option${p.gender==='Male'?' selected':''}>Male</option><option${p.gender==='Female'?' selected':''}>Female</option></select>
     <button onclick="saveT('${p.id}')">Save</button></div></div>`).join('');
 }
 window.saveT=async id=>{
-  const {error}=await sb.from('profiles').update({class_name:$('c_'+id).value||null,role:$('r_'+id).value}).eq('id',id);
+  const {error}=await sb.from('profiles').update({class_name:$('c_'+id).value||null,role:$('r_'+id).value,gender:$('g_'+id).value||null}).eq('id',id);
   alert(error?error.message:'Saved');
 };
 
