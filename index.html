@@ -231,6 +231,11 @@ main>div:not([hidden]){animation:rise .45s both}
 input.pv::placeholder{color:rgba(255,255,255,.55)}input.pv:focus{box-shadow:0 0 0 3px var(--gold),0 7px 14px rgba(0,0,0,.28)}
 input.pv::-webkit-inner-spin-button{display:none}input.pv{-moz-appearance:textfield}
 .hcc{background:#f6f9ff;border-radius:16px;padding:14px;margin-bottom:14px}
+.lvt.still{animation:none}
+.lvph{position:absolute;left:0;top:0;width:84px;height:84px;border-radius:50%;border:4px solid #fff;background:#eaf1fd;box-shadow:0 6px 16px rgba(0,0,0,.28);display:grid;place-items:center;font-family:Anton,Impact,sans-serif;font-size:34px;color:var(--navy);z-index:2}
+.lp.pre{background:#0a1fb8}.lp.lve{background:#fbff0f}
+.sa-box .lvt{margin-bottom:16px}
+.pi{display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid #e3eaf7}.pi img,.pi .i0{width:38px;height:38px;border-radius:50%;object-fit:cover;background:#eaf1fd;display:grid;place-items:center;font-weight:700;color:var(--navy);flex:none}
 </style></head>
 <body>
 <div id="toast" hidden></div>
@@ -312,6 +317,7 @@ input.pv::-webkit-inner-spin-button{display:none}input.pv{-moz-appearance:textfi
     <button class="mi" data-v="prof"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="8" r="4"/></svg>Profile</button>
     <button class="mi on" data-v="dash"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</button>
     <button class="mi" data-v="inout"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>In &amp; Out</button>
+    <button class="mi" data-v="sattend" id="m_sa" hidden><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21a7 7 0 0 0-14 0"/><circle cx="9" cy="8" r="4"/><path d="m16 11 2 2 4-4"/></svg>Students' Attendance</button>
     <button class="mi" data-v="head"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2 20a7 7 0 0 1 14 0M17 5a3.5 3.5 0 0 1 0 6.5M19 20a6 6 0 0 0-3-5"/></svg><span id="m_hc_t">Head Count</span></button>
     <button class="mi" data-v="allhc" id="m_allhc" hidden><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>All Over Head Count</button>
     <button class="mi" data-v="students"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c3 2.5 9 2.5 12 0v-5"/></svg>Students</button>
@@ -329,6 +335,7 @@ input.pv::-webkit-inner-spin-button{display:none}input.pv{-moz-appearance:textfi
   <main>
     <div id="v_dash">
     <div class="card"><h2>Teacher's In &amp; Out</h2><small class="sub io-date"></small><div class="io-box"></div></div>
+    <div class="card" id="sa_card" hidden style="margin-top:16px"><h2>Students' Attendance</h2><small class="sub sa-sub"></small><div class="sa-box"></div></div>
     <button class="cb" id="hc_btn" type="button" hidden style="width:100%;margin:16px 0"><b>Head Count</b><small id="hc_sub"></small></button>
     <div style="height:16px"></div>
     </div>
@@ -338,6 +345,7 @@ input.pv::-webkit-inner-spin-button{display:none}input.pv{-moz-appearance:textfi
         <div class="row" style="margin:0"><h2 id="l_title">Students</h2><select id="filter" style="max-width:150px" hidden></select></div>
         <div class="tw"><table id="stable"></table></div>
       </div></div>
+    <div id="v_sattend" hidden><div class="card"><h2>Students' Attendance</h2><small class="sub sa-sub"></small><div class="sa-box"></div></div></div>
     <div id="v_inout" hidden><div class="card"><h2>Teacher's In &amp; Out</h2><small class="sub io-date"></small><div class="io-box"></div></div></div>
     <div id="v_head" hidden><div class="card"><h2 id="hc_h">Head Count</h2><div id="hc_dayw" hidden><input type="date" id="hc_day" style="margin:8px 0 14px"></div><div id="hc_body"></div></div></div>
     <div id="v_allhc" hidden><div class="card"><h2>All Over Head Count</h2><input type="date" id="ao_day" style="margin:8px 0 14px"><div id="ao_body"></div></div></div>
@@ -503,13 +511,13 @@ async function boot(){
   $('filter').hidden=!admin;$('st_class').disabled=!admin;
   $('f_sub').textContent=admin?'Aap admin hain: kisi bhi class ka data add/edit kar sakte hain.':'Class: '+(me.class_name||'-')+'. Save hone ke baad sirf admin change kar sakta hai.';
   $('l_title').textContent=admin?'All Students':'Students of '+(me.class_name||'-');
-  resetForm();drawProfile();$('m_tea').hidden=!admin;$('m_tdata').hidden=!admin;$('m_leave').hidden=!admin;$('m_allhc').hidden=!admin;$('m_hc_t').textContent=admin?'All Head Count':'Head Count';$('hc_dayw').hidden=!admin;$('hc_h').hidden=!admin;$('hc_h').textContent='All Head Count';$('m_loc').hidden=!admin;$('m_class_t').textContent=admin?'Classes':'Class';$('m_data').hidden=!admin;view('dash');
+  resetForm();drawProfile();$('m_tea').hidden=!admin;$('m_tdata').hidden=!admin;$('m_leave').hidden=!admin;$('m_sa').hidden=admin||!me.class_name;$('m_allhc').hidden=!admin;$('m_hc_t').textContent=admin?'All Head Count':'Head Count';$('hc_dayw').hidden=!admin;$('hc_h').hidden=!admin;$('hc_h').textContent='All Head Count';$('m_loc').hidden=!admin;$('m_class_t').textContent=admin?'Classes':'Class';$('m_data').hidden=!admin;view('dash');
 }
 function view(v){
-  ['dash','students','inout','head','allhc','class','data','tdata','leave','loc','search','add','prof','tea'].forEach(x=>$('v_'+x).hidden=x!==v);
+  ['dash','students','sattend','inout','head','allhc','class','data','tdata','leave','loc','search','add','prof','tea'].forEach(x=>$('v_'+x).hidden=x!==v);
   document.querySelectorAll('.mi[data-v]').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
   $('drawer').classList.remove('open');$('scrim').hidden=true;
-  if(v==='tea')loadTeachers();if(v==='dash'||v==='inout')loadIO();if(v==='dash')loadHCBtn();if(v==='head'){if(me.role==='admin'&&!$('hc_day').value)$('hc_day').value=dayStr();loadHC()}if(v==='allhc'){if(!$('ao_day').value)$('ao_day').value=dayStr();loadAllHC()}if(v==='loc')loadLoc();if(v==='leave'){if(!$('lv_day').value)$('lv_day').value=dayStr();loadLeave()}if(v==='tdata'){if(!$('td_day').value)$('td_day').value=dayStr();loadTD()}if(v==='dash'||v==='students'||v==='search'||v==='class'||v==='data')loadStudents();scrollTo(0,0);
+  if(v==='tea')loadTeachers();if(v==='dash'||v==='inout')loadIO();if(v==='dash'){loadHCBtn();loadSA()}if(v==='sattend')loadSA();if(v==='head'){if(me.role==='admin'&&!$('hc_day').value)$('hc_day').value=dayStr();loadHC()}if(v==='allhc'){if(!$('ao_day').value)$('ao_day').value=dayStr();loadAllHC()}if(v==='loc')loadLoc();if(v==='leave'){if(!$('lv_day').value)$('lv_day').value=dayStr();loadLeave()}if(v==='tdata'){if(!$('td_day').value)$('td_day').value=dayStr();loadTD()}if(v==='dash'||v==='students'||v==='search'||v==='class'||v==='data')loadStudents();scrollTo(0,0);
 }
 document.querySelector('.dh').onclick=()=>view('prof');
 document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const r=b.getBoundingClientRect(),d=Math.max(r.width,r.height),x=document.createElement('span');x.className='rp';x.style.cssText=`width:${d}px;height:${d}px;left:${e.clientX-r.left-d/2}px;top:${e.clientY-r.top-d/2}px`;b.appendChild(x);setTimeout(()=>x.remove(),650)});
@@ -759,76 +767,94 @@ async function setLeave(id,kind){
 $('lv_day').onchange=loadLeave;
 $('td_day').onchange=loadTD;
 
-// ---- Head Count (boys / girls)
-let hcNames={},hcSaved=false;
+// ---- Students' Attendance (teacher taps) -> Head Count is calculated from it
+let saMap={},hcNames={};
 const gcnt=c=>{const l=students.filter(s=>s.class_name===c),b=l.filter(s=>s.gender==='Boy').length,g=l.filter(s=>s.gender==='Girl').length;return{b,g,t:l.length,u:l.length-b-g}};
 const enr=c=>gcnt(c).t,pct=(p,n)=>n?Math.round(p*100/n):0,p2=n=>String(Math.max(0,n)).padStart(2,'0');
 const barAnim=()=>requestAnimationFrame(()=>requestAnimationFrame(()=>document.querySelectorAll('.bar i[data-w]').forEach(e=>e.style.width=e.dataset.w+'%')));
+const byGr=(a,b)=>String(a.gr_no||'').localeCompare(String(b.gr_no||''),undefined,{numeric:true})||String(a.name).localeCompare(String(b.name));
+const stuPhoto=s=>s.photo_url?`<img src="${esc(s.photo_url)}" alt="">`:`<div class="lvph">${esc((s.name||'?')[0].toUpperCase())}</div>`;
+async function fetchSA(day){const {data,error}=await sb.from('student_attendance').select('student_id,class_name,status').eq('day',day);if(error){console.warn(error.message);return null}return data||[]}
+async function loadSA(){
+  const ok=me.role!=='admin'&&me.class_name;$('sa_card').hidden=!ok;if(!ok)return;
+  if(!students.length)await loadStudents();
+  const rows=await fetchSA(dayStr());
+  if(rows===null)return document.querySelectorAll('.sa-box').forEach(e=>e.innerHTML="<p class=\"sub\">Students' attendance is not set up yet. Please ask the admin to run the latest SQL.</p>");
+  saMap={};rows.forEach(r=>saMap[r.student_id]=r.status);drawSA();
+}
+function drawSA(){
+  const list=students.filter(s=>s.class_name===me.class_name).sort(byGr);
+  const P=list.filter(s=>saMap[s.id]==='present').length,L=list.filter(s=>saMap[s.id]==='leave').length;
+  document.querySelectorAll('.sa-sub').forEach(e=>e.textContent=`Class ${me.class_name} - Present ${P} - Leave ${L} - Absent ${list.length-P-L}`);
+  const html=list.length?list.map(s=>{const k=saMap[s.id];
+    return `<div class="lvt still ${k?'has':''}">${stuPhoto(s)}<div class="lvn"><div class="nm">${esc(s.name)}</div><div class="rt">${s.gr_no?'G.R '+esc(s.gr_no):''}<br>${esc(s.gender||'')}</div></div>
+    <div class="lvb2"><button class="lp pre ${k==='present'?'on':''}" onclick="markSA('${s.id}','present')">${k==='present'?'&#10003; ':''}Present</button><button class="lp lve ${k==='leave'?'on':''}" onclick="markSA('${s.id}','leave')">${k==='leave'?'&#10003; ':''}Leave</button></div></div>`}).join(''):'<p class="sub">No students in your class yet. Add them from Add Student.</p>';
+  document.querySelectorAll('.sa-box').forEach(e=>e.innerHTML=html);
+}
+async function markSA(id,st){
+  const wd=new Date().getDay();if(wd===0||wd===6)return toast("Weekly holiday. Students' attendance is closed.");
+  const cur=saMap[id];if(cur===st)delete saMap[id];else saMap[id]=st;drawSA();
+  const {error}=await (cur===st?sb.from('student_attendance').delete().eq('student_id',id).eq('day',dayStr()):sb.from('student_attendance').upsert({student_id:id,class_name:me.class_name,day:dayStr(),status:st},{onConflict:'student_id,day'}));
+  if(error){if(cur)saMap[id]=cur;else delete saMap[id];drawSA();toast('Could not save: '+error.message)}
+}
+// ---- Head Count (automatic)
+function hcStats(c,rows){
+  const st=students.filter(s=>s.class_name===c),m={};rows.filter(r=>r.class_name===c).forEach(r=>m[r.student_id]=r.status);
+  const P=st.filter(s=>m[s.id]==='present'),pb=P.filter(s=>s.gender==='Boy').length,pg=P.filter(s=>s.gender==='Girl').length;
+  return{b:st.filter(s=>s.gender==='Boy').length,g:st.filter(s=>s.gender==='Girl').length,t:st.length,pb,pg,pn:P.length,lv:st.filter(s=>m[s.id]==='leave').length,ab:st.length-P.length-st.filter(s=>m[s.id]==='leave').length,list:P.sort(byGr),any:Object.keys(m).length>0};
+}
 async function fetchHC(day){
   if(!students.length)await loadStudents();
-  if(me.role==='admin'){
-    const [h,p]=await Promise.all([sb.from('head_count').select('*').eq('day',day),sb.from('profiles').select('id,full_name,email')]);
-    hcNames={};(p.data||[]).forEach(t=>hcNames[t.id]=t);return h.data||[];
-  }
-  const {data}=await sb.from('head_count').select('*').eq('teacher_id',me.id).eq('day',day);return data||[];
+  const rows=(await fetchSA(day))||[];
+  if(me.role==='admin'){const {data}=await sb.from('profiles').select('id,full_name,email,class_name,role');hcNames={};(data||[]).forEach(t=>{if(t.class_name&&t.role!=='admin')hcNames[t.class_name]=t})}
+  return rows;
 }
 async function loadHCBtn(){
-  const rows=await fetchHC(dayStr()),P=rows.reduce((a,r)=>a+(r.present||0),0),L=rows.reduce((a,r)=>a+(r.leave_count||0),0);
-  const en=me.role==='admin'?rows.reduce((a,r)=>a+enr(r.class_name),0):enr(me.class_name);
-  $('hc_btn').hidden=!rows.length;$('hc_sub').textContent=`Present ${P} - Leave ${L} - Absent ${p2(en-P-L)}`;
+  const rows=await fetchHC(dayStr()),cs=me.role==='admin'?CLASSES:(me.class_name?[me.class_name]:[]);
+  let P=0,L=0,A=0,any=false;cs.forEach(c=>{const x=hcStats(c,rows);if(x.any){any=true;P+=x.pn;L+=x.lv;A+=x.ab}});
+  $('hc_btn').hidden=!any;$('hc_sub').textContent=`Present ${P} - Leave ${L} - Absent ${p2(A)}`;
 }
 async function loadHC(){
   const adm=me.role==='admin',rows=await fetchHC(adm?($('hc_day').value||dayStr()):dayStr());
-  $('hc_body').innerHTML=adm?hcAdminHTML(rows):hcTeacherHTML(rows[0]);
-  if(!adm&&me.class_name)bindHC();
+  $('hc_body').innerHTML=adm?hcAdminHTML(rows):hcTeacherHTML(rows);
 }
-function hcTeacherHTML(mine){
-  if(!me.class_name)return '<p class="sub">No class assigned, so there is no head count to enter.</p>';
-  const c=gcnt(me.class_name),saved=hcSaved,L=mine?(mine.leave_count||0):0;hcSaved=false;
+const pI=s=>`<div class="pi">${s.photo_url?`<img src="${esc(s.photo_url)}" alt="">`:`<div class="i0">${esc((s.name||'?')[0])}</div>`}<div><b>${esc(s.name)}</b><small style="display:block;color:var(--mut)">${s.gr_no?'G.R '+esc(s.gr_no):''}</small></div></div>`;
+function hcTeacherHTML(rows){
+  if(!me.class_name)return '<p class="sub">No class assigned, so there is no head count.</p>';
+  const x=hcStats(me.class_name,rows),unk=x.pn-x.pb-x.pg;
   return `<div class="lvt"><img src="${esc(me.avatar_url||'emblem.png')}" alt=""><div class="lvn"><div class="nm">${esc(me.full_name||me.email)}</div><div class="rt">( ${esc(me.designation||'-')} )<br>${esc(me.subject||'Class '+me.class_name)}</div></div></div>
   <h2 class="hct">Class ${esc(me.class_name)} Head Count</h2>
-  <div class="hrow"><div class="pl g">On Roll Boys: ${c.b}</div><div class="pl bl">On Roll Girls: ${c.g}</div></div>
-  <div class="hf"><div class="pl y">Present Boys:</div><input class="pv" id="hc_pb" type="number" min="0" inputmode="numeric" placeholder="00" value="${mine?mine.present_boys:''}"></div>
-  <div class="hf"><div class="pl y">Present Girls:</div><input class="pv" id="hc_pg" type="number" min="0" inputmode="numeric" placeholder="00" value="${mine?mine.present_girls:''}"></div>
-  <div class="hf"><div class="pl y">Leave</div><input class="pv" id="hc_lv" type="number" min="0" inputmode="numeric" placeholder="00" value="${mine?L:''}"></div>
-  <div class="hf"><div class="pl y">Absent</div><div class="pv" id="hc_ab">${mine?p2(c.t-mine.present-L):'00'}</div></div>
-  <p class="sub">Students on leave are counted as present. Absent = on roll - present - leave.</p>
-  ${c.u?`<p class="sub">${c.u} student(s) have no gender set. Ask the admin to complete them.</p>`:''}
-  <button class="pri" onclick="saveHC()">Save Head Count</button>`+(saved?'<p class="ok" style="margin-top:12px">Saved. It now shows on your first screen.</p>':'')+
-  (mine?`<p class="sub" style="margin-top:12px">Present ${mine.present} + Leave ${L} of ${c.t} students (${pct(mine.present+L,c.t)}%)</p>`:'');
-}
-function bindHC(){
-  const c=gcnt(me.class_name),n=id=>parseInt($(id).value,10)||0,f=()=>{$('hc_ab').textContent=p2(c.t-n('hc_pb')-n('hc_pg')-n('hc_lv'))};
-  $('hc_pb').oninput=$('hc_pg').oninput=$('hc_lv').oninput=f;
-}
-async function saveHC(){
-  const c=gcnt(me.class_name),pb=parseInt($('hc_pb').value,10),pg=parseInt($('hc_pg').value,10),lv=parseInt($('hc_lv').value,10)||0;
-  if(isNaN(pb)||isNaN(pg)||pb<0||pg<0||lv<0)return alert('Please enter Present Boys and Present Girls (use 0 if none).');
-  if(pb>c.b+c.u||pg>c.g+c.u||pb+pg+lv>c.t)return alert('Present + Leave cannot be more than the students on roll.');
-  const {error}=await sb.from('head_count').upsert({teacher_id:me.id,day:dayStr(),class_name:me.class_name,present:pb+pg,present_boys:pb,present_girls:pg,leave_count:lv,updated_at:new Date().toISOString()},{onConflict:'teacher_id,day'});
-  if(error)return alert(error.message);
-  hcSaved=true;loadHC();
+  <div class="hrow"><div class="pl g">On Roll Boys: ${x.b}</div><div class="pl bl">On Roll Girls: ${x.g}</div></div>
+  <div class="hf"><div class="pl y">Present Boys:</div><div class="pv">${p2(x.pb)}</div></div>
+  <div class="hf"><div class="pl y">Present Girls:</div><div class="pv">${p2(x.pg)}</div></div>
+  <div class="hf"><div class="pl y">Leave</div><div class="pv">${p2(x.lv)}</div></div>
+  <div class="hf"><div class="pl y">Absent</div><div class="pv">${p2(x.ab)}</div></div>
+  <p class="sub">This count is filled automatically from Students' Attendance. Students on leave are counted as present. Absent = on roll - present - leave.</p>
+  ${unk>0?`<p class="sub">${unk} present student(s) have no gender set, so they are not in Boys/Girls.</p>`:''}
+  <p class="sub">Present ${x.pn} + Leave ${x.lv} of ${x.t} students (${pct(x.pn+x.lv,x.t)}%)</p>
+  <button class="pri" onclick="view('sattend')">Open Students' Attendance</button>
+  <h2 style="margin-top:22px">Present Students (${x.pn})</h2>`+(x.list.length?x.list.map(pI).join(''):'<p class="sub">No student marked present yet today.</p>');
 }
 function hcAdminHTML(rows){
-  const by={};rows.forEach(r=>(by[r.class_name]=by[r.class_name]||[]).push(r));
-  return CLASSES.filter(c=>enr(c)||by[c]).map(c=>{
-    const g=gcnt(c),rs=by[c]||[],pb=rs.reduce((a,r)=>a+r.present_boys,0),pg=rs.reduce((a,r)=>a+r.present_girls,0),lv=rs.reduce((a,r)=>a+(r.leave_count||0),0),t=rs[0]&&hcNames[rs[0].teacher_id];
-    return `<div class="hcc"><div class="row" style="margin:0 0 10px"><h3 class="gh" style="margin:0">Class ${c}</h3><small class="sub">${rs.length?esc((t&&(t.full_name||t.email))||''):'Not entered yet'}</small></div>
-    <div class="hrow"><div class="pl g sm">On Roll Boys: ${g.b}</div><div class="pl bl sm">On Roll Girls: ${g.g}</div></div>
-    ${rs.length?`<div class="hrow"><div class="pl y sm">Present Boys: ${pb}</div><div class="pl y sm">Present Girls: ${pg}</div></div><div class="hrow"><div class="pl y sm">Leave: ${p2(lv)}</div><div class="pl mr sm">Absent: ${p2(g.t-pb-pg-lv)}</div></div>`:''}</div>`}).join('')||'<p class="sub">No classes yet.</p>';
+  return CLASSES.filter(c=>enr(c)||rows.some(r=>r.class_name===c)).map(c=>{
+    const x=hcStats(c,rows),t=hcNames[c];
+    return `<div class="hcc"><div class="row" style="margin:0 0 10px"><h3 class="gh" style="margin:0">Class ${c}</h3><small class="sub">${x.any?esc((t&&(t.full_name||t.email))||''):'Not marked yet'}</small></div>
+    <div class="hrow"><div class="pl g sm">On Roll Boys: ${x.b}</div><div class="pl bl sm">On Roll Girls: ${x.g}</div></div>
+    ${x.any?`<div class="hrow"><div class="pl y sm">Present Boys: ${x.pb}</div><div class="pl y sm">Present Girls: ${x.pg}</div></div><div class="hrow"><div class="pl y sm">Leave: ${p2(x.lv)}</div><div class="pl mr sm">Absent: ${p2(x.ab)}</div></div>
+    <button class="ghost" type="button" onclick="const n=this.nextElementSibling;n.hidden=!n.hidden">Present students (${x.pn})</button><div class="dd" hidden>${x.list.length?x.list.map(pI).join(''):'<p class="sub">None.</p>'}</div>`:''}</div>`}).join('')||'<p class="sub">No classes yet.</p>';
 }
 async function loadAllHC(){
-  const rows=await fetchHC($('ao_day').value||dayStr()),rep=new Set(rows.map(r=>r.class_name)),cls=CLASSES.filter(c=>enr(c)||rep.has(c));
-  const B=students.filter(s=>s.gender==='Boy').length,G=students.filter(s=>s.gender==='Girl').length,T=students.length;
-  const pb=rows.reduce((a,r)=>a+r.present_boys,0),pg=rows.reduce((a,r)=>a+r.present_girls,0),pr=pb+pg,L=rows.reduce((a,r)=>a+(r.leave_count||0),0);
-  const repOn=[...rep].reduce((a,c)=>a+enr(c),0),ab=Math.max(0,repOn-pr-L),pend=cls.filter(c=>!rep.has(c));
+  const rows=await fetchHC($('ao_day').value||dayStr()),cls=CLASSES.filter(c=>enr(c)||rows.some(r=>r.class_name===c));
+  const st=cls.map(c=>({c,...hcStats(c,rows)})),rep=st.filter(x=>x.any),pend=st.filter(x=>!x.any).map(x=>x.c);
+  const B=students.filter(s=>s.gender==='Boy').length,G=students.filter(s=>s.gender==='Girl').length,sum=(l,k)=>l.reduce((a,x)=>a+x[k],0);
+  const pb=sum(rep,'pb'),pg=sum(rep,'pg'),pr=sum(rep,'pn'),L=sum(rep,'lv'),ab=sum(rep,'ab'),repOn=sum(rep,'t');
   $('ao_body').innerHTML=`<div class="hrow"><div class="pl g">On Roll Boys: ${B}</div><div class="pl bl">On Roll Girls: ${G}</div></div>
   <div class="hrow"><div class="pl y">Present Boys: ${pb}</div><div class="pl y">Present Girls: ${pg}</div></div>
   <div class="hrow"><div class="pl g">Total Present: ${pr}</div><div class="pl y">Total Leave: ${L}</div></div>
   <div class="hrow"><div class="pl mr">Total Absent: ${ab}</div></div>
   <div class="pc">${pct(pr+L,repOn)}%</div><div class="bar"><i data-w="${pct(pr+L,repOn)}"></i></div>
-  <p class="sub" style="margin-top:8px">${T} students on roll in school. Classes reported: ${rep.size} of ${cls.length}${pend.length?' (waiting: '+pend.join(', ')+')':''}. Students on leave are counted as present. Absent = on roll - present - leave, for reported classes only.</p>
-  <div class="tw"><table><tr><th>Class</th><th>On Roll</th><th>Present</th><th>Leave</th><th>Absent</th></tr>${cls.map(c=>{const r=rows.filter(x=>x.class_name===c),p=r.reduce((a,x)=>a+x.present,0),l=r.reduce((a,x)=>a+(x.leave_count||0),0),n=enr(c);return `<tr><td>${c}</td><td>${n}</td><td>${r.length?p:'-'}</td><td>${r.length?l:'-'}</td><td>${r.length?p2(n-p-l):'-'}</td></tr>`}).join('')}</table></div>`;
+  <p class="sub" style="margin-top:8px">${students.length} students on roll in school. Classes marked: ${rep.length} of ${cls.length}${pend.length?' (waiting: '+pend.join(', ')+')':''}. Students on leave are counted as present. Absent is counted only for marked classes.</p>
+  <div class="tw"><table><tr><th>Class</th><th>On Roll</th><th>Present</th><th>Leave</th><th>Absent</th></tr>${st.map(x=>`<tr><td>${x.c}</td><td>${x.t}</td><td>${x.any?x.pn:'-'}</td><td>${x.any?x.lv:'-'}</td><td>${x.any?p2(x.ab):'-'}</td></tr>`).join('')}</table></div>`;
   barAnim();
 }
 $('hc_btn').onclick=()=>view('head');$('hc_day').onchange=loadHC;$('ao_day').onchange=loadAllHC;
