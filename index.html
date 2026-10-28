@@ -405,7 +405,19 @@ input[type=date]::-webkit-calendar-picker-indicator{width:22px;height:22px;opaci
           <div style="grid-column:1/-1"><label>Address</label><input id="st_addr"></div>
         </div><button class="pri" style="max-width:220px" id="s_btn">Save student</button></form>
       </div></div>
-    <div id="v_prof" class="card" hidden style="max-width:520px;margin:auto"><div style="text-align:center"><img id="pr_av" class="pav" alt=""><div><button class="alt" id="pr_chg" type="button" style="max-width:260px;margin:12px auto 0">Change Profile Picture</button><input type="file" id="pr_file" accept="image/*" hidden></div><h2 id="pr_name"></h2><p class="sub" id="pr_des"></p></div><div id="pr_rows"></div></div>
+    <div id="v_prof" class="card" hidden style="max-width:520px;margin:auto"><div style="text-align:center"><img id="pr_av" class="pav" alt=""><div><button class="alt" id="pr_chg" type="button" style="max-width:260px;margin:12px auto 0">Change Profile Picture</button><input type="file" id="pr_file" accept="image/*" hidden></div><h2 id="pr_name"></h2><p class="sub" id="pr_des"></p></div><div id="pr_rows"></div>
+    <button class="pri" id="pr_edit" type="button">Edit Profile</button>
+    <form id="ep_f" hidden style="margin-top:6px">
+      <label>Name</label><input id="ep_name" required>
+      <label>Father's Name</label><input id="ep_father" required>
+      <label>C.N.I.C</label><input id="ep_cnic" required maxlength="15" inputmode="numeric" placeholder="12345-1234567-1" pattern="\d{5}-?\d{7}-?\d">
+      <label>Caste</label><input id="ep_caste" required>
+      <label>Gender</label><select id="ep_gender" required><option value="">Select gender</option><option>Male</option><option>Female</option></select>
+      <div id="ep_dw"><label>Designation</label><select id="ep_des"><option>H.T</option><option>E.S.T</option><option>Primary</option><option>Subject Teacher</option></select></div>
+      <div id="ep_cw"><label>Class</label><select id="ep_class"></select></div>
+      <button class="pri">Save changes</button><button type="button" class="alt" id="ep_cancel">Cancel</button>
+      <p id="ep_msg" class="err" style="margin-top:10px"></p>
+    </form></div>
     <div id="v_tea" hidden><h2 style="font-family:'Baloo 2',sans-serif;color:var(--navy);margin:0 0 12px">Teachers</h2><div id="tgrid" class="tgrid"></div></div>
     <div style="display:flex;justify-content:center"><div class="adm"><img src="admin.png" alt=""><div><small>Admin:</small><b>Muhammad Ajmal Solangi</b></div></div></div>
   </main>
@@ -567,6 +579,22 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)r
   }
   requestAnimationFrame(frame);
 })();
+opts($('ep_class'),'Select class');$('ep_cnic').oninput=fmt13;
+$('ep_des').onchange=()=>{const n=noCls($('ep_des').value);$('ep_class').disabled=n;if(n)$('ep_class').value=''};
+$('pr_edit').onclick=()=>{
+  const adm=me.role==='admin';
+  $('ep_name').value=me.full_name||'';$('ep_father').value=me.father_name||'';$('ep_cnic').value=me.cnic||'';$('ep_caste').value=me.caste||'';$('ep_gender').value=me.gender||'';
+  $('ep_dw').hidden=$('ep_cw').hidden=adm;$('ep_des').value=me.designation||'E.S.T';$('ep_class').value=me.class_name||'';$('ep_class').disabled=noCls($('ep_des').value);
+  $('ep_msg').textContent='';$('ep_f').hidden=false;$('pr_edit').hidden=true;
+};
+$('ep_cancel').onclick=()=>{$('ep_f').hidden=true;$('pr_edit').hidden=false};
+$('ep_f').onsubmit=async e=>{e.preventDefault();
+  const adm=me.role==='admin',des=adm?'Headmaster':$('ep_des').value,m=t=>$('ep_msg').textContent=t;
+  if(!adm&&!noCls(des)&&!$('ep_class').value)return m('Please select your class.');
+  const {error}=await sb.rpc('update_my_profile',{p_name:$('ep_name').value,p_father:$('ep_father').value,p_cnic:$('ep_cnic').value,p_caste:$('ep_caste').value,p_gender:$('ep_gender').value,p_designation:des,p_class:adm||noCls(des)?null:$('ep_class').value});
+  if(error)return m(error.message.includes('BAD_CNIC')?'Please enter a valid 13-digit CNIC.':error.message);
+  $('ep_f').hidden=true;await boot();view('prof');toast('Profile updated.',false);
+};
 $('pr_chg').onclick=()=>$('pr_file').click();
 $('pr_file').onchange=async e=>{
   const f=e.target.files[0];if(!f)return;$('pr_chg').textContent='Uploading...';
@@ -585,6 +613,7 @@ document.querySelectorAll('.mi[data-v]').forEach(b=>b.onclick=()=>{
   setTimeout(()=>{b.classList.remove('go');if(b.dataset.v==='add'&&editId)resetForm();if(b.dataset.v==='class')curClass=null;view(b.dataset.v)},260)});
 $('logout').onclick=()=>{$('logout').classList.add('go');$('logout').style.animationDelay='0s';setTimeout(()=>sb.auth.signOut(),280)};
 function drawProfile(){
+  $('pr_edit').hidden=viewerRole(me.role);
   const f=(k,v)=>`<div class="kv"><span>${k}</span><b>${esc(v||'-')}</b></div>`,nm=me.full_name||me.email;
   $('pr_av').src=$('d_av').src=me.avatar_url||'emblem.png';$('pr_name').textContent=$('d_name').textContent=nm;$('pr_des').textContent=me.designation||'';
   $('d_sub').textContent=me.role==='admin'?(me.designation||'Admin'):[me.designation,me.class_name].filter(Boolean).join(' - ');
