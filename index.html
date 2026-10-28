@@ -405,7 +405,7 @@ input[type=date]::-webkit-calendar-picker-indicator{width:22px;height:22px;opaci
           <div style="grid-column:1/-1"><label>Address</label><input id="st_addr"></div>
         </div><button class="pri" style="max-width:220px" id="s_btn">Save student</button></form>
       </div></div>
-    <div id="v_prof" class="card" hidden style="max-width:520px;margin:auto"><div style="text-align:center"><img id="pr_av" class="pav" alt=""><h2 id="pr_name"></h2><p class="sub" id="pr_des"></p></div><div id="pr_rows"></div></div>
+    <div id="v_prof" class="card" hidden style="max-width:520px;margin:auto"><div style="text-align:center"><img id="pr_av" class="pav" alt=""><div><button class="alt" id="pr_chg" type="button" style="max-width:260px;margin:12px auto 0">Change Profile Picture</button><input type="file" id="pr_file" accept="image/*" hidden></div><h2 id="pr_name"></h2><p class="sub" id="pr_des"></p></div><div id="pr_rows"></div></div>
     <div id="v_tea" hidden><h2 style="font-family:'Baloo 2',sans-serif;color:var(--navy);margin:0 0 12px">Teachers</h2><div id="tgrid" class="tgrid"></div></div>
     <div style="display:flex;justify-content:center"><div class="adm"><img src="admin.png" alt=""><div><small>Admin:</small><b>Muhammad Ajmal Solangi</b></div></div></div>
   </main>
@@ -564,6 +564,15 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)r
   }
   requestAnimationFrame(frame);
 })();
+$('pr_chg').onclick=()=>$('pr_file').click();
+$('pr_file').onchange=async e=>{
+  const f=e.target.files[0];if(!f)return;$('pr_chg').textContent='Uploading...';
+  try{
+    const url=await upload(f);const {error}=await sb.rpc('set_my_avatar',{p_url:url});if(error)throw error;
+    me.avatar_url=url;drawProfile();$('av').src=url;$('av').hidden=false;toast('Profile picture updated.',false);
+  }catch(er){toast('Could not change the picture: '+(er.message||er))}
+  finally{$('pr_chg').textContent='Change Profile Picture';e.target.value=''}
+};
 $('gn_btn').onclick=async()=>{const g=$('gn_sel').value;if(!g)return toast('Please select Male or Female.');const {error}=await sb.rpc('set_my_gender',{p:g});if(error)return toast(error.message);me.gender=g;$('gn_card').hidden=true;drawProfile()};
 document.querySelectorAll('input[type=date]').forEach(i=>i.addEventListener('click',()=>{try{i.showPicker()}catch(e){}}));
 $('burger').onclick=()=>{[...document.querySelectorAll('#drawer .mi:not([hidden])')].forEach((b,i)=>b.style.animationDelay=(i*.045)+'s');$('drawer').classList.add('open');$('scrim').hidden=false};
