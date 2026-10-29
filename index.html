@@ -240,6 +240,35 @@ input[type=date]{display:block;width:100%;min-width:0;box-sizing:border-box;heig
 input[type=date]::-webkit-date-and-time-value{text-align:left;min-height:42px;line-height:42px}
 input[type=date]::-webkit-calendar-picker-indicator{width:22px;height:22px;opacity:.7}
 .grid>div{min-width:0}
+.sbw{gap:10px}
+.sb{flex:1;min-height:46px;border-radius:14px;font-family:Poppins,sans-serif;font-weight:700;font-size:15px;letter-spacing:.2px;display:flex;align-items:center;justify-content:center;gap:8px;background:#fff;border:2px solid;box-shadow:0 3px 8px rgba(0,0,0,.08);transition:all .2s}
+.sb .ck{font-size:16px;line-height:1}.sb .ck:empty{display:none}
+.sb.pre{color:#0a3fd0;border-color:#0a3fd0}
+.sb.pre.on{background:linear-gradient(135deg,#0a3fd0,#2a7bff);color:#fff;border-color:transparent;box-shadow:0 6px 14px rgba(10,63,208,.4)}
+.sb.lve{color:#9a6200;border-color:#f5b81c}
+.sb.lve.on{background:linear-gradient(135deg,#ffe07a,#f5b81c);color:#3b2a00;border-color:transparent;box-shadow:0 6px 14px rgba(245,184,28,.5)}
+.ht{border-collapse:separate;border-spacing:0;font-size:13px;min-width:820px;width:100%}
+.ht th,.ht td{padding:9px 7px;text-align:center;border-bottom:1px solid #e3eaf7;white-space:nowrap}
+.ht thead th{color:#fff;font-weight:700}.ht .sub th{font-size:12px}
+.ht .sk{position:sticky;left:0;z-index:2;text-align:left;font-weight:700;background:#fff;color:var(--navy)}
+.ht thead .sk{color:#fff;background:var(--navy)}
+.ht .g0{background:var(--navy)}.ht .g1{background:#2e9e47}.ht .g2{background:#1565d8}.ht .g3{background:#e0a100;color:#3b2a00!important}.ht .g4{background:#8a0f4f}
+.ht tfoot td{font-weight:700;background:#eaf1fd}.ht tfoot .sk{background:#eaf1fd}
+.hbx{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+.hbx>div{border-radius:18px;padding:16px 10px;color:#fff;text-align:center;box-shadow:0 8px 18px rgba(0,0,0,.18)}
+.hbx b{display:block;font-family:"Baloo 2",sans-serif;font-size:30px;line-height:1.1}.hbx small{font-weight:700;opacity:.95}
+.hl{margin:6px 0 12px}.hs{padding:8px 0 8px 12px;border-left:5px solid;border-bottom:1px dashed #cfdaf0;margin-bottom:2px}
+.hs.g1{border-left-color:#2e9e47}.hs.g2{border-left-color:#1565d8}.hs.g3{border-left-color:#e0a100}.hs.g4{border-left-color:#8a0f4f}.hs.g0{border-left-color:var(--navy)}
+.hr2{display:flex;justify-content:space-between;padding:5px 0;font-size:15px}.hr2 span{color:var(--ink)}.hr2 b{color:var(--navy);font-size:16px}.hr2.tot{border-top:1px solid #cfdaf0;margin-top:3px}.hr2.tot span,.hr2.tot b{font-weight:800}
+.sheet{background:#fff;font-family:Cambria,Georgia,serif;color:#000}
+.sh-h{display:flex;gap:12px;align-items:center}.sh-h img{height:58px}.sh-h h3{margin:0;font-size:17px;font-weight:800;line-height:1.2;font-family:inherit;color:#000}.sh-h small{font-weight:700}
+.sh-b{display:inline-block;background:#111;color:#fff;font-weight:800;padding:5px 28px;border-radius:0 0 10px 10px;margin:12px 0 8px}
+.sh-dd{display:flex;justify-content:space-between;font-weight:700;border-bottom:5px double #111;padding-bottom:8px;margin-bottom:12px}
+.hcf{border-collapse:collapse;width:100%;min-width:900px;font-size:14px;font-weight:700;color:#000}
+.hcf th,.hcf td{border:1px solid #444;padding:9px 6px;text-align:center}
+.hcf thead tr:first-child th{background:#000;color:#fff;padding:12px 6px}.hcf .s2 th{background:#fff;color:#000}
+.hcf .t{background:#d9d9d9}.hcf .tr td{background:#fff}.hcf .tr td.t{background:#d9d9d9}
+@media print{@page{size:landscape;margin:10mm}body *{visibility:hidden}.sheet,.sheet *{visibility:visible}.sheet{position:absolute;left:0;top:0;width:100%}.tw{overflow:visible!important}.noprint{display:none!important}}
 </style></head>
 <body>
 <div id="toast" hidden></div>
@@ -322,6 +351,7 @@ input[type=date]::-webkit-calendar-picker-indicator{width:22px;height:22px;opaci
     <button class="mi" data-v="prof"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="8" r="4"/></svg>Profile</button>
     <button class="mi on" data-v="dash"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</button>
     <button class="mi" data-v="inout"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>In &amp; Out</button>
+    <button class="mi" data-v="photos" id="m_ph" hidden><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="15" rx="2"/><circle cx="12" cy="12.5" r="3.5"/><path d="M8 5l1.5-2h5L16 5"/></svg>Student Photos</button>
     <button class="mi" data-v="sattend" id="m_sa" hidden><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21a7 7 0 0 0-14 0"/><circle cx="9" cy="8" r="4"/><path d="m16 11 2 2 4-4"/></svg>Students' Attendance</button>
     <button class="mi" data-v="head"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2 20a7 7 0 0 1 14 0M17 5a3.5 3.5 0 0 1 0 6.5M19 20a6 6 0 0 0-3-5"/></svg><span id="m_hc_t">Head Count</span></button>
     <button class="mi" data-v="allhc" id="m_allhc" hidden><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>All Over Head Count</button>
@@ -355,6 +385,11 @@ input[type=date]::-webkit-calendar-picker-indicator{width:22px;height:22px;opaci
     <div id="v_sattend" hidden><div class="card"><h2>Students' Attendance</h2><small class="sub sa-sub"></small><div class="sa-box"></div></div></div>
     <div id="v_inout" hidden><div class="card"><h2>Teacher's In &amp; Out</h2><small class="sub io-date"></small><div class="io-box"></div></div></div>
     <div id="v_head" hidden><div class="card"><h2 id="hc_h">Head Count</h2><div id="hc_dayw" hidden><input type="date" id="hc_day" style="margin:8px 0 14px"></div><div id="hc_body"></div></div></div>
+    <div id="v_photos" hidden><h2 class="vt">Student Photos</h2>
+      <div class="card"><p class="sub">Tap Add Photo to set a student's picture. Only the photo changes here.</p>
+        <div class="grid"><div><label>Class</label><select id="ph_class"></select></div><div><label>Search</label><input id="ph_q" placeholder="Name or G.R No."></div></div>
+        <input type="file" id="ph_file" accept="image/*" hidden></div>
+      <div class="card" style="margin-top:16px"><p class="sub" id="ph_cnt"></p><div id="ph_list"></div></div></div>
     <div id="v_allhc" hidden><div class="card"><h2>All Over Head Count</h2><input type="date" id="ao_day" style="margin:8px 0 14px"><div id="ao_body"></div></div></div>
     <div id="v_leave" hidden><h2 class="vt">Teacher's Leave</h2>
       <div class="card"><p class="sub" style="margin:0 0 10px">Choose a date, then tap a leave type for the teacher. Tap again to cancel.</p><input type="date" id="lv_day"></div>
@@ -544,14 +579,14 @@ async function boot(){
     [['tea',1],['tdata',2],['head',3]].forEach(([v,o])=>document.querySelector('.mi[data-v='+v+']').style.order=o);$('logout').style.order=9;
     drawProfile();view('tea');return;
   }
-  resetForm();drawProfile();$('gn_card').hidden=!!me.gender;$('m_tea').hidden=!admin;$('m_tdata').hidden=!admin;$('m_leave').hidden=!admin;$('m_sa').hidden=admin||!me.class_name;$('m_allhc').hidden=!admin;$('m_hc_t').textContent=admin?'All Head Count':'Head Count';$('hc_dayw').hidden=!admin;$('hc_h').hidden=!admin;$('hc_h').textContent='All Head Count';$('m_loc').hidden=!admin;$('m_class_t').textContent=admin?'Classes':'Class';$('m_data').hidden=!admin;view('dash');
+  resetForm();drawProfile();$('gn_card').hidden=!!me.gender;$('m_tea').hidden=!admin;$('m_tdata').hidden=!admin;$('m_leave').hidden=!admin;$('m_ph').hidden=!admin;$('m_sa').hidden=admin||!me.class_name;$('m_allhc').hidden=!admin;$('m_hc_t').textContent=admin?'All Head Count':'Head Count';$('hc_dayw').hidden=!admin;$('hc_h').hidden=!admin;$('hc_h').textContent='All Head Count';$('m_loc').hidden=!admin;$('m_class_t').textContent=admin?'Classes':'Class';$('m_data').hidden=!admin;view('dash');
 }
 function view(v){
   if(me&&viewerRole(me.role)&&!['tea','tdata','head'].includes(v))v='tea';
-  ['dash','students','sattend','inout','head','allhc','class','data','tdata','leave','loc','search','add','prof','tea'].forEach(x=>$('v_'+x).hidden=x!==v);
+  ['dash','students','photos','sattend','inout','head','allhc','class','data','tdata','leave','loc','search','add','prof','tea'].forEach(x=>$('v_'+x).hidden=x!==v);
   document.querySelectorAll('.mi[data-v]').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
   $('drawer').classList.remove('open');$('scrim').hidden=true;
-  if(v==='tea')loadTeachers();if(v==='dash'||v==='inout')loadIO();if(v==='dash'){loadHCBtn();loadSA()}if(v==='sattend')loadSA();if(v==='head'){if(me.role==='admin'&&!$('hc_day').value)$('hc_day').value=dayStr();loadHC()}if(v==='allhc'){if(!$('ao_day').value)$('ao_day').value=dayStr();loadAllHC()}if(v==='loc')loadLoc();if(v==='leave'){if(!$('lv_day').value)$('lv_day').value=dayStr();loadLeave()}if(v==='tdata'){if(!$('td_day').value)$('td_day').value=dayStr();loadTD()}if(v==='dash'||v==='students'||v==='search'||v==='class'||v==='data')loadStudents();scrollTo(0,0);
+  if(v==='tea')loadTeachers();if(v==='dash'||v==='inout')loadIO();if(v==='dash'){loadHCBtn();loadSA()}if(v==='sattend')loadSA();if(v==='head'){if(me.role==='admin'&&!$('hc_day').value)$('hc_day').value=dayStr();loadHC()}if(v==='allhc'){if(!$('ao_day').value)$('ao_day').value=dayStr();loadAllHC()}if(v==='loc')loadLoc();if(v==='leave'){if(!$('lv_day').value)$('lv_day').value=dayStr();loadLeave()}if(v==='tdata'){if(!$('td_day').value)$('td_day').value=dayStr();loadTD()}if(v==='photos')loadStudents();if(v==='dash'||v==='students'||v==='search'||v==='class'||v==='data')loadStudents();scrollTo(0,0);
 }
 document.querySelector('.dh').onclick=()=>view('prof');
 document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const r=b.getBoundingClientRect(),d=Math.max(r.width,r.height),x=document.createElement('span');x.className='rp';x.style.cssText=`width:${d}px;height:${d}px;left:${e.clientX-r.left-d/2}px;top:${e.clientY-r.top-d/2}px`;b.appendChild(x);setTimeout(()=>x.remove(),650)});
@@ -854,7 +889,7 @@ function drawSA(){
   document.querySelectorAll('.sa-sub').forEach(e=>e.textContent=`Class ${me.class_name} - Present ${P} - Leave ${L} - Absent ${list.length-P-L}`);
   const html=list.length?list.map(s=>{const k=saMap[s.id];
     return `<div class="lvt still ${k?'has':''}">${stuPhoto(s)}<div class="lvn"><div class="nm">${esc(s.name)}</div><div class="rt">${s.gr_no?'G.R '+esc(s.gr_no):''}<br>${esc(gnorm(s.gender))}</div></div>
-    <div class="lvb2"><button class="lp pre ${k==='present'?'on':''}" onclick="markSA('${s.id}','present')">${k==='present'?'&#10003; ':''}Present</button><button class="lp lve ${k==='leave'?'on':''}" onclick="markSA('${s.id}','leave')">${k==='leave'?'&#10003; ':''}Leave</button></div></div>`}).join(''):'<p class="sub">No students in your class yet. Add them from Add Student.</p>';
+    <div class="lvb2 sbw"><button class="sb pre ${k==='present'?'on':''}" onclick="markSA('${s.id}','present')"><span class="ck">${k==='present'?'&#10003;':''}</span>Present</button><button class="sb lve ${k==='leave'?'on':''}" onclick="markSA('${s.id}','leave')"><span class="ck">${k==='leave'?'&#10003;':''}</span>Leave</button></div></div>`}).join(''):'<p class="sub">No students in your class yet. Add them from Add Student.</p>';
   document.querySelectorAll('.sa-box').forEach(e=>e.innerHTML=html);
 }
 async function markSA(id,st){
@@ -867,10 +902,10 @@ async function markSA(id,st){
 function hcStats(c,rows){
   const st=students.filter(s=>s.class_name===c),m={};rows.filter(r=>r.class_name===c).forEach(r=>m[r.student_id]=r.status);
   const P=st.filter(s=>m[s.id]==='present'),pb=P.filter(s=>isM(s)).length,pg=P.filter(s=>isF(s)).length;
-  return{b:st.filter(s=>isM(s)).length,g:st.filter(s=>isF(s)).length,t:st.length,pb,pg,pn:P.length,lv:st.filter(s=>m[s.id]==='leave').length,ab:st.length-P.length-st.filter(s=>m[s.id]==='leave').length,list:P.sort(byGen),any:Object.keys(m).length>0};
+  return{b:st.filter(s=>isM(s)).length,g:st.filter(s=>isF(s)).length,t:st.length,pb,pg,pn:P.length,lv:st.filter(s=>m[s.id]==='leave').length,lvb:st.filter(s=>m[s.id]==='leave'&&isM(s)).length,lvg:st.filter(s=>m[s.id]==='leave'&&isF(s)).length,ab:st.length-P.length-st.filter(s=>m[s.id]==='leave').length,list:P.sort(byGen),any:Object.keys(m).length>0};
 }
 let rpcHC=null;
-const stFor=(c,rows)=>{if(!rpcHC)return hcStats(c,rows);const x=rpcHC[c]||{},pn=x.present_total||0,lv=x.leave_total||0,t=x.total||0;return{b:x.on_boys||0,g:x.on_girls||0,t,pb:x.present_boys||0,pg:x.present_girls||0,pn,lv,ab:t-pn-lv,list:[],any:!!x.any}};
+const stFor=(c,rows)=>{if(!rpcHC)return hcStats(c,rows);const x=rpcHC[c]||{},pn=x.present_total||0,lv=x.leave_total||0,t=x.total||0;return{b:x.on_boys||0,g:x.on_girls||0,t,pb:x.present_boys||0,pg:x.present_girls||0,pn,lv,lvb:x.leave_boys||0,lvg:x.leave_girls||0,ab:t-pn-lv,list:[],any:!!x.any}};
 const clsList=rows=>rpcHC?CLASSES.filter(c=>rpcHC[c]):CLASSES.filter(c=>enr(c)||rows.some(r=>r.class_name===c));
 async function fetchHC(day){
   if(viewerRole(me.role)){
@@ -893,47 +928,75 @@ async function loadHC(){
   $('hc_body').innerHTML=adm?hcAdminHTML(rows):hcTeacherHTML(rows);
 }
 const pI=s=>`<div class="pi">${s.photo_url?`<img src="${esc(s.photo_url)}" alt="">`:`<div class="i0">${esc((s.name||'?')[0])}</div>`}<div><b>${esc(s.name)}</b><small style="display:block;color:var(--mut)">${s.gr_no?'G.R '+esc(s.gr_no):''}</small></div></div>`;
+const ROM={ECCE:'ECCE',KG:'KG',One:'I',Two:'II',Three:'III',Four:'IV',Five:'V',Six:'VI',Seven:'VII',Eight:'VIII'};
+const pct1=(p,n)=>n?(Math.round(p*1000/n)/10).toFixed(1)+'%':'-';
+function hcClassList(x){
+  const n=v=>x.any?p2(v):'-',row=(l,v,t)=>`<div class="hr2${t?' tot':''}"><span>${l}</span><b>${v}</b></div>`;
+  const aB=Math.max(0,x.b-x.pb-x.lvb),aG=Math.max(0,x.g-x.pg-x.lvg);
+  return `<div class="hl"><div class="hs g1">${row('On Roll Boys:',p2(x.b))}${row('On Roll Girls:',p2(x.g))}${row('Total:',p2(x.t),1)}</div>
+  <div class="hs g2">${row('Present Boys:',n(x.pb))}${row('Present Girls:',n(x.pg))}${row('Total:',n(x.pn),1)}</div>
+  <div class="hs g3">${row('Leave Boys:',n(x.lvb))}${row('Leave Girls:',n(x.lvg))}${row('Total:',n(x.lv),1)}</div>
+  <div class="hs g4">${row('Absent Boys:',n(aB))}${row('Absent Girls:',n(aG))}${row('Total:',n(x.ab),1)}</div>
+  <div class="hs g0">${row('Per%:',x.any?pct1(x.pn+x.lv,x.t):'-',1)}</div></div>`;
+}
 function hcTeacherHTML(rows){
   if(!me.class_name)return '<p class="sub">No class assigned, so there is no head count.</p>';
   const x=hcStats(me.class_name,rows),unk=x.pn-x.pb-x.pg;
   return `<div class="lvt"><img src="${esc(me.avatar_url||'emblem.png')}" alt=""><div class="lvn"><div class="nm">${hon(me)}${esc(me.full_name||me.email)}</div><div class="rt">( ${esc(me.designation||'-')} )<br>${esc(me.subject||'Class '+me.class_name)}</div></div></div>
-  <h2 class="hct">Class ${esc(me.class_name)} Head Count</h2>
-  <div class="hrow"><div class="pl g">On Roll Boys: ${x.b}</div><div class="pl bl">On Roll Girls: ${x.g}</div></div>
-  <div class="hf"><div class="pl y">Present Boys:</div><div class="pv">${p2(x.pb)}</div></div>
-  <div class="hf"><div class="pl y">Present Girls:</div><div class="pv">${p2(x.pg)}</div></div>
-  <div class="hf"><div class="pl y">Leave</div><div class="pv">${p2(x.lv)}</div></div>
-  <div class="hf"><div class="pl y">Absent</div><div class="pv">${p2(x.ab)}</div></div>
-  <p class="sub">This count is filled automatically from Students' Attendance. Students on leave are counted as present. Absent = on roll - present - leave.</p>
-  ${unk>0?`<p class="sub">${unk} present student(s) have no gender set, so they are not in Boys/Girls.</p>`:''}
-  <p class="sub">Present ${x.pn} + Leave ${x.lv} of ${x.t} students (${pct(x.pn+x.lv,x.t)}%)</p>
+  <h2 class="hct">Class ${esc(me.class_name)} Head Count</h2>`+hcClassList(x)+
+  `<p class="sub">Filled automatically from Students' Attendance. Students on leave are counted as present. Per% = (Present + Leave) / On Roll.</p>
+  ${x.any===false?'<p class="sub">No student has been marked yet today.</p>':''}${unk>0?`<p class="sub">${unk} present student(s) have no gender set, so they are only in the Total.</p>`:''}
   <button class="pri" onclick="view('sattend')">Open Students' Attendance</button>
   <h2 style="margin-top:22px">Present Students (${x.pn})</h2>`+(x.list.length?x.list.map(pI).join(''):'<p class="sub">No student marked present yet today.</p>');
 }
+function hcSummaryHTML(rows,dateStr){
+  const cls=clsList(rows),st=cls.map(c=>({c,...stFor(c,rows)})),rep=st.filter(x=>x.any);
+  const sum=(l,f)=>l.reduce((a,x)=>a+f(x),0),allB=sum(st,x=>x.b),allG=sum(st,x=>x.g),allT=sum(st,x=>x.t);
+  const aB=x=>Math.max(0,x.b-x.pb-x.lvb),aG=x=>Math.max(0,x.g-x.pg-x.lvg);
+  const d=new Date((dateStr||dayStr())+'T00:00:00'),dd=pad2(d.getDate())+'/'+pad2(d.getMonth()+1)+'/'+d.getFullYear(),dn=d.toLocaleDateString('en-GB',{weekday:'long'});
+  const row=x=>`<tr><td>${ROM[x.c]||x.c}</td><td>${p2(x.b)}</td><td>${p2(x.g)}</td><td class="t">${p2(x.t)}</td>`+(x.any?`<td>${p2(x.pb)}</td><td>${p2(x.pg)}</td><td class="t">${p2(x.pn)}</td><td>${p2(x.lvb)}</td><td>${p2(x.lvg)}</td><td class="t">${p2(x.lv)}</td><td>${p2(aB(x))}</td><td>${p2(aG(x))}</td><td class="t">${p2(x.ab)}</td><td>${pct1(x.pn+x.lv,x.t)}</td>`:'<td colspan="10" style="color:#777;font-weight:400">Not marked yet</td>')+'<td></td></tr>';
+  const tot=`<tr class="tr"><td>TOTAL</td><td>${p2(allB)}</td><td>${p2(allG)}</td><td class="t">${p2(allT)}</td><td>${p2(sum(rep,x=>x.pb))}</td><td>${p2(sum(rep,x=>x.pg))}</td><td class="t">${p2(sum(rep,x=>x.pn))}</td><td>${p2(sum(rep,x=>x.lvb))}</td><td>${p2(sum(rep,x=>x.lvg))}</td><td class="t">${p2(sum(rep,x=>x.lv))}</td><td>${p2(sum(rep,aB))}</td><td>${p2(sum(rep,aG))}</td><td class="t">${p2(sum(rep,x=>x.ab))}</td><td>${pct1(sum(rep,x=>x.pn+x.lv),sum(rep,x=>x.t))}</td><td></td></tr>`;
+  const P=sum(rep,x=>x.pn+x.lv),A=sum(rep,x=>x.ab),R=sum(rep,x=>x.t),pend=st.filter(x=>!x.any).map(x=>x.c);
+  return `<div class="sheet"><div class="sh-h"><img src="emblem.png" alt=""><div><h3>ADAM SONS ELEMENTARY SCHOOL JAMPUR-350105043</h3><small>Assisted by: Sindh Education Foundation (SEF)</small></div></div>
+  <div class="sh-b">HEADCOUNT</div><div class="sh-dd"><span>Date: ${dd}</span><span>Day: ${dn}</span></div>
+  <div class="tw"><table class="hcf"><thead><tr><th>CLASS</th><th colspan="3">ON ROLL</th><th colspan="3">PRESENT</th><th colspan="3">LEAVE</th><th colspan="3">ABSENT</th><th>PER%</th><th>TEACHER'S SIGN.</th></tr>
+  <tr class="s2"><th>***</th><th>B</th><th>G</th><th>T</th><th>B</th><th>G</th><th>T</th><th>B</th><th>G</th><th>T</th><th>B</th><th>G</th><th>T</th><th>***</th><th>***</th></tr></thead>
+  <tbody>${st.map(row).join('')}${tot}</tbody></table></div></div>
+  <div class="hbx"><div style="background:linear-gradient(135deg,#0b2a8a,#1565d8)"><b>${allT}</b><small>Total</small></div><div style="background:linear-gradient(135deg,#2e9e47,#4caf50)"><b>${P}</b><small>Total Present</small></div>
+  <div style="background:linear-gradient(135deg,#8a0f4f,#c2185b)"><b>${A}</b><small>Total Absent</small></div><div style="background:linear-gradient(135deg,#e0a100,#ffc800);color:#3b2a00"><b>${pct1(P,R)}</b><small>Per%</small></div></div>
+  <button class="alt noprint" type="button" style="margin-top:14px" onclick="window.print()">Print / Save as PDF</button>
+  <p class="sub noprint" style="margin-top:12px">Total Present includes students on leave. Per% = (Present + Leave) / On Roll. Present, Leave, Absent and Per% count only the ${rep.length} class(es) marked so far${pend.length?' (waiting: '+pend.map(c=>ROM[c]||c).join(', ')+')':''}. On Roll comes from the students added in the portal.</p>`;
+}
 function hcAdminHTML(rows){
-  const all=rpcHC?clsList(rows).map(c=>stFor(c,rows)).filter(x=>x.any):[],sm=k=>all.reduce((a,x)=>a+x[k],0);
-  const top=rpcHC?`<div class="hcc"><h3 class="gh" style="margin:0 0 10px">All classes</h3><div class="hrow"><div class="pl g sm">Total Present: ${sm('pn')}</div><div class="pl y sm">Total Leave: ${sm('lv')}</div></div><div class="hrow"><div class="pl mr sm">Total Absent: ${p2(sm('ab'))}</div></div></div>`:'';
+  const top=rpcHC?hcSummaryHTML(rows,$('hc_day').value||dayStr())+'<h2 class="vt" style="margin:22px 0 10px">Class by class</h2>':'';
   return top+(clsList(rows).map(c=>{
     const x=stFor(c,rows),t=hcNames[c];
     const names=rpcHC?'':`<button class="ghost" type="button" onclick="const n=this.nextElementSibling;n.hidden=!n.hidden">Present students (${x.pn})</button><div class="dd" hidden>${x.list.length?x.list.map(pI).join(''):'<p class="sub">None.</p>'}</div>`;
-    return `<div class="hcc"><div class="row" style="margin:0 0 10px"><h3 class="gh" style="margin:0">Class ${c}</h3><small class="sub">${x.any?esc((t&&(t.full_name||t.email))||''):'Not marked yet'}</small></div>
-    <div class="hrow"><div class="pl g sm">On Roll Boys: ${x.b}</div><div class="pl bl sm">On Roll Girls: ${x.g}</div></div>
-    ${x.any?`<div class="hrow"><div class="pl y sm">Present Boys: ${x.pb}</div><div class="pl y sm">Present Girls: ${x.pg}</div></div><div class="hrow"><div class="pl y sm">Leave: ${p2(x.lv)}</div><div class="pl mr sm">Absent: ${p2(x.ab)}</div></div>${names}`:''}</div>`}).join('')||'<p class="sub">No classes yet.</p>');
+    return `<div class="hcc"><div class="row" style="margin:0 0 10px"><h3 class="gh" style="margin:0">Class: ${c}</h3><small class="sub">${x.any?esc((t&&(t.full_name||t.email))||''):'Not marked yet'}</small></div>${hcClassList(x)}${x.any?names:''}</div>`}).join('')||'<p class="sub">No classes yet.</p>');
 }
 async function loadAllHC(){
-  const rows=await fetchHC($('ao_day').value||dayStr()),cls=CLASSES.filter(c=>enr(c)||rows.some(r=>r.class_name===c));
-  const st=cls.map(c=>({c,...hcStats(c,rows)})),rep=st.filter(x=>x.any),pend=st.filter(x=>!x.any).map(x=>x.c);
-  const B=students.filter(s=>isM(s)).length,G=students.filter(s=>isF(s)).length,sum=(l,k)=>l.reduce((a,x)=>a+x[k],0);
-  const pb=sum(rep,'pb'),pg=sum(rep,'pg'),pr=sum(rep,'pn'),L=sum(rep,'lv'),ab=sum(rep,'ab'),repOn=sum(rep,'t');
-  $('ao_body').innerHTML=`<div class="hrow"><div class="pl g">On Roll Boys: ${B}</div><div class="pl bl">On Roll Girls: ${G}</div></div>
-  <div class="hrow"><div class="pl y">Present Boys: ${pb}</div><div class="pl y">Present Girls: ${pg}</div></div>
-  <div class="hrow"><div class="pl g">Total Present: ${pr}</div><div class="pl y">Total Leave: ${L}</div></div>
-  <div class="hrow"><div class="pl mr">Total Absent: ${ab}</div></div>
-  <div class="pc">${pct(pr+L,repOn)}%</div><div class="bar"><i data-w="${pct(pr+L,repOn)}"></i></div>
-  <p class="sub" style="margin-top:8px">${students.length} students on roll in school. Classes marked: ${rep.length} of ${cls.length}${pend.length?' (waiting: '+pend.join(', ')+')':''}. Students on leave are counted as present. Absent is counted only for marked classes.</p>
-  <div class="tw"><table><tr><th>Class</th><th>On Roll</th><th>Present</th><th>Leave</th><th>Absent</th></tr>${st.map(x=>`<tr><td>${x.c}</td><td>${x.t}</td><td>${x.any?x.pn:'-'}</td><td>${x.any?x.lv:'-'}</td><td>${x.any?p2(x.ab):'-'}</td></tr>`).join('')}</table></div>`;
-  barAnim();
+  const rows=await fetchHC($('ao_day').value||dayStr());
+  $('ao_body').innerHTML=hcSummaryHTML(rows,$('ao_day').value||dayStr());
 }
 $('hc_btn').onclick=()=>view('head');$('hc_day').onchange=loadHC;$('ao_day').onchange=loadAllHC;
+opts($('ph_class'),'All classes');
+let phId=null;
+function drawPhotos(){
+  const c=$('ph_class').value,q=$('ph_q').value.trim().toLowerCase();
+  const all=students.filter(s=>(!c||s.class_name===c)&&(!q||(s.name||'').toLowerCase().includes(q)||String(s.gr_no||'').toLowerCase().includes(q))).sort((a,b)=>CIx(a.class_name)-CIx(b.class_name)||byGen(a,b));
+  const l=all.slice(0,60),done=all.filter(s=>s.photo_url).length;
+  $('ph_cnt').textContent=`${all.length} students - ${done} with photo${all.length>60?' - showing first 60, use Class or Search':''}`;
+  $('ph_list').innerHTML=l.map(s=>`<div class="li">${s.photo_url?`<img src="${esc(s.photo_url)}" alt="">`:`<div class="i0">${esc((s.name||'?')[0])}</div>`}<div style="flex:1;min-width:0"><b>${esc(s.name)}</b><small>Class ${esc(s.class_name)}${s.gr_no?' - G.R '+esc(s.gr_no):''}</small></div><button onclick="pickPhoto('${s.id}')">${s.photo_url?'Change':'Add Photo'}</button></div>`).join('')||'<p class="sub">No students found.</p>';
+}
+function pickPhoto(id){phId=id;$('ph_file').click()}
+$('ph_class').onchange=$('ph_q').oninput=drawPhotos;
+$('ph_file').onchange=async e=>{
+  const f=e.target.files[0],id=phId;if(!f||!id)return;toast('Uploading photo...',false);
+  try{const url=await upload(f);const {error}=await sb.from('students').update({photo_url:url}).eq('id',id);if(error)throw error;
+    const s=students.find(x=>x.id===id);if(s)s.photo_url=url;drawPhotos();drawLatest();toast('Photo saved.',false)}
+  catch(er){toast('Could not save the photo: '+(er.message||er))}
+  finally{e.target.value=''}
+};
 function drawLatest(){
   const r=[...students].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).slice(0,10);
   $('latest').innerHTML=r.length?r.map(s=>`<div class="li">${s.photo_url?`<img src="${esc(s.photo_url)}" alt="">`:`<div class="i0">${esc((s.name||'?')[0])}</div>`}<div><b>${esc(s.name)}</b><small>${s.gr_no?'G.R '+esc(s.gr_no)+' - ':''}Class ${esc(s.class_name)}</small></div></div>`).join(''):'<p class="sub">No students added yet. Open the menu and tap Add Student.</p>';
@@ -955,7 +1018,7 @@ async function loadStudents(){
     $('filter').innerHTML='<option value="">All classes</option>'+cl.map(c=>`<option>${esc(c)}</option>`).join('');
     $('filter').value=cl.includes(cur)?cur:'';
   }
-  drawLatest();drawStudents();drawSearch();drawClassView();drawData();
+  drawLatest();drawStudents();drawSearch();drawClassView();drawData();drawPhotos();
 }
 $('filter').onchange=drawStudents;
 function drawStudents(){
