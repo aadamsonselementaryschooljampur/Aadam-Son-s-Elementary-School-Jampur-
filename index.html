@@ -838,6 +838,7 @@ const gcnt=c=>{const l=students.filter(s=>s.class_name===c),b=l.filter(s=>isM(s)
 const enr=c=>gcnt(c).t,pct=(p,n)=>n?Math.round(p*100/n):0,p2=n=>String(Math.max(0,n)).padStart(2,'0');
 const barAnim=()=>requestAnimationFrame(()=>requestAnimationFrame(()=>document.querySelectorAll('.bar i[data-w]').forEach(e=>e.style.width=e.dataset.w+'%')));
 const byGr=(a,b)=>String(a.gr_no||'').localeCompare(String(b.gr_no||''),undefined,{numeric:true})||String(a.name).localeCompare(String(b.name));
+const gRank=s=>isM(s)?0:isF(s)?1:2,byGen=(a,b)=>gRank(a)-gRank(b)||byGr(a,b);
 const stuPhoto=s=>s.photo_url?`<img src="${esc(s.photo_url)}" alt="">`:`<div class="lvph">${esc((s.name||'?')[0].toUpperCase())}</div>`;
 async function fetchSA(day){const {data,error}=await sb.from('student_attendance').select('student_id,class_name,status').eq('day',day);if(error){console.warn(error.message);return null}return data||[]}
 async function loadSA(){
@@ -848,7 +849,7 @@ async function loadSA(){
   saMap={};rows.forEach(r=>saMap[r.student_id]=r.status);drawSA();
 }
 function drawSA(){
-  const list=students.filter(s=>s.class_name===me.class_name).sort(byGr);
+  const list=students.filter(s=>s.class_name===me.class_name).sort(byGen);
   const P=list.filter(s=>saMap[s.id]==='present').length,L=list.filter(s=>saMap[s.id]==='leave').length;
   document.querySelectorAll('.sa-sub').forEach(e=>e.textContent=`Class ${me.class_name} - Present ${P} - Leave ${L} - Absent ${list.length-P-L}`);
   const html=list.length?list.map(s=>{const k=saMap[s.id];
@@ -866,7 +867,7 @@ async function markSA(id,st){
 function hcStats(c,rows){
   const st=students.filter(s=>s.class_name===c),m={};rows.filter(r=>r.class_name===c).forEach(r=>m[r.student_id]=r.status);
   const P=st.filter(s=>m[s.id]==='present'),pb=P.filter(s=>isM(s)).length,pg=P.filter(s=>isF(s)).length;
-  return{b:st.filter(s=>isM(s)).length,g:st.filter(s=>isF(s)).length,t:st.length,pb,pg,pn:P.length,lv:st.filter(s=>m[s.id]==='leave').length,ab:st.length-P.length-st.filter(s=>m[s.id]==='leave').length,list:P.sort(byGr),any:Object.keys(m).length>0};
+  return{b:st.filter(s=>isM(s)).length,g:st.filter(s=>isF(s)).length,t:st.length,pb,pg,pn:P.length,lv:st.filter(s=>m[s.id]==='leave').length,ab:st.length-P.length-st.filter(s=>m[s.id]==='leave').length,list:P.sort(byGen),any:Object.keys(m).length>0};
 }
 let rpcHC=null;
 const stFor=(c,rows)=>{if(!rpcHC)return hcStats(c,rows);const x=rpcHC[c]||{},pn=x.present_total||0,lv=x.leave_total||0,t=x.total||0;return{b:x.on_boys||0,g:x.on_girls||0,t,pb:x.present_boys||0,pg:x.present_girls||0,pn,lv,ab:t-pn-lv,list:[],any:!!x.any}};
