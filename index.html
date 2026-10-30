@@ -727,7 +727,7 @@ function drawIO(){
 // ---- GPS-verified attendance (server decides; browser only collects the fix)
 let toastT;
 function toast(msg,bad=true){
-  if(bad){$('toast').hidden=true;const out=msg.startsWith('Please go to School');$('pop_h').textContent=out?'Please go to School':'Attendance not recorded';$('pop_t').textContent=out?(msg.split('\n')[1]||''):msg;$('pop').hidden=false;return}
+  if(bad){$('toast').hidden=true;const out=msg.startsWith('Please go to School'),loc=msg.startsWith('Please turn on Location');$('pop_h').textContent=out?'Please go to School':loc?'Turn on Location':'Attendance not recorded';$('pop_t').textContent=out?(msg.split('\n')[1]||''):loc?msg.replace('Please turn on Location. ',''):msg;$('pop').hidden=false;return}
   const t=$('toast');t.textContent=msg;t.className=bad?'bad':'ok';t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,bad?9000:3500)}
 function getFix(){return new Promise((res,rej)=>{
   if(!navigator.geolocation)return rej({code:'UNSUPPORTED'});
@@ -736,14 +736,14 @@ function getFix(){return new Promise((res,rej)=>{
 function geoMsg(o){
   const c=o&&o.code;
   return ({
-    DENIED:'Location permission is blocked. Allow Location for this site in your browser settings, then tap again.',
-    UNAVAILABLE:'Could not get your location. Turn on GPS/Location, move near a window or outdoors, and try again.',
-    TIMEOUT:'Getting your location took too long. Turn on GPS/Location and try again.',
+    DENIED:'Please turn on Location. Allow Location for this site (browser menu > Site settings > Location > Allow), also keep phone Location/GPS ON, then tap again.',
+    UNAVAILABLE:'Please turn on Location. Switch ON the phone Location/GPS, move outdoors or near a window, then tap again.',
+    TIMEOUT:'Please turn on Location. Switch ON the phone Location/GPS (High accuracy), wait a few seconds, then tap again.',
     UNSUPPORTED:'This browser cannot provide location. Please use Chrome or Safari on your phone.',
     STALE_LOCATION:'Your location reading is too old. Tap again to get a fresh reading.',
     LOW_ACCURACY:`GPS is not accurate enough (about ${o&&o.accuracy_m} m, needs ${o&&o.max_accuracy_m} m or better). Move outdoors and wait a few seconds, then tap again.`,
     OUTSIDE_RADIUS:`Please go to School\nYou are about ${o&&o.distance_m} m away (allowed: ${o&&o.radius_m} m).`,
-    NOT_CONFIGURED:'The school location has not been set yet. Please ask the Headmaster.',
+    NOT_CONFIGURED:'The school location is not set up yet. Please ask the Headmaster.',SERVER_ERROR:'Attendance setup is not finished on the server'+(o&&o.detail?' ('+o.detail+')':'')+'. Please tell the Headmaster.',
     NO_AUTH:'Your session has expired. Please log in again.',
     ALREADY_IN:'You have already marked In today.',
     ALREADY_OUT:'You have already marked Out today.',
