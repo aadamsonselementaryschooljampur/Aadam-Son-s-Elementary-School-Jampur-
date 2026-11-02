@@ -269,6 +269,7 @@ input[type=date]::-webkit-calendar-picker-indicator{width:22px;height:22px;opaci
 .hcf thead tr:first-child th{background:#000;color:#fff;padding:12px 6px}.hcf .s2 th{background:#fff;color:#000}
 .hcf .t{background:#d9d9d9}.hcf .tr td{background:#fff}.hcf .tr td.t{background:#d9d9d9}
 @media print{@page{size:landscape;margin:10mm}body *{visibility:hidden}.sheet,.sheet *{visibility:visible}.sheet{position:absolute;left:0;top:0;width:100%}.tw{overflow:visible!important}.noprint{display:none!important}}
+.hcf .nm2{text-align:left;padding-left:10px}
 </style></head>
 <body>
 <div id="toast" hidden></div>
@@ -401,7 +402,7 @@ input[type=date]::-webkit-calendar-picker-indicator{width:22px;height:22px;opaci
         <button class="alt" id="lc_here" type="button">Use my current location</button><button class="pri" id="lc_save" type="button">Save</button>
         <p class="sub" id="lc_msg" style="margin-top:12px"></p></div></div>
     <div id="v_tdata" hidden><h2 class="vt">Teachers' Data</h2>
-      <div class="card"><h2>In &amp; Out - Daily</h2><input type="date" id="td_day" style="margin:8px 0"><div id="td_list"></div></div>
+      <div class="card"><h2>In &amp; Out - Daily</h2><input type="date" id="td_day" style="margin:8px 0"><button class="alt noprint" id="td_pdf" type="button" style="margin:0 0 12px">Download PDF (In &amp; Out sheet)</button><div id="td_sheet" hidden style="margin-bottom:14px"></div><div id="td_list"></div></div>
       <h2 class="vt" style="margin-top:22px">Yearly Records</h2>
       <div id="td_years" class="cgrid"></div>
       <div id="td_ym" hidden><div class="row" style="margin:16px 0 10px"><h2 class="vt" id="td_ytitle" style="margin:0"></h2><button class="ghost" id="td_yback" type="button">&lsaquo; Years</button></div><div id="td_months" class="cgrid"></div></div>
@@ -614,20 +615,20 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)r
   }
   requestAnimationFrame(frame);
 })();
-opts($('ep_class'),'Select class');$('ep_cnic').oninput=fmt13;
+const EP_OPTS=$('ep_des').innerHTML;opts($('ep_class'),'Select class');$('ep_cnic').oninput=fmt13;
 $('ep_des').onchange=()=>{const n=noCls($('ep_des').value);$('ep_class').disabled=n;if(n)$('ep_class').value=''};
 $('pr_edit').onclick=()=>{
   const adm=me.role==='admin';
   $('ep_name').value=me.full_name||'';$('ep_father').value=me.father_name||'';$('ep_cnic').value=me.cnic||'';$('ep_caste').value=me.caste||'';$('ep_gender').value=me.gender||'';
-  $('ep_dw').hidden=$('ep_cw').hidden=adm;$('ep_des').value=['E.S.T','Primary','Subject Teacher'].includes(me.designation)?me.designation:'';$('ep_class').value=me.class_name||'';$('ep_class').disabled=noCls($('ep_des').value);
+  $('ep_dw').hidden=$('ep_cw').hidden=adm;const keepD=['V.P','H.T'].includes(me.designation);$('ep_des').innerHTML=keepD?'<option>'+me.designation+'</option>':EP_OPTS;$('ep_des').value=keepD||['E.S.T','Primary','Subject Teacher'].includes(me.designation)?me.designation:'';$('ep_class').value=me.class_name||'';$('ep_class').disabled=noCls($('ep_des').value);
   $('ep_msg').textContent='';$('ep_f').hidden=false;$('pr_edit').hidden=true;
 };
 $('ep_cancel').onclick=()=>{$('ep_f').hidden=true;$('pr_edit').hidden=false};
 $('ep_f').onsubmit=async e=>{e.preventDefault();
   const adm=me.role==='admin',des=adm?'Headmaster':$('ep_des').value,m=t=>$('ep_msg').textContent=t;
   if(!adm&&!des)return m('Please select your designation.');
-  if(!adm&&!noCls(des)&&!$('ep_class').value)return m('Please select your class.');
-  const {error}=await sb.rpc('update_my_profile',{p_name:$('ep_name').value,p_father:$('ep_father').value,p_cnic:$('ep_cnic').value,p_caste:$('ep_caste').value,p_gender:$('ep_gender').value,p_designation:des,p_class:adm||noCls(des)?null:$('ep_class').value});
+  if(!adm&&!noCls(des)&&des!=='V.P'&&!$('ep_class').value)return m('Please select your class.');
+  const {error}=await sb.rpc('update_my_profile',{p_name:$('ep_name').value,p_father:$('ep_father').value,p_cnic:$('ep_cnic').value,p_caste:$('ep_caste').value,p_gender:$('ep_gender').value,p_designation:des,p_class:adm||noCls(des)?null:($('ep_class').value||null)});
   if(error)return m(error.message.includes('BAD_CNIC')?'Please enter a valid 13-digit CNIC.':error.message);
   $('ep_f').hidden=true;await boot();view('prof');toast('Profile updated.',false);
 };
@@ -793,13 +794,31 @@ $('lc_save').onclick=async()=>{
   const {error}=await sb.from('school_location').upsert({id:1,lat,lng,radius_m:rad,max_accuracy_m:acc,updated_at:new Date().toISOString(),updated_by:me.id});
   m(error?error.message:'Saved. New attendance checks use this location immediately.');
 };
-let tdP=[];
+let tdP=[],tdA=[],tdL=[],tdDay='';
+const DL=t=>t.role==='admin'||t.designation==='H.T'||t.designation==='Headmaster'?'H.T':t.designation==='Primary'?'P.S.T':(t.designation||'-');
+const SG=t=>({'H.T':0,'V.P':1,'E.S.T':2,'P.S.T':3,'Subject Teacher':4})[DL(t)]??5;
+function tdSheetHTML(){
+  const day=tdDay||dayStr(),d=new Date(day+'T00:00:00'),wd=d.getDay(),today=dayStr(),dd=pad2(d.getDate())+'/'+pad2(d.getMonth()+1)+'/'+d.getFullYear(),dn=d.toLocaleDateString('en-GB',{weekday:'long'});
+  const A={},L={};tdA.forEach(r=>A[r.teacher_id]=r);tdL.forEach(r=>L[r.teacher_id]=r.kind);
+  const list=tdP.slice().sort((a,b)=>SG(a)-SG(b)||CIx(a.class_name)-CIx(b.class_name)||String(a.full_name||'').localeCompare(String(b.full_name||'')));
+  const rows=list.map((t,i)=>{const r=A[t.id],lk=L[t.id];let rem='';
+    if(r)rem=[isLate(r)?'Late':'',r.out_time&&isEarly(r)?'Too Early':''].filter(Boolean).join(', ');
+    else if(lk)rem=lk==='sick'?'Sick Leave':'Casual Leave';
+    else if(wd===6)rem='Saturday Leave';else if(wd===0)rem='Sunday Leave';else if(day<today)rem='Absent';
+    return `<tr><td>${p2(i+1)}</td><td class="nm2">${esc(t.full_name||t.email)}</td><td>${DL(t)}</td><td>${r?tm(r.in_time):''}</td><td>${r&&r.out_time?tm(r.out_time):''}</td><td>${rem}</td><td></td></tr>`}).join('');
+  return `<div class="sheet"><div class="sh-h"><img src="emblem.png" alt=""><div><h3>ADAM SONS ELEMENTARY SCHOOL JAMPUR-350105043</h3><small>Assisted by: Sindh Education Foundation (SEF)</small></div></div>
+  <div class="sh-b">TEACHERS' IN &amp; OUT</div><div class="sh-dd"><span>Date: ${dd}</span><span>Day: ${dn}</span></div>
+  <div class="tw"><table class="hcf" style="min-width:640px"><thead><tr><th>SR#</th><th>NAME</th><th>DESIGNATION</th><th>IN</th><th>OUT</th><th>REMARKS</th><th>SIGN.</th></tr></thead><tbody>${rows||'<tr><td colspan="7">No teachers yet.</td></tr>'}</tbody></table></div></div>
+  <div class="noprint" style="display:flex;gap:10px;margin-top:12px"><button class="pri" type="button" onclick="window.print()" style="margin:0">Print / Save as PDF</button><button class="alt" type="button" onclick="document.getElementById('td_sheet').hidden=true" style="margin:0">Close</button></div>`;
+}
+$('td_pdf').onclick=()=>{$('td_sheet').innerHTML=tdSheetHTML();$('td_sheet').hidden=false;$('td_sheet').scrollIntoView({behavior:'smooth'});setTimeout(()=>window.print(),500)};
 const pad2=n=>String(n).padStart(2,'0'),dsd=d=>d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());
 const MN=['January','February','March','April','May','June','July','August','September','October','November','December'];
 async function loadTD(){
   const day=$('td_day').value||dayStr(),dw=new Date(day+'T00:00:00').getDay();
-  const [a,p,l]=await Promise.all([sb.from('attendance').select('*').eq('day',day),sb.from('profiles').select('id,full_name,email,avatar_url,created_at,role'),sb.from('leaves').select('*').eq('day',day)]);
-  const er=a.error||p.error;tdP=(p.data||[]).filter(t=>!viewerRole(t.role));
+  const [a,p,l]=await Promise.all([sb.from('attendance').select('*').eq('day',day),sb.from('profiles').select('id,full_name,email,avatar_url,created_at,role,designation,class_name'),sb.from('leaves').select('*').eq('day',day)]);
+  tdA=a.data||[];tdL=l.data||[];tdDay=day;
+  const er=a.error||p.error;tdP=(p.data||[]).filter(t=>!viewerRole(t.role));if(!$('td_sheet').hidden)$('td_sheet').innerHTML=tdSheetHTML();
   $('td_list').innerHTML=er?'<p class="sub">'+esc(er.message)+'</p>':ioList(a.data,tdP,l.data||[],dw===6?'Saturday Leave':dw===0?'Sunday Leave':'');
   drawYears();
 }
@@ -840,8 +859,8 @@ async function openMonth(y,m){
 // ---- Teacher's Leave (admin)
 let lvRows={};
 const CIx=c=>{const i=CLASSES.indexOf(c);return i<0?99:i};
-const GRx=t=>t.role==='admin'?0:t.designation==='H.T'?1:t.designation==='E.S.T'?2:t.designation==='Primary'?3:t.designation==='Subject Teacher'?4:5;
-const GRN=['Headmaster','H.T','E.S.T','Primary','Subject Teacher','Others'];
+const GRx=t=>t.role==='admin'?0:t.designation==='H.T'?1:t.designation==='V.P'?2:t.designation==='E.S.T'?3:t.designation==='Primary'?4:t.designation==='Subject Teacher'?5:6;
+const GRN=['Headmaster','H.T','V.P','E.S.T','P.S.T','Subject Teacher','Others'];
 async function loadLeave(){
   const day=$('lv_day').value||dayStr();
   const [p,l]=await Promise.all([sb.from('profiles').select('id,full_name,email,avatar_url,class_name,designation,subject,role,gender'),sb.from('leaves').select('*').eq('day',day)]);
@@ -1060,11 +1079,11 @@ async function loadTeachers(){
     <div class="tk">${kv("Father",p.father_name)}${kv('C.N.I.C',p.cnic)}${kv('Caste',p.caste)}${kv('Gender',p.gender)}${kv('Email',p.email)}</div>
     ${me.role!=='admin'?'':`<div class="te"><select id="c_${p.id}"><option value="">No class</option>${CLASSES.map(c=>`<option${c===p.class_name?' selected':''}>${c}</option>`).join('')}</select>
     <select id="r_${p.id}"><option${p.role==='teacher'?' selected':''}>teacher</option><option${p.role==='admin'?' selected':''}>admin</option><option${p.role==='coordinator'?' selected':''}>coordinator</option></select>
-    <select id="g_${p.id}"><option value="">Gender</option><option${p.gender==='Male'?' selected':''}>Male</option><option${p.gender==='Female'?' selected':''}>Female</option></select>
+    ${p.role==='teacher'?`<select id="d_${p.id}"><option value="">Designation</option>${['H.T','V.P','E.S.T','Primary','Subject Teacher'].map(d=>`<option${d===p.designation?' selected':''}>${d}</option>`).join('')}</select>`:''}<select id="g_${p.id}"><option value="">Gender</option><option${p.gender==='Male'?' selected':''}>Male</option><option${p.gender==='Female'?' selected':''}>Female</option></select>
     <button onclick="saveT('${p.id}')">Save</button></div>`}</div>`).join('');
 }
 window.saveT=async id=>{
-  const {error}=await sb.from('profiles').update({class_name:$('c_'+id).value||null,role:$('r_'+id).value,gender:$('g_'+id).value||null}).eq('id',id);
+  const {error}=await sb.from('profiles').update({class_name:$('c_'+id).value||null,role:$('r_'+id).value,gender:$('g_'+id).value||null,...($('d_'+id)&&$('d_'+id).value?{designation:$('d_'+id).value}:{})}).eq('id',id);
   alert(error?error.message:'Saved');
 };
 
