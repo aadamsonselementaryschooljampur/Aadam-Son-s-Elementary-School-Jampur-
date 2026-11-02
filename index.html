@@ -696,7 +696,7 @@ $('d_inc').onclick=()=>{dsel='inc';drawData()};$('d_com').onclick=()=>{dsel='com
 const dayStr=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
 const tm=t=>t?new Date(t).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}):'-';
 const mins=t=>{const d=new Date(t);return d.getHours()*60+d.getMinutes()};
-const isLate=r=>!!(r&&r.in_time&&mins(r.in_time)>8*60+30),isEarly=r=>!!(r&&r.out_time&&mins(r.out_time)<13*60+30);
+const isLate=r=>!!(r&&r.in_time&&mins(r.in_time)>8*60+30),isEarly=r=>!!(r&&r.out_time&&mins(r.out_time)<14*60);
 let todayRow=null,todayLeave=null;
 const setIO=h=>document.querySelectorAll('.io-box').forEach(e=>e.innerHTML=h);
 const dur=r=>{const m=Math.max(0,Math.round((new Date(r.out_time)-new Date(r.in_time))/60000));return Math.floor(m/60)+'h '+m%60+'m'};
