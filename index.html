@@ -584,7 +584,7 @@ async function boot(){
     [['tea',1],['tdata',2],['head',3]].forEach(([v,o])=>document.querySelector('.mi[data-v='+v+']').style.order=o);$('logout').style.order=9;
     drawProfile();restoreView(['tea','tdata','head'],'tea');return;
   }
-  resetForm();drawProfile();$('gn_card').hidden=!!me.gender;$('m_tea').hidden=!admin;$('m_tdata').hidden=!admin;$('m_leave').hidden=!admin;$('m_ph').hidden=!admin;$('m_sa').hidden=admin||!me.class_name;$('m_allhc').hidden=!admin;$('m_hc_t').textContent=admin?'All Head Count':'Head Count';$('hc_dayw').hidden=!admin;$('hc_h').hidden=!admin;$('hc_h').textContent='All Head Count';$('m_loc').hidden=!admin;$('m_class_t').textContent=admin?'Classes':'Class';$('m_data').hidden=!admin;restoreDraft();restoreView(null,'dash');
+  resetForm();drawProfile();$('gn_card').hidden=!!me.gender;$('m_tea').hidden=!admin;$('m_tdata').hidden=!admin;$('m_leave').hidden=!admin;$('m_ph').hidden=!(admin||me.class_name);$('ph_class').parentElement.hidden=!admin;$('m_sa').hidden=admin||!me.class_name;$('m_allhc').hidden=!admin;$('m_hc_t').textContent=admin?'All Head Count':'Head Count';$('hc_dayw').hidden=!admin;$('hc_h').hidden=!admin;$('hc_h').textContent='All Head Count';$('m_loc').hidden=!admin;$('m_class_t').textContent=admin?'Classes':'Class';$('m_data').hidden=!admin;restoreDraft();restoreView(null,'dash');
 }
 const ST_KEY='as_state',DR_KEY='as_draft';
 let curView='dash',touched=false;
@@ -1031,8 +1031,8 @@ function pickPhoto(id){phId=id;$('ph_file').click()}
 $('ph_class').onchange=$('ph_q').oninput=drawPhotos;
 $('ph_file').onchange=async e=>{
   const f=e.target.files[0],id=phId;if(!f||!id)return;toast('Uploading photo...',false);
-  try{const url=await upload(f);const {error}=await sb.from('students').update({photo_url:url}).eq('id',id);if(error)throw error;
-    const s=students.find(x=>x.id===id);if(s)s.photo_url=url;drawPhotos();drawLatest();toast('Photo saved.',false)}
+  try{const url=await upload(f);const {error}=await sb.rpc('set_student_photo',{p_student:id,p_url:url});if(error)throw error;
+    const s=students.find(x=>x.id===id);if(s)s.photo_url=url;drawPhotos();drawLatest();if(me.role!=='admin'&&me.class_name&&typeof drawSA==='function')drawSA();toast('Photo saved.',false)}
   catch(er){toast('Could not save the photo: '+(er.message||er))}
   finally{e.target.value=''}
 };
