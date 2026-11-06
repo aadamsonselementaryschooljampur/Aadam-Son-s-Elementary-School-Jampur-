@@ -270,9 +270,14 @@ input[type=date]::-webkit-calendar-picker-indicator{width:22px;height:22px;opaci
 .hcf .t{background:#d9d9d9}.hcf .tr td{background:#fff}.hcf .tr td.t{background:#d9d9d9}
 @media print{@page{size:landscape;margin:10mm}body *{visibility:hidden}.sheet,.sheet *{visibility:visible}.sheet{position:absolute;left:0;top:0;width:100%}.tw{overflow:visible!important}.noprint{display:none!important}}
 .hcf .nm2{text-align:left;padding-left:10px}
+.pcam{position:relative;flex:none;width:48px;height:48px;cursor:pointer}
+.pcam img,.pcam .i0{width:48px;height:48px;border-radius:50%}
+.i0.add{border:2px dashed #1565d8;background:#eaf1fd}.i0.add svg{width:24px;height:24px;stroke:#1565d8;fill:none;stroke-width:1.8}
+.cb2{position:absolute;right:-4px;bottom:-4px;width:20px;height:20px;border-radius:50%;background:#f5b81c;display:grid;place-items:center;border:2px solid #fff}.cb2 svg{width:11px;height:11px;stroke:#3b2a00;fill:none;stroke-width:2.2}
 </style></head>
 <body>
 <div id="toast" hidden></div>
+<input type="file" id="ph_file" accept="image/*" hidden>
 <div id="pop" hidden><div><b id="pop_h"></b><p id="pop_t"></p><button class="pri" type="button" onclick="document.getElementById('pop').hidden=true">OK</button></div></div>
 
 <!-- LOGIN / REGISTER SCREEN -->
@@ -389,7 +394,7 @@ input[type=date]::-webkit-calendar-picker-indicator{width:22px;height:22px;opaci
     <div id="v_photos" hidden><h2 class="vt">Student Photos</h2>
       <div class="card"><p class="sub">Tap Add Photo to set a student's picture. Only the photo changes here.</p>
         <div class="grid"><div><label>Class</label><select id="ph_class"></select></div><div><label>Search</label><input id="ph_q" placeholder="Name or G.R No."></div></div>
-        <input type="file" id="ph_file" accept="image/*" hidden></div>
+        </div>
       <div class="card" style="margin-top:16px"><p class="sub" id="ph_cnt"></p><div id="ph_list"></div></div></div>
     <div id="v_allhc" hidden><div class="card"><h2>All Over Head Count</h2><input type="date" id="ao_day" style="margin:8px 0 14px"><div id="ao_body"></div></div></div>
     <div id="v_leave" hidden><h2 class="vt">Teacher's Leave</h2>
@@ -683,7 +688,9 @@ function drawSearch(){
   r.slice(0,50).map(s=>`<div class="li">${s.photo_url?`<img src="${esc(s.photo_url)}" alt="">`:`<div class="i0">${esc((s.name||'?')[0])}</div>`}<div style="flex:1;min-width:0"><b>${esc(s.name)}</b><small>${s.gr_no?'G.R '+esc(s.gr_no)+' - ':''}Class ${esc(s.class_name)}${s.father_name?' - '+esc(s.father_name):''}</small></div>${adm?`<button onclick="editS('${s.id}')">Edit</button>`:''}</div>`).join('');
 }
 $('q_gr').oninput=$('q_name').oninput=drawSearch;
-const stuItem=(s,adm)=>`<div class="li">${s.photo_url?`<img src="${esc(s.photo_url)}" alt="">`:`<div class="i0">${esc((s.name||'?')[0])}</div>`}<div style="flex:1;min-width:0"><b>${esc(s.name)}</b><small>${s.gr_no?'G.R '+esc(s.gr_no)+' - ':''}Class ${esc(s.class_name)}${s.father_name?' - '+esc(s.father_name):''}</small></div>${adm?`<button onclick="editS('${s.id}')">Edit</button>`:''}</div>`;
+const CAM='<svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13.5" r="3.5"/></svg>';
+const stuItem=(s,adm)=>{const can=adm||me.role==='teacher',av=s.photo_url?`<img src="${esc(s.photo_url)}" alt="">`:`<div class="i0 add">${CAM}</div>`;
+  return `<div class="li">${can?`<div class="pcam" onclick="pickPhoto('${s.id}')" title="Add or change photo">${av}${s.photo_url?`<span class="cb2">${CAM}</span>`:''}</div>`:av}<div style="flex:1;min-width:0"><b>${esc(s.name)}</b><small>${s.gr_no?'G.R '+esc(s.gr_no)+' - ':''}Class ${esc(s.class_name)}${s.father_name?' - '+esc(s.father_name):''}</small></div>${adm?`<button onclick="editS('${s.id}')">Edit</button>`:''}</div>`};
 function drawClassView(){
   const adm=me.role==='admin';
   if(!adm){curClass=me.class_name||null;$('cgrid').hidden=true;$('c_back').hidden=true;$('c_none').hidden=!!curClass;$('cdet').hidden=!curClass;$('c_head').textContent='My Class'}
@@ -1032,7 +1039,7 @@ $('ph_class').onchange=$('ph_q').oninput=drawPhotos;
 $('ph_file').onchange=async e=>{
   const f=e.target.files[0],id=phId;if(!f||!id)return;toast('Uploading photo...',false);
   try{const url=await upload(f);const {error}=await sb.rpc('set_student_photo',{p_student:id,p_url:url});if(error)throw error;
-    const s=students.find(x=>x.id===id);if(s)s.photo_url=url;drawPhotos();drawLatest();if(me.role!=='admin'&&me.class_name&&typeof drawSA==='function')drawSA();toast('Photo saved.',false)}
+    const s=students.find(x=>x.id===id);if(s)s.photo_url=url;drawPhotos();drawLatest();drawStudents();if(curClass)drawClass();if(me.role!=='admin'&&me.class_name)drawSA();toast('Photo saved.',false)}
   catch(er){toast('Could not save the photo: '+(er.message||er))}
   finally{e.target.value=''}
 };
