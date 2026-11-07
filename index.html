@@ -5,7 +5,7 @@
 <title>Aadam Son's Elementary School Jampur</title>
 <link rel="icon" href="emblem.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@700&family=Amiri:wght@400;700&family=Noto+Nastaliq+Urdu:wght@500;700&family=Anton&family=Abril+Fatface&family=Baloo+2:wght@700;800&family=Caveat:wght@700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@700&family=Amiri:wght@400;700&family=Noto+Nastaliq+Urdu:wght@500;700&family=Anton&family=Abril+Fatface&family=Baloo+2:wght@700;800&family=Caveat:wght@700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <style>
 :root{--navy:#0b2a8a;--blue:#1565d8;--gold:#f5b81c;--bg:#eef4fd;--ink:#14213d;--mut:#6b7a99}
@@ -276,36 +276,38 @@ input[type=date]::-webkit-calendar-picker-indicator{width:22px;height:22px;opaci
 .cb2{position:absolute;right:-4px;bottom:-4px;width:20px;height:20px;border-radius:50%;background:#f5b81c;display:grid;place-items:center;border:2px solid #fff}.cb2 svg{width:11px;height:11px;stroke:#3b2a00;fill:none;stroke-width:2.2}
 .hx-box{margin-top:16px;border-radius:22px;padding:20px 18px 18px;color:#fff;text-align:center;position:relative;overflow:hidden;box-shadow:0 12px 28px rgba(0,0,0,.28);animation:hxIn .7s ease both}
 .hx-box::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 85% 0,rgba(255,255,255,.14),transparent 55%);pointer-events:none}
-.hx-head{display:flex;align-items:center;justify-content:center;gap:10px;direction:rtl;font-family:'Noto Nastaliq Urdu',serif;font-weight:700;font-size:20px;line-height:2}
+.hx-head{display:flex;align-items:center;justify-content:center;gap:10px;direction:rtl;font-family:var(--jn);font-weight:700;font-size:20px;line-height:2}
 .hx-head svg{width:26px;height:26px;fill:none;stroke:#ffd966;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
 .hx-ar{font-family:'Amiri','Noto Naskh Arabic',serif;font-size:30px;line-height:2;direction:rtl;margin:8px 0 2px;color:#fff}
-.hx-ti{font-family:'Noto Nastaliq Urdu',serif;font-size:26px;line-height:2.1;direction:rtl;font-weight:700;color:#fff;margin:8px 0 2px}
+.hx-ti{font-family:var(--jn);font-size:26px;line-height:2.1;direction:rtl;font-weight:700;color:#fff;margin:8px 0 2px}
 .hx-ln{height:2px;width:70%;margin:10px auto;background:#fff;border-radius:2px;opacity:.9}
-.hx-ur{font-family:'Noto Nastaliq Urdu',serif;font-size:19px;line-height:2.2;direction:rtl;color:#fff}
-.hx-rf{font-family:'Noto Nastaliq Urdu',serif;font-size:17px;line-height:2;direction:rtl;color:#ffd966;font-weight:700;margin-top:6px}
+.hx-ur{font-family:var(--jn);font-size:19px;line-height:2.2;direction:rtl;color:#fff}
+.hx-rf{font-family:var(--jn);font-size:17px;line-height:2;direction:rtl;color:#ffd966;font-weight:700;margin-top:6px}
 @keyframes hxIn{from{opacity:0;transform:translateY(14px) scale(.98)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.hx-box{animation:none}}
-.iq-wrap{margin-top:16px;border-radius:24px;padding:20px 16px 22px;text-align:center;color:#fff;position:relative;overflow:hidden;background:radial-gradient(circle at 50% 0,#1a3fb0 0,#0b2a8a 45%,#061a5c 100%);box-shadow:0 14px 30px rgba(6,26,92,.4);border:2px solid #f5b81c;animation:iqIn .8s ease both}
-.iq-wrap::before{content:"";position:absolute;inset:6px;border:1px solid rgba(245,184,28,.55);border-radius:19px;pointer-events:none}
-.iq-tag{display:inline-block;font-family:'Noto Nastaliq Urdu',serif;direction:rtl;background:linear-gradient(90deg,#f5b81c,#ffd966);color:#061a5c;font-weight:700;font-size:16px;line-height:2;padding:0 18px;border-radius:30px}
-.iq-frame{width:208px;margin:16px auto 0;padding:10px;border-radius:6px;background:linear-gradient(135deg,#ffe08a,#c58a0a 45%,#f5b81c 70%,#9a6a05);box-shadow:0 10px 24px rgba(0,0,0,.5),inset 0 0 0 2px rgba(255,255,255,.35);animation:iqGlow 3.5s ease-in-out infinite}
-.iq-canvas{position:relative;height:250px;border:3px solid #5a3a05;background:#2b1b08;overflow:hidden}
-.iq-canvas img{width:100%;height:100%;object-fit:cover;object-position:center top;filter:sepia(.3) contrast(1.05) saturate(.9);display:block}
-.iq-canvas::after,.iq-vig{content:"";position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 40px rgba(30,15,0,.65)}
-.iq-canvas::after{background:repeating-linear-gradient(45deg,rgba(255,255,255,.035) 0 2px,transparent 2px 5px)}
-.iq-fb{position:absolute;inset:0;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 35%,#3a5bd0,#0b2a8a 70%,#061a5c)}
-.iq-fb svg{width:150px;height:110px;fill:#f5b81c;filter:drop-shadow(0 4px 6px rgba(0,0,0,.6))}
-.iq-nm{font-family:'Aref Ruqaa','Noto Nastaliq Urdu',serif;font-size:34px;line-height:1.9;direction:rtl;margin-top:14px;white-space:nowrap;background:linear-gradient(180deg,#fff3c4,#f5b81c 60%,#d99a0b);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;text-shadow:none;filter:drop-shadow(0 2px 3px rgba(0,0,0,.45))}
-.iq-en{font-family:'Abril Fatface',serif;font-size:25px;letter-spacing:.5px;color:#fff;line-height:1.2}
-.iq-sub{font-family:'Noto Nastaliq Urdu',serif;direction:rtl;color:#ffd966;font-size:16px;line-height:2.2;margin-top:4px}
-.iq-ln{height:2px;width:62%;margin:12px auto;background:linear-gradient(90deg,transparent,#f5b81c,transparent)}
-.iq-art{font-family:'Noto Nastaliq Urdu',serif;direction:rtl;text-align:justify;text-align-last:center;font-size:16px;line-height:2.35;color:#fff;margin:6px 4px}
-.iq-ph{font-family:'Noto Nastaliq Urdu',serif;direction:rtl;font-weight:700;font-size:19px;line-height:2;color:#ffd966}
-.iq-v{font-family:'Noto Nastaliq Urdu',serif;direction:rtl;font-size:16px;line-height:2.3;color:#fff;background:rgba(255,255,255,.08);border:1px solid rgba(245,184,28,.45);border-radius:14px;padding:6px 10px;margin-top:10px;animation:iqIn .8s ease both}
+@font-face{font-family:'JNN';src:local('Jameel Noori Nastaleeq'),local('JameelNooriNastaleeq'),url('JameelNooriNastaleeq.ttf') format('truetype');font-display:swap}
+.hx-box,.iq-wrap{--jn:'JNN','Noto Nastaliq Urdu',serif}
+.iq-wrap{margin-top:16px;border-radius:22px;padding:16px 12px 18px;background:#000;color:#fff;box-shadow:0 12px 28px rgba(0,0,0,.4);animation:iqIn .8s ease both}
+.iq-top{display:flex;direction:ltr;align-items:center;gap:12px}
+.iq-pc{flex:none;width:104px;height:104px;border-radius:50%;background:#fff;border:2px solid #000;box-shadow:0 0 0 2px #fff,0 0 20px rgba(255,255,255,.75);overflow:hidden;position:relative;animation:iqGlow 3.5s ease-in-out infinite}
+.iq-pc img{width:100%;height:100%;object-fit:cover;display:block}
+.iq-fb{position:absolute;inset:0;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 35%,#3a5bd0,#0a1fb8 70%,#061a5c)}
+.iq-fb svg{width:70px;height:52px;fill:#f5b81c}
+.iq-tt{flex:1;min-width:0;text-align:center;direction:rtl}
+.iq-rh{font-family:'Reem Kufi','Amiri',serif;font-size:17px;line-height:1.6;color:#fff;text-shadow:0 0 8px rgba(255,255,255,.6)}
+.iq-nm{font-family:'Reem Kufi','Amiri',serif;font-size:clamp(22px,7.6vw,34px);line-height:1.5;white-space:nowrap;color:#fff;text-shadow:0 0 10px rgba(255,255,255,.65)}
+.iq-en{font-family:'Abril Fatface',serif;font-size:15px;letter-spacing:.4px;color:#ffd966;line-height:1.4;direction:ltr}
+.iq-tag{text-align:center;margin-top:10px;font-family:var(--jn);direction:rtl;color:#ffd966;font-weight:700;font-size:17px;line-height:2.2}
+.iq-blue{margin-top:6px;background:linear-gradient(160deg,#0a24c8,#0a1fb8 55%,#06148a);border:1px solid #e6e6e6;border-radius:6px;box-shadow:0 0 16px rgba(255,255,255,.55);padding:14px 12px 16px;text-align:center}
+.iq-sub{font-family:var(--jn);direction:rtl;color:#ffd966;font-size:16px;line-height:2.2}
+.iq-ln{height:2px;width:62%;margin:10px auto;background:linear-gradient(90deg,transparent,#fff,transparent)}
+.iq-art{font-family:var(--jn);direction:rtl;text-align:justify;text-align-last:center;font-size:17px;line-height:2.4;color:#fff;margin:6px 2px}
+.iq-ph{font-family:var(--jn);direction:rtl;font-weight:700;font-size:19px;line-height:2.1;color:#ffd966}
+.iq-v{font-family:var(--jn);direction:rtl;font-size:17px;line-height:2.4;color:#fff;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.5);border-radius:12px;padding:6px 10px;margin-top:10px;animation:iqIn .8s ease both}
 .iq-v:nth-of-type(2){animation-delay:.15s}.iq-v:nth-of-type(3){animation-delay:.3s}.iq-v:nth-of-type(4){animation-delay:.45s}
 @keyframes iqIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
-@keyframes iqGlow{0%,100%{box-shadow:0 10px 24px rgba(0,0,0,.5),0 0 0 rgba(245,184,28,0)}50%{box-shadow:0 10px 24px rgba(0,0,0,.5),0 0 26px rgba(245,184,28,.6)}}
-@media (prefers-reduced-motion:reduce){.iq-wrap,.iq-v,.iq-frame{animation:none}}
+@keyframes iqGlow{0%,100%{box-shadow:0 0 0 2px #fff,0 0 14px rgba(255,255,255,.55)}50%{box-shadow:0 0 0 2px #fff,0 0 26px rgba(255,217,102,.9)}}
+@media (prefers-reduced-motion:reduce){.iq-wrap,.iq-v,.iq-pc{animation:none}}
 .jm{font-family:'Noto Nastaliq Urdu','Jameel Noori Nastaleeq','Noto Naskh Arabic',serif;color:#1b8a3c;font-size:28px;font-weight:700;text-align:center;direction:rtl;line-height:2.2;margin-top:10px}
 </style></head>
 <body>
@@ -411,24 +413,27 @@ input[type=date]::-webkit-calendar-picker-indicator{width:22px;height:22px;opaci
     <div class="card" id="gn_card" hidden style="margin-bottom:16px"><h2>Please set your Gender</h2><p class="sub">Choose Male or Female. You can set it only once; the admin can change it later.</p>
       <select id="gn_sel"><option value="">Select gender</option><option>Male</option><option>Female</option></select><button class="pri" id="gn_btn" type="button">Save</button></div>
     <div class="card"><h2>Teacher's In &amp; Out</h2><small class="sub io-date"></small><div class="io-box"></div><div class="jm" id="jm" hidden>نماز قائم کرو</div></div>
+    <div class="hx-box" id="hx-box" hidden></div>
     <div class="iq-wrap" id="iq-wrap" hidden>
+      <div class="iq-top">
+        <div class="iq-pc"><img src="iqbal.jpg" alt="Allama Muhammad Iqbal" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="iq-fb" style="display:none"><svg viewBox="0 0 120 80"><path d="M4 46Q34 8 60 42Q86 8 116 46Q88 34 60 70Q32 34 4 46Z"/></svg></div></div>
+        <div class="iq-tt"><div class="iq-rh">رحمة الله عليه</div><div class="iq-nm">علامه محمد اقبال</div><div class="iq-en">Allama Muhammad Iqbal</div></div>
+      </div>
       <div class="iq-tag">یومِ اقبالؒ · 9 نومبر</div>
-      <div class="iq-frame"><div class="iq-canvas"><img src="iqbal.jpg" alt="Allama Muhammad Iqbal" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="iq-fb" style="display:none"><svg viewBox="0 0 120 80"><path d="M4 46Q34 8 60 42Q86 8 116 46Q88 34 60 70Q32 34 4 46Z"/></svg></div></div></div>
-      <div class="iq-nm">علامہ محمد اقبالؒ</div>
-      <div class="iq-en">Allama Muhammad Iqbal</div>
-      <div class="iq-sub">شاعرِ مشرق · حکیم الامت · 1877 – 1938</div>
-      <div class="iq-ln"></div>
-      <p class="iq-art">علامہ محمد اقبالؒ 9 نومبر 1877ء کو سیالکوٹ میں پیدا ہوئے۔ وہ شاعرِ مشرق اور حکیم الامت کے نام سے مشہور ہیں۔ انہوں نے اپنی شاعری اور فلسفے کے ذریعے مسلمانوں کو خودی، بیداری اور عمل کا پیغام دیا۔ 1930ء کے خطبۂ الٰہ آباد میں انہوں نے مسلمانوں کے لیے ایک الگ وطن کا تصور پیش کیا، جو آگے چل کر قیامِ پاکستان کی بنیاد بنا۔ ان کی مشہور کتابوں میں بانگِ درا، بالِ جبریل اور ضربِ کلیم شامل ہیں۔ اقبالؒ نے نوجوانوں کو شاہین سے تشبیہ دی، کیونکہ شاہین بلند پرواز، خوددار اور آزاد پرندہ ہے۔ ان کا پیغام یہ ہے کہ اپنے اندر خودی پیدا کرو اور اپنی منزل آسمانوں میں تلاش کرو۔ 21 اپریل 1938ء کو لاہور میں ان کا انتقال ہوا۔ ہر سال 9 نومبر کو یومِ اقبالؒ منایا جاتا ہے۔</p>
-      <div class="iq-ln"></div>
-      <div class="iq-ph">شاہینوں (نوجوانوں) کے نام اقبالؒ کے اشعار</div>
-      <div class="iq-v">شاہیں کبھی پرواز سے تھک کر نہیں گرتا،<br>پر دم ہے اگر تو، تو خطرہ نہیں افتاد۔</div>
-      <div class="iq-v">نہیں تیرا نشیمن قصرِ سلطانی کے گنبد پر،<br>تو شاہیں ہے، بسیرا کر پہاڑوں کی چٹانوں میں۔</div>
-      <div class="iq-v">عقابی روح جب بیدار ہوتی ہے جوانوں میں،<br>نظر آتی ہے ان کو اپنی منزل آسمانوں میں۔</div>
-      <div class="iq-v">تو شاہیں ہے، پرواز ہے کام تیرا،<br>ترے سامنے آسماں اور بھی ہیں۔</div>
+      <div class="iq-blue">
+        <div class="iq-sub">شاعرِ مشرق · حکیم الامت · 1877 – 1938</div>
+        <div class="iq-ln"></div>
+        <p class="iq-art">علامہ محمد اقبالؒ 9 نومبر 1877ء کو سیالکوٹ میں پیدا ہوئے۔ وہ شاعرِ مشرق اور حکیم الامت کے نام سے مشہور ہیں۔ انہوں نے اپنی شاعری اور فلسفے کے ذریعے مسلمانوں کو خودی، بیداری اور عمل کا پیغام دیا۔ 1930ء کے خطبۂ الٰہ آباد میں انہوں نے مسلمانوں کے لیے ایک الگ وطن کا تصور پیش کیا، جو آگے چل کر قیامِ پاکستان کی بنیاد بنا۔ ان کی مشہور کتابوں میں بانگِ درا، بالِ جبریل اور ضربِ کلیم شامل ہیں۔ اقبالؒ نے نوجوانوں کو شاہین سے تشبیہ دی، کیونکہ شاہین بلند پرواز، خوددار اور آزاد پرندہ ہے۔ ان کا پیغام یہ ہے کہ اپنے اندر خودی پیدا کرو اور اپنی منزل آسمانوں میں تلاش کرو۔ 21 اپریل 1938ء کو لاہور میں ان کا انتقال ہوا۔ ہر سال 9 نومبر کو یومِ اقبالؒ منایا جاتا ہے۔</p>
+        <div class="iq-ln"></div>
+        <div class="iq-ph">شاہینوں (نوجوانوں) کے نام اقبالؒ کے اشعار</div>
+        <div class="iq-v">شاہیں کبھی پرواز سے تھک کر نہیں گرتا،<br>پر دم ہے اگر تو، تو خطرہ نہیں افتاد۔</div>
+        <div class="iq-v">نہیں تیرا نشیمن قصرِ سلطانی کے گنبد پر،<br>تو شاہیں ہے، بسیرا کر پہاڑوں کی چٹانوں میں۔</div>
+        <div class="iq-v">عقابی روح جب بیدار ہوتی ہے جوانوں میں،<br>نظر آتی ہے ان کو اپنی منزل آسمانوں میں۔</div>
+        <div class="iq-v">تو شاہیں ہے، پرواز ہے کام تیرا،<br>ترے سامنے آسماں اور بھی ہیں۔</div>
+      </div>
     </div>
     <div class="card" id="sa_card" hidden style="margin-top:16px"><h2>Students' Attendance</h2><small class="sub sa-sub"></small><div class="sa-box"></div></div>
     <button class="cb" id="hc_btn" type="button" hidden style="width:100%;margin:16px 0"><b>Head Count</b><small id="hc_sub"></small></button>
-    <div class="hx-box" id="hx-box" hidden></div>
     <div style="height:16px"></div>
     </div>
     <div id="v_students" hidden><h2 class="vt">Students</h2>
