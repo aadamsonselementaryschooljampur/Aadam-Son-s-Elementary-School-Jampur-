@@ -838,8 +838,8 @@ async function loadIO(){
   todayRow=data;drawIO();
 }
 function drawIO(){
-  const wd=new Date().getDay();
-  if(wd===0||wd===6){const nm=wd===6?'Saturday Leave':'Sunday Leave';return setIO(`<div class="lvbox wk"><b>${nm}</b><small>Weekly holiday. In &amp; Out is not available.</small></div>`)}
+  const hn=holOf(new Date());
+  if(hn){return setIO(`<div class="lvbox wk"><b>${hn}</b><small>${hn.startsWith('Allama')?'School is closed today.':'Weekly holiday.'} In &amp; Out is not available.</small></div>`)}
   if(todayLeave){const k=todayLeave.kind;return setIO(`<div class="lvbox ${k}"><b>${k==='sick'?'Sick Leave':'Casual Leave'}</b><small>You are on leave today. In &amp; Out is not available.</small></div>`)}
   const r=todayRow,late=isLate(r),early=isEarly(r);
   const inT=r&&r.in_time,outT=r&&r.out_time;
@@ -879,7 +879,7 @@ function geoMsg(o){
 let ioBusy=false;
 async function markIO(k){
   if(ioBusy)return;
-  const wd=new Date().getDay();if(wd===0||wd===6)return toast('Weekly holiday.');
+  const hn=holOf(new Date());if(hn)return toast(hn+'. In & Out is not available.');
   if(todayLeave)return toast('You are on leave today.');
   const r=todayRow;
   if(k==='in'&&r)return toast('You have already marked In today.');
@@ -925,7 +925,7 @@ function tdSheetHTML(){
   const rows=list.map((t,i)=>{const r=A[t.id],lk=L[t.id];let rem='';
     if(r)rem=[isLate(r)?'Late':'',r.out_time&&isEarly(r)?'Too Early':''].filter(Boolean).join(', ');
     else if(lk)rem=lk==='sick'?'Sick Leave':'Casual Leave';
-    else if(wd===6)rem='Saturday Leave';else if(wd===0)rem='Sunday Leave';else if(day<today)rem='Absent';
+    else if(holOf(d))rem=holOf(d);else if(day<today)rem='Absent';
     return `<tr><td>${p2(i+1)}</td><td class="nm2">${esc(t.full_name||t.email)}</td><td>${DL(t)}</td><td>${r?tm(r.in_time):''}</td><td>${r&&r.out_time?tm(r.out_time):''}</td><td>${rem}</td><td></td></tr>`}).join('');
   return `<div class="sheet"><div class="sh-h"><img src="emblem.png" alt=""><div><h3>ADAM SONS ELEMENTARY SCHOOL JAMPUR-350105043</h3><small>Assisted by: Sindh Education Foundation (SEF)</small></div></div>
   <div class="sh-b">TEACHERS' IN &amp; OUT</div><div class="sh-dd"><span>Date: ${dd}</span><span>Day: ${dn}</span></div>
@@ -934,13 +934,14 @@ function tdSheetHTML(){
 }
 $('td_pdf').onclick=()=>{$('td_sheet').innerHTML=tdSheetHTML();$('td_sheet').hidden=false;$('td_sheet').scrollIntoView({behavior:'smooth'});setTimeout(()=>window.print(),500)};
 const pad2=n=>String(n).padStart(2,'0'),dsd=d=>d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());
+const holOf=d=>d.getMonth()===10&&d.getDate()===9?'Allama Iqbal Day Leave':d.getDay()===6?'Saturday Leave':d.getDay()===0?'Sunday Leave':'';
 const MN=['January','February','March','April','May','June','July','August','September','October','November','December'];
 async function loadTD(){
   const day=$('td_day').value||dayStr(),dw=new Date(day+'T00:00:00').getDay();
   const [a,p,l]=await Promise.all([sb.from('attendance').select('*').eq('day',day),sb.from('profiles').select('id,full_name,email,avatar_url,created_at,role,designation,class_name'),sb.from('leaves').select('*').eq('day',day)]);
   tdA=a.data||[];tdL=l.data||[];tdDay=day;
   const er=a.error||p.error;tdP=(p.data||[]).filter(t=>!viewerRole(t.role));if(!$('td_sheet').hidden)$('td_sheet').innerHTML=tdSheetHTML();
-  $('td_list').innerHTML=er?'<p class="sub">'+esc(er.message)+'</p>':ioList(a.data,tdP,l.data||[],dw===6?'Saturday Leave':dw===0?'Sunday Leave':'');
+  $('td_list').innerHTML=er?'<p class="sub">'+esc(er.message)+'</p>':ioList(a.data,tdP,l.data||[],holOf(new Date(day+'T00:00:00')));
   drawYears();
 }
 function drawYears(){
@@ -970,7 +971,7 @@ async function openMonth(y,m){
       const wd=new Date(y,m,d).getDay(),r=A[t.id+'|'+ds],lk=L[t.id+'|'+ds],lbl=d+' '+MN[m].slice(0,3);
       if(r){pr++;if(isLate(r))lt++;if(isEarly(r))er++;rows+=`<div class="kv"><span>${lbl}</span><b>In ${tm(r.in_time)}${isLate(r)?' (Late)':''} - Out ${tm(r.out_time)}${isEarly(r)?' (Too Early)':''}</b></div>`}
       else if(lk){lk==='sick'?sk++:cs++;rows+=`<div class="kv"><span>${lbl}</span><b>${lk==='sick'?'Sick Leave':'Casual Leave'}</b></div>`}
-      else if(wd===0||wd===6){continue}
+      else if(holOf(new Date(y,m,d))){continue}
       else if(ds<today){ab++;rows+=`<div class="kv"><span>${lbl}</span><b style="color:#c62828">Absent</b></div>`}
     }
     return `<div class="lvc"><div class="li"><img src="${esc(t.avatar_url||'emblem.png')}" alt=""><div style="flex:1;min-width:0"><b>${esc(t.full_name||t.email)}</b></div></div>
@@ -1033,7 +1034,7 @@ function drawSA(){
   document.querySelectorAll('.sa-box').forEach(e=>e.innerHTML=html);
 }
 async function markSA(id,st){
-  const wd=new Date().getDay();if(wd===0||wd===6)return toast("Weekly holiday. Students' attendance is closed.");
+  const hn=holOf(new Date());if(hn)return toast(hn+". Students' attendance is closed.");
   const cur=saMap[id];if(cur===st)delete saMap[id];else saMap[id]=st;drawSA();
   const {error}=await (cur===st?sb.from('student_attendance').delete().eq('student_id',id).eq('day',dayStr()):sb.from('student_attendance').upsert({student_id:id,class_name:me.class_name,day:dayStr(),status:st},{onConflict:'student_id,day'}));
   if(error){if(cur)saMap[id]=cur;else delete saMap[id];drawSA();toast('Could not save: '+error.message)}
