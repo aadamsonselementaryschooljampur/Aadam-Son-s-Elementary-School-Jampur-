@@ -5,7 +5,7 @@
 <title>Aadam Son's Elementary School Jampur</title>
 <link rel="icon" href="emblem.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@500;700&family=Anton&family=Abril+Fatface&family=Baloo+2:wght@700;800&family=Caveat:wght@700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Nastaliq+Urdu:wght@500;700&family=Anton&family=Abril+Fatface&family=Baloo+2:wght@700;800&family=Caveat:wght@700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <style>
 :root{--navy:#0b2a8a;--blue:#1565d8;--gold:#f5b81c;--bg:#eef4fd;--ink:#14213d;--mut:#6b7a99}
@@ -274,6 +274,17 @@ input[type=date]::-webkit-calendar-picker-indicator{width:22px;height:22px;opaci
 .pcam img,.pcam .i0{width:48px;height:48px;border-radius:50%}
 .i0.add{border:2px dashed #1565d8;background:#eaf1fd}.i0.add svg{width:24px;height:24px;stroke:#1565d8;fill:none;stroke-width:1.8}
 .cb2{position:absolute;right:-4px;bottom:-4px;width:20px;height:20px;border-radius:50%;background:#f5b81c;display:grid;place-items:center;border:2px solid #fff}.cb2 svg{width:11px;height:11px;stroke:#3b2a00;fill:none;stroke-width:2.2}
+.hx-box{margin-top:16px;border-radius:22px;padding:20px 18px 18px;color:#fff;text-align:center;position:relative;overflow:hidden;box-shadow:0 12px 28px rgba(0,0,0,.28);animation:hxIn .7s ease both}
+.hx-box::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 85% 0,rgba(255,255,255,.14),transparent 55%);pointer-events:none}
+.hx-head{display:flex;align-items:center;justify-content:center;gap:10px;direction:rtl;font-family:'Noto Nastaliq Urdu',serif;font-weight:700;font-size:20px;line-height:2}
+.hx-head svg{width:26px;height:26px;fill:none;stroke:#ffd966;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.hx-ar{font-family:'Amiri','Noto Naskh Arabic',serif;font-size:30px;line-height:2;direction:rtl;margin:8px 0 2px;color:#fff}
+.hx-ti{font-family:'Noto Nastaliq Urdu',serif;font-size:26px;line-height:2.1;direction:rtl;font-weight:700;color:#fff;margin:8px 0 2px}
+.hx-ln{height:2px;width:70%;margin:10px auto;background:#fff;border-radius:2px;opacity:.9}
+.hx-ur{font-family:'Noto Nastaliq Urdu',serif;font-size:19px;line-height:2.2;direction:rtl;color:#fff}
+.hx-rf{font-family:'Noto Nastaliq Urdu',serif;font-size:17px;line-height:2;direction:rtl;color:#ffd966;font-weight:700;margin-top:6px}
+@keyframes hxIn{from{opacity:0;transform:translateY(14px) scale(.98)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.hx-box{animation:none}}
 .jm{font-family:'Noto Nastaliq Urdu','Jameel Noori Nastaleeq','Noto Naskh Arabic',serif;color:#1b8a3c;font-size:28px;font-weight:700;text-align:center;direction:rtl;line-height:2.2;margin-top:10px}
 </style></head>
 <body>
@@ -381,6 +392,7 @@ input[type=date]::-webkit-calendar-picker-indicator{width:22px;height:22px;opaci
     <div class="card"><h2>Teacher's In &amp; Out</h2><small class="sub io-date"></small><div class="io-box"></div><div class="jm" id="jm" hidden>نماز قائم کرو</div></div>
     <div class="card" id="sa_card" hidden style="margin-top:16px"><h2>Students' Attendance</h2><small class="sub sa-sub"></small><div class="sa-box"></div></div>
     <button class="cb" id="hc_btn" type="button" hidden style="width:100%;margin:16px 0"><b>Head Count</b><small id="hc_sub"></small></button>
+    <div class="hx-box" id="hx-box" hidden></div>
     <div style="height:16px"></div>
     </div>
     <div id="v_students" hidden><h2 class="vt">Students</h2>
@@ -593,6 +605,49 @@ async function boot(){
   resetForm();drawProfile();$('gn_card').hidden=!!me.gender;$('m_tea').hidden=!admin;$('m_tdata').hidden=!admin;$('m_leave').hidden=!admin;$('m_ph').hidden=!(admin||me.class_name);$('ph_class').parentElement.hidden=!admin;$('m_sa').hidden=admin||!me.class_name;$('m_allhc').hidden=!admin;$('m_hc_t').textContent=admin?'All Head Count':'Head Count';$('hc_dayw').hidden=!admin;$('hc_h').hidden=!admin;$('hc_h').textContent='All Head Count';$('m_loc').hidden=!admin;$('m_class_t').textContent=admin?'Classes':'Class';$('m_data').hidden=!admin;restoreDraft();restoreView(null,'dash');
 }
 const ST_KEY='as_state',DR_KEY='as_draft';
+const HX_LIST=[
+["إِنَّمَا الْأَعْمَالُ بِالنِّيَّاتِ","اعمال کا دارومدار نیتوں پر ہے۔",1],
+["لَا يُؤْمِنُ أَحَدُكُمْ حَتَّى يُحِبَّ لِأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ","اپنے بھائی کے لیے وہی پسند کرو جو اپنے لیے پسند کرتے ہو۔",13],
+["تُطْعِمُ الطَّعَامَ، وَتَقْرَأُ السَّلَامَ عَلَى مَنْ عَرَفْتَ وَمَنْ لَمْ تَعْرِفْ","کھانا کھلاؤ اور ہر جاننے والے اور انجانے کو سلام کرو۔",6236],
+["خَيْرُكُمْ مَنْ تَعَلَّمَ الْقُرْآنَ وَعَلَّمَهُ","تم میں بہترین وہ ہے جو قرآن سیکھے اور دوسروں کو سکھائے۔",5027],
+["مَا زَالَ جِبْرِيلُ يُوصِينِي بِالْجَارِ","جبرائیلؑ مجھے مسلسل پڑوسی کے ساتھ حسنِ سلوک کی نصیحت کرتے رہے۔",6015],
+["فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ","اچھی بات کہو یا خاموش رہو۔",6018],
+["الْيَدُ الْعُلْيَا خَيْرٌ مِنَ الْيَدِ السُّفْلَى","دینے والا ہاتھ لینے والے ہاتھ سے بہتر ہے۔",1429],
+["مَنْ لَا يَرْحَمُ لَا يُرْحَمُ","جو دوسروں پر رحم نہیں کرتا، اس پر رحم نہیں کیا جاتا۔",6013],
+["لَيْسَ الشَّدِيدُ بِالصُّرَعَةِ","طاقتور وہ ہے جو غصے کے وقت خود پر قابو رکھے۔",6114],
+["يَسِّرُوا وَلَا تُعَسِّرُوا","آسانی پیدا کرو، مشکل نہ بناؤ۔",69],
+["مَا مِنْ مُسْلِمٍ غَرَسَ غَرْسًا","جو مسلمان درخت لگاتا ہے اور اس سے کوئی فائدہ اٹھاتا ہے تو یہ اس کے لیے صدقہ ہے۔",6012],
+["الْمُسْلِمُ مَنْ سَلِمَ الْمُسْلِمُونَ مِنْ لِسَانِهِ وَيَدِهِ","مسلمان وہ ہے جس کی زبان اور ہاتھ سے دوسرے مسلمان محفوظ رہیں۔",10],
+["","جو اللہ اور آخرت کے دن پر ایمان رکھتا ہے، وہ اپنے پڑوسی کو تکلیف نہ دے۔",6018,"پڑوسی کے حقوق"],
+["","جو اللہ اور آخرت کے دن پر ایمان رکھتا ہے، اسے اپنے مہمان کی عزت کرنی چاہیے۔",6018,"مہمان نوازی"],
+["الصَّلَاةُ عَلَى وَقْتِهَا","نماز کو اس کے مقررہ وقت پر ادا کرنا اللہ کو بہت محبوب عمل ہے۔",5974],
+["كُلُّ مَعْرُوفٍ صَدَقَةٌ","ہر نیک کام صدقہ ہے۔",6021],
+["إِنَّ الصِّدْقَ يَهْدِي إِلَى الْبِرِّ","سچائی نیکی کی طرف رہنمائی کرتی ہے۔",6094],
+["أَحَبُّ الْأَعْمَالِ أَدْوَمُهَا إِلَى اللَّهِ وَإِنْ قَلَّ","اللہ کو وہ عمل زیادہ پسند ہے جو ہمیشہ کیا جائے، چاہے تھوڑا ہو۔",6464],
+["تُطْعِمُ الطَّعَامَ وَتَقْرَأُ السَّلَامَ","کھانا کھلانا اور سلام کرنا بہترین اسلامی اعمال میں سے ہیں۔",28],
+["عَلَى كُلِّ مُسْلِمٍ صَدَقَةٌ","ہر مسلمان پر صدقہ کرنا لازم ہے۔",6022],
+["الصِّدْقُ يَهْدِي إِلَى الْبِرِّ وَالْبِرُّ يَهْدِي إِلَى الْجَنَّةِ","سچائی نیکی کی طرف اور نیکی جنت کی طرف لے جاتی ہے۔",6094],
+["أَيُّ الْعَمَلِ أَحَبُّ إِلَى اللَّهِ؟ قَالَ: الصَّلَاةُ عَلَى وَقْتِهَا","اللہ کو سب سے محبوب عمل وقت پر نماز ادا کرنا ہے۔",5974]];
+const HX_COL=[["#0b2a8a","#061a5c"],["#0f5132","#082e1c"],["#6a1b3d","#3d0e23"],["#4a148c","#2a0a52"],["#7a2e0e","#4a1a06"],["#0b4f6c","#062c3d"],["#3b3b98","#22225a"],["#1b5e20","#0d3311"],["#7b1e1e","#470f0f"],["#37474f","#1c262b"]];
+function hxPerm(r,n){let p=[];for(let i=0;i<n;i++)p.push(i);let last=-1;
+  for(let k=0;k<=r;k++){let t=(k+1)*2654435761>>>0,a=[];for(let i=0;i<n;i++)a.push(i);
+    const rnd=()=>{t+=0x6D2B79F5;let x=t;x=Math.imul(x^x>>>15,x|1);x^=x+Math.imul(x^x>>>7,x|61);return((x^x>>>14)>>>0)/4294967296};
+    for(let i=n-1;i>0;i--){const j=Math.floor(rnd()*(i+1));[a[i],a[j]]=[a[j],a[i]]}
+    if(last===a[0]&&n>1)[a[0],a[1]]=[a[1],a[0]];
+    p=a;last=a[n-1]}
+  return p}
+function hxToday(){const d=new Date(),n=Math.floor(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())/86400000),N=HX_LIST.length,r=Math.floor(n/N);
+  return{h:HX_LIST[hxPerm(r,N)[n%N]],c:HX_COL[n%HX_COL.length]}}
+function renderHadith(){const b=document.getElementById('hx-box');if(!b)return;
+  const t=hxToday(),h=t.h,k=document.createElement.bind(document);
+  b.style.background='linear-gradient(145deg,'+t.c[0]+','+t.c[1]+')';b.innerHTML='';
+  const add=(c,x,tag)=>{const e=k(tag||'div');e.className=c;e.textContent=x;b.appendChild(e);return e};
+  const hd=add('hx-head','');hd.innerHTML='<svg viewBox="0 0 24 24"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19V5"/><path d="M9 8h6"/></svg>';
+  const sp=k('span');sp.textContent='آج کی حدیثِ مبارکہ';hd.appendChild(sp);
+  if(h[0])add('hx-ar',h[0]);else if(h[3])add('hx-ti',h[3]);
+  add('hx-ln','');add('hx-ur',h[1]);add('hx-rf','صحیح بخاری: '+h[2]);
+  b.hidden=false}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')renderHadith()});
 let curView='dash',touched=false;
 function saveState(v){if(!me)return;try{localStorage.setItem(ST_KEY,JSON.stringify({u:me.id,v:v||curView,y:Math.round(window.scrollY||0)}))}catch(e){}}
 function readState(){try{return JSON.parse(localStorage.getItem(ST_KEY))}catch(e){return null}}
@@ -613,7 +668,7 @@ function view(v){
   ['dash','students','photos','sattend','inout','head','allhc','class','data','tdata','leave','loc','search','add','prof','tea'].forEach(x=>$('v_'+x).hidden=x!==v);
   document.querySelectorAll('.mi[data-v]').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
   $('drawer').classList.remove('open');$('scrim').hidden=true;
-  if(v==='tea')loadTeachers();if(v==='dash'||v==='inout')loadIO();if(v==='dash'){loadHCBtn();loadSA()}if(v==='sattend')loadSA();if(v==='head'){if(me.role==='admin'&&!$('hc_day').value)$('hc_day').value=dayStr();loadHC()}if(v==='allhc'){if(!$('ao_day').value)$('ao_day').value=dayStr();loadAllHC()}if(v==='loc')loadLoc();if(v==='leave'){if(!$('lv_day').value)$('lv_day').value=dayStr();loadLeave()}if(v==='tdata'){if(!$('td_day').value)$('td_day').value=dayStr();loadTD()}if(v==='photos')loadStudents();if(v==='dash'||v==='students'||v==='search'||v==='class'||v==='data')loadStudents();scrollTo(0,0);saveState(v);
+  if(v==='tea')loadTeachers();if(v==='dash'||v==='inout')loadIO();if(v==='dash'){renderHadith();loadHCBtn();loadSA()}if(v==='sattend')loadSA();if(v==='head'){if(me.role==='admin'&&!$('hc_day').value)$('hc_day').value=dayStr();loadHC()}if(v==='allhc'){if(!$('ao_day').value)$('ao_day').value=dayStr();loadAllHC()}if(v==='loc')loadLoc();if(v==='leave'){if(!$('lv_day').value)$('lv_day').value=dayStr();loadLeave()}if(v==='tdata'){if(!$('td_day').value)$('td_day').value=dayStr();loadTD()}if(v==='photos')loadStudents();if(v==='dash'||v==='students'||v==='search'||v==='class'||v==='data')loadStudents();scrollTo(0,0);saveState(v);
 }
 document.querySelector('.dh').onclick=()=>view('prof');
 document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const r=b.getBoundingClientRect(),d=Math.max(r.width,r.height),x=document.createElement('span');x.className='rp';x.style.cssText=`width:${d}px;height:${d}px;left:${e.clientX-r.left-d/2}px;top:${e.clientY-r.top-d/2}px`;b.appendChild(x);setTimeout(()=>x.remove(),650)});
