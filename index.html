@@ -217,10 +217,10 @@ main>div:not([hidden]){animation:rise .45s both}
 .lvn .nm{font-family:Anton,Impact,sans-serif;font-size:23px;line-height:1.08;letter-spacing:.3px;min-width:0;word-break:break-word}
 .lvn .rt{flex:none;text-align:center;font-family:Anton,Impact,sans-serif;font-size:14px;line-height:1.15;max-width:44%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .lvb2{display:flex;gap:12px;margin:12px 0 0 74px}
-.lp{flex:1;border-radius:999px;padding:12px 6px;font-family:Anton,Impact,sans-serif;font-size:16px;letter-spacing:.3px;color:#fff;
- text-shadow:-1.5px -1.5px 0 #000,1.5px -1.5px 0 #000,-1.5px 1.5px 0 #000,1.5px 1.5px 0 #000,0 2px 0 #000;box-shadow:0 7px 14px rgba(0,0,0,.3),inset 0 2px 4px rgba(255,255,255,.35)}
-.lp.cas{background:#0a1fb8}.lp.sck{background:#fbff0f}
-.lp.on{box-shadow:0 0 0 3px #fff,0 0 0 6px #f5b81c,0 7px 14px rgba(0,0,0,.3)}
+.lp{flex:1;border-radius:999px;padding:14px 6px;font-family:"Baloo 2",sans-serif;font-weight:800;font-size:14px;line-height:1.1;white-space:nowrap;text-transform:uppercase;letter-spacing:.03em;color:#fff;text-shadow:none}
+.lp.cas{background:linear-gradient(135deg,#0b3aa8,#1565d8);color:#fff;box-shadow:0 8px 18px rgba(21,101,216,.35)}
+.lp.sck{background:linear-gradient(135deg,#ffe45c,#ffc800);color:#0b2a8a;box-shadow:0 8px 18px rgba(245,184,28,.4)}
+.lp.on{box-shadow:0 0 0 3px #fff,0 0 0 6px #0b2a8a,0 8px 18px rgba(0,0,0,.3)}
 .lvt.has .lp:not(.on){opacity:.4}
 .hct{font-family:Anton,Impact,sans-serif;font-weight:400;color:#0a1fb8;text-align:center;font-size:30px;margin:6px 0 16px;letter-spacing:.02em}
 .hrow{display:flex;gap:12px;margin:0 0 14px}.hrow>*{flex:1}
@@ -464,7 +464,7 @@ input[type=date]::-webkit-calendar-picker-indicator{width:22px;height:22px;opaci
         <button class="alt" id="lc_here" type="button">Use my current location</button><button class="pri" id="lc_save" type="button">Save</button>
         <p class="sub" id="lc_msg" style="margin-top:12px"></p></div></div>
     <div id="v_tdata" hidden><h2 class="vt">Teachers' Data</h2>
-      <div class="card"><h2>In &amp; Out - Daily</h2><input type="date" id="td_day" style="margin:8px 0"><button class="alt noprint" id="td_pdf" type="button" style="margin:0 0 12px">Download PDF (In &amp; Out sheet)</button><div id="td_sheet" hidden style="margin-bottom:14px"></div><div id="td_list"></div></div>
+      <div class="card"><h2>In &amp; Out - Daily</h2><input type="date" id="td_day" style="margin:8px 0"><button class="alt noprint" id="td_pdf" type="button" style="margin:0 0 12px">Show Sheet: Download PDF / JPG</button><div id="td_sheet" hidden style="margin-bottom:14px"></div><div id="td_list"></div></div>
       <h2 class="vt" style="margin-top:22px">Yearly Records</h2>
       <div id="td_years" class="cgrid"></div>
       <div id="td_ym" hidden><div class="row" style="margin:16px 0 10px"><h2 class="vt" id="td_ytitle" style="margin:0"></h2><button class="ghost" id="td_yback" type="button">&lsaquo; Years</button></div><div id="td_months" class="cgrid"></div></div>
@@ -938,10 +938,40 @@ function tdSheetHTML(){
   return `<div class="sheet"><div class="sh-h"><img src="emblem.png" alt=""><div><h3>ADAM SONS ELEMENTARY SCHOOL JAMPUR-350105043</h3><small>Assisted by: Sindh Education Foundation (SEF)</small></div></div>
   <div class="sh-b">TEACHERS' IN &amp; OUT</div><div class="sh-dd"><span>Date: ${dd}</span><span>Day: ${dn}</span></div>
   <div class="tw"><table class="hcf" style="min-width:640px"><thead><tr><th>SR#</th><th>NAME</th><th>DESIGNATION</th><th>IN</th><th>OUT</th><th>REMARKS</th></tr></thead><tbody>${rows||'<tr><td colspan="6">No teachers yet.</td></tr>'}</tbody></table></div></div>
-  <div class="noprint" style="display:flex;gap:10px;margin-top:12px"><button class="pri" type="button" onclick="window.print()" style="margin:0">Print / Save as PDF</button><button class="alt" type="button" onclick="document.getElementById('td_sheet').hidden=true" style="margin:0">Close</button></div>`;
+  <div class="noprint" style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap"><button class="pri" type="button" onclick="dlSheet(this,'pdf')" style="margin:0;flex:1">Download PDF</button><button class="pri" type="button" onclick="dlSheet(this,'jpg')" style="margin:0;flex:1">Download JPG</button><button class="alt" type="button" onclick="document.getElementById('td_sheet').hidden=true" style="margin:0;flex:1">Close</button></div>`;
 }
-$('td_pdf').onclick=()=>{$('td_sheet').innerHTML=tdSheetHTML();$('td_sheet').hidden=false;$('td_sheet').scrollIntoView({behavior:'smooth'});setTimeout(()=>window.print(),500)};
+$('td_pdf').onclick=()=>{$('td_sheet').innerHTML=tdSheetHTML();$('td_sheet').hidden=false;$('td_sheet').scrollIntoView({behavior:'smooth'})};
 const pad2=n=>String(n).padStart(2,'0'),dsd=d=>d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());
+function loadLib(u,ok){return new Promise((res,rej)=>{if(ok()){return res()}const e=document.createElement('script');e.src=u;e.onload=()=>ok()?res():rej(new Error('lib'));e.onerror=()=>rej(new Error('lib'));document.head.appendChild(e)})}
+async function dlSheet(btn,kind){
+  let n=btn;while(n&&!(n.querySelector&&n.querySelector('.sheet')))n=n.parentElement;
+  const sh=n&&n.querySelector('.sheet');if(!sh)return alert('Sheet not found.');
+  const old=btn.textContent;btn.disabled=true;btn.textContent='Preparing...';
+  let wrap;
+  try{
+    await loadLib('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js',()=>window.html2canvas);
+    if(kind==='pdf')await loadLib('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',()=>window.jspdf&&window.jspdf.jsPDF);
+    const W=1123;wrap=document.createElement('div');wrap.style.cssText='position:fixed;left:-20000px;top:0;width:'+W+'px;background:#fff;padding:16px;box-sizing:border-box';
+    const c=sh.cloneNode(true);c.style.width='100%';wrap.appendChild(c);document.body.appendChild(wrap);
+    c.querySelectorAll('.tw').forEach(e=>e.style.overflow='visible');
+    await new Promise(r=>setTimeout(r,150));
+    const cv=await html2canvas(wrap,{scale:2,backgroundColor:'#ffffff',useCORS:true,width:W,windowWidth:W});
+    const dm=(sh.querySelector('.sh-dd span')||{}).textContent||'',dt=(dm.match(/(\d\d)\/(\d\d)\/(\d{4})/)||[]);
+    const ds=dt.length?dt[3]+'-'+dt[2]+'-'+dt[1]:dayStr(),nm=((sh.querySelector('.sh-b')||{}).textContent||'Sheet').replace(/&/g,'and').replace(/[^A-Za-z0-9]+/g,'-').replace(/^-|-$/g,'')+'-'+ds;
+    if(kind==='jpg'){
+      const a=document.createElement('a');a.href=cv.toDataURL('image/jpeg',.92);a.download=nm+'.jpg';document.body.appendChild(a);a.click();a.remove();
+    }else{
+      const pdf=new window.jspdf.jsPDF({orientation:'landscape',unit:'pt',format:'a4'}),pw=842,ph=595,m=20,iw=pw-2*m,ratio=iw/cv.width,pageH=(ph-2*m)/ratio;
+      for(let y=0,p=0;y<cv.height-1;y+=pageH,p++){const h=Math.min(pageH,cv.height-y),part=document.createElement('canvas');part.width=cv.width;part.height=Math.ceil(h);
+        const x=part.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,part.width,part.height);x.drawImage(cv,0,y,cv.width,h,0,0,cv.width,h);
+        if(p)pdf.addPage();pdf.addImage(part.toDataURL('image/jpeg',.92),'JPEG',m,m,iw,h*ratio)}
+      pdf.save(nm+'.pdf');
+    }
+  }catch(e){
+    if(kind==='pdf'){alert('PDF library could not load (internet?). Opening Print: choose Save as PDF.');window.print()}
+    else alert('JPG could not be made (internet needed once to load the tool). Please try again.');
+  }finally{if(wrap)wrap.remove();btn.disabled=false;btn.textContent=old}
+}
 const holOf=d=>d.getMonth()===10&&d.getDate()===9?'Allama Iqbal Day Leave':d.getDay()===6?'Saturday Leave':d.getDay()===0?'Sunday Leave':'';
 const MN=['January','February','March','April','May','June','July','August','September','October','November','December'];
 async function loadTD(){
@@ -1113,7 +1143,7 @@ function hcSummaryHTML(rows,dateStr){
   <tbody>${st.map(row).join('')}${tot}</tbody></table></div></div>
   <div class="hbx"><div style="background:linear-gradient(135deg,#0b2a8a,#1565d8)"><b>${allT}</b><small>Total</small></div><div style="background:linear-gradient(135deg,#2e9e47,#4caf50)"><b>${P}</b><small>Total Present</small></div>
   <div style="background:linear-gradient(135deg,#8a0f4f,#c2185b)"><b>${A}</b><small>Total Absent</small></div><div style="background:linear-gradient(135deg,#e0a100,#ffc800);color:#3b2a00"><b>${pct1(P,R)}</b><small>Per%</small></div></div>
-  <button class="alt noprint" type="button" style="margin-top:14px" onclick="window.print()">Print / Save as PDF</button>
+  <div class="noprint" style="display:flex;gap:10px;margin-top:14px"><button class="pri" type="button" onclick="dlSheet(this,'pdf')" style="margin:0;flex:1">Download PDF</button><button class="pri" type="button" onclick="dlSheet(this,'jpg')" style="margin:0;flex:1">Download JPG</button></div>
   <p class="sub noprint" style="margin-top:12px">Total Present includes students on leave. Per% = (Present + Leave) / On Roll. Present, Leave, Absent and Per% count only the ${rep.length} class(es) marked so far${pend.length?' (waiting: '+pend.map(c=>ROM[c]||c).join(', ')+')':''}. On Roll comes from the students added in the portal.</p>`;
 }
 function hcAdminHTML(rows){
