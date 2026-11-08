@@ -287,11 +287,8 @@ input[type=date]::-webkit-calendar-picker-indicator{width:22px;height:22px;opaci
 @media (prefers-reduced-motion:reduce){.hx-box{animation:none}}
 @font-face{font-family:'JNN';src:local('Jameel Noori Nastaleeq'),local('JameelNooriNastaleeq'),url('JameelNooriNastaleeq.ttf') format('truetype');font-display:swap}
 .hx-box,.iq-wrap{--jn:'JNN','Noto Nastaliq Urdu',serif}
-.sl-card{margin-top:0;border-radius:22px;padding:18px 12px;text-align:center;background:linear-gradient(135deg,#0a24c8,#0a1fb8 55%,#06148a);border:2px solid #f5b81c;box-shadow:0 10px 24px rgba(6,26,92,.35);position:relative;overflow:hidden;animation:iqIn .8s ease both}
-.sl-card::after{content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.22),transparent);animation:slSh 4.5s ease-in-out infinite}
-.sl-t{font-family:'Amiri','Noto Naskh Arabic',serif;font-weight:700;font-size:clamp(24px,7.6vw,34px);line-height:2;direction:rtl;color:#fff;text-shadow:0 0 12px rgba(255,217,102,.7)}
-@keyframes slSh{0%{left:-60%}60%,100%{left:130%}}
-@media (prefers-reduced-motion:reduce){.sl-card,.sl-card::after{animation:none}}
+.sl-t{font-family:'Amiri','Noto Naskh Arabic',serif;font-weight:700;font-size:clamp(25px,8vw,36px);line-height:2;direction:rtl;text-align:center;color:#0b2a8a;text-shadow:0 1px 0 #fff,0 0 14px rgba(245,184,28,.55);margin:0 0 12px;animation:iqIn .8s ease both}
+@media (prefers-reduced-motion:reduce){.sl-t{animation:none}}
 .iq-wrap{margin-top:16px;border-radius:22px;padding:16px 12px 18px;background:#000;color:#fff;box-shadow:0 12px 28px rgba(0,0,0,.4);animation:iqIn .8s ease both}
 .iq-top{display:flex;direction:ltr;align-items:center;gap:12px}
 .iq-pc{flex:none;width:104px;height:104px;border-radius:50%;background:#fff;border:2px solid #000;box-shadow:0 0 0 2px #fff,0 0 20px rgba(255,255,255,.75);overflow:hidden;position:relative;animation:iqGlow 3.5s ease-in-out infinite}
@@ -415,10 +412,10 @@ input[type=date]::-webkit-calendar-picker-indicator{width:22px;height:22px;opaci
   <header><button class="bg" id="burger" aria-label="Menu">&#9776;</button><img src="emblem.png" alt=""><div><b>Aadam Son's</b><small id="who"></small></div><div class="sp"></div><img id="av" class="av" alt="" hidden></header>
   <main>
     <div id="v_dash">
+    <div class="sl-t" id="sl_t">اَلسَّلَامُ عَلَيْكُمْ وَرَحْمَةُ اللَّهِ وَبَرَكَاتُهُ</div>
     <div class="card" id="gn_card" hidden style="margin-bottom:16px"><h2>Please set your Gender</h2><p class="sub">Choose Male or Female. You can set it only once; the admin can change it later.</p>
       <select id="gn_sel"><option value="">Select gender</option><option>Male</option><option>Female</option></select><button class="pri" id="gn_btn" type="button">Save</button></div>
     <div class="card" id="io_card"><h2>Teacher's In &amp; Out</h2><small class="sub io-date"></small><div class="io-box"></div><div class="jm" id="jm" hidden>نماز قائم کرو</div></div>
-    <div class="sl-card" id="sl_card" hidden><div class="sl-t">اَلسَّلَامُ عَلَيْكُمْ وَرَحْمَةُ اللَّهِ وَبَرَكَاتُهُ</div></div>
     <div class="hx-box" id="hx-box" hidden></div>
     <div class="iq-wrap" id="iq-wrap" hidden>
       <div class="iq-top">
@@ -716,7 +713,7 @@ function view(v){
   ['dash','students','photos','sattend','inout','head','allhc','class','data','tdata','leave','loc','search','add','prof','tea'].forEach(x=>$('v_'+x).hidden=x!==v);
   document.querySelectorAll('.mi[data-v]').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
   $('drawer').classList.remove('open');$('scrim').hidden=true;
-  if(v==='tea')loadTeachers();const sv=!!me&&(me.role==='admin'||viewerRole(me.role));if(v==='dash'){$('io_card').hidden=sv;$('sl_card').hidden=!sv}if(v==='inout'||(v==='dash'&&!sv))loadIO();if(v==='dash'){renderHadith();renderIqbal();if(me&&viewerRole(me.role)){$('hc_btn').hidden=true;$('sa_card').hidden=true}else{loadHCBtn();loadSA()}}if(v==='sattend')loadSA();if(v==='head'){if(me.role==='admin'&&!$('hc_day').value)$('hc_day').value=dayStr();loadHC()}if(v==='allhc'){if(!$('ao_day').value)$('ao_day').value=dayStr();loadAllHC()}if(v==='loc')loadLoc();if(v==='leave'){if(!$('lv_day').value)$('lv_day').value=dayStr();loadLeave()}if(v==='tdata'){if(!$('td_day').value)$('td_day').value=dayStr();loadTD()}if(v==='photos')loadStudents();if(v==='dash'||v==='students'||v==='search'||v==='class'||v==='data')loadStudents();scrollTo(0,0);saveState(v);
+  if(v==='tea')loadTeachers();const vw=!!me&&viewerRole(me.role);if(v==='dash')$('io_card').hidden=vw;if(v==='inout'||(v==='dash'&&!vw))loadIO();if(v==='dash'){renderHadith();renderIqbal();if(me&&viewerRole(me.role)){$('hc_btn').hidden=true;$('sa_card').hidden=true}else{loadHCBtn();loadSA()}}if(v==='sattend')loadSA();if(v==='head'){if(me.role==='admin'&&!$('hc_day').value)$('hc_day').value=dayStr();loadHC()}if(v==='allhc'){if(!$('ao_day').value)$('ao_day').value=dayStr();loadAllHC()}if(v==='loc')loadLoc();if(v==='leave'){if(!$('lv_day').value)$('lv_day').value=dayStr();loadLeave()}if(v==='tdata'){if(!$('td_day').value)$('td_day').value=dayStr();loadTD()}if(v==='photos')loadStudents();if(v==='dash'||v==='students'||v==='search'||v==='class'||v==='data')loadStudents();scrollTo(0,0);saveState(v);
 }
 document.querySelector('.dh').onclick=()=>view('prof');
 document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const r=b.getBoundingClientRect(),d=Math.max(r.width,r.height),x=document.createElement('span');x.className='rp';x.style.cssText=`width:${d}px;height:${d}px;left:${e.clientX-r.left-d/2}px;top:${e.clientY-r.top-d/2}px`;b.appendChild(x);setTimeout(()=>x.remove(),650)});
@@ -937,10 +934,10 @@ function tdSheetHTML(){
     if(r)rem=[isLate(r)?'Late':'',r.out_time&&isEarly(r)?'Too Early':''].filter(Boolean).join(', ');
     else if(lk)rem=lk==='sick'?'Sick Leave':'Casual Leave';
     else if(holOf(d))rem=holOf(d);else if(day<today)rem='Absent';
-    return `<tr><td>${p2(i+1)}</td><td class="nm2">${esc(t.full_name||t.email)}</td><td>${DL(t)}</td><td>${r?tm(r.in_time):''}</td><td>${r&&r.out_time?tm(r.out_time):''}</td><td>${rem}</td><td></td></tr>`}).join('');
+    return `<tr><td>${p2(i+1)}</td><td class="nm2">${esc(t.full_name||t.email)}</td><td>${DL(t)}</td><td>${r?tm(r.in_time):''}</td><td>${r&&r.out_time?tm(r.out_time):''}</td><td>${rem}</td></tr>`}).join('');
   return `<div class="sheet"><div class="sh-h"><img src="emblem.png" alt=""><div><h3>ADAM SONS ELEMENTARY SCHOOL JAMPUR-350105043</h3><small>Assisted by: Sindh Education Foundation (SEF)</small></div></div>
   <div class="sh-b">TEACHERS' IN &amp; OUT</div><div class="sh-dd"><span>Date: ${dd}</span><span>Day: ${dn}</span></div>
-  <div class="tw"><table class="hcf" style="min-width:640px"><thead><tr><th>SR#</th><th>NAME</th><th>DESIGNATION</th><th>IN</th><th>OUT</th><th>REMARKS</th><th>SIGN.</th></tr></thead><tbody>${rows||'<tr><td colspan="7">No teachers yet.</td></tr>'}</tbody></table></div></div>
+  <div class="tw"><table class="hcf" style="min-width:640px"><thead><tr><th>SR#</th><th>NAME</th><th>DESIGNATION</th><th>IN</th><th>OUT</th><th>REMARKS</th></tr></thead><tbody>${rows||'<tr><td colspan="6">No teachers yet.</td></tr>'}</tbody></table></div></div>
   <div class="noprint" style="display:flex;gap:10px;margin-top:12px"><button class="pri" type="button" onclick="window.print()" style="margin:0">Print / Save as PDF</button><button class="alt" type="button" onclick="document.getElementById('td_sheet').hidden=true" style="margin:0">Close</button></div>`;
 }
 $('td_pdf').onclick=()=>{$('td_sheet').innerHTML=tdSheetHTML();$('td_sheet').hidden=false;$('td_sheet').scrollIntoView({behavior:'smooth'});setTimeout(()=>window.print(),500)};
@@ -1106,13 +1103,13 @@ function hcSummaryHTML(rows,dateStr){
   const sum=(l,f)=>l.reduce((a,x)=>a+f(x),0),allB=sum(st,x=>x.b),allG=sum(st,x=>x.g),allT=sum(st,x=>x.t);
   const aB=x=>Math.max(0,x.b-x.pb-x.lvb),aG=x=>Math.max(0,x.g-x.pg-x.lvg);
   const d=new Date((dateStr||dayStr())+'T00:00:00'),dd=pad2(d.getDate())+'/'+pad2(d.getMonth()+1)+'/'+d.getFullYear(),dn=d.toLocaleDateString('en-GB',{weekday:'long'});
-  const row=x=>`<tr><td>${ROM[x.c]||x.c}</td><td>${p2(x.b)}</td><td>${p2(x.g)}</td><td class="t">${p2(x.t)}</td>`+(x.any?`<td>${p2(x.pb)}</td><td>${p2(x.pg)}</td><td class="t">${p2(x.pn)}</td><td>${p2(x.lvb)}</td><td>${p2(x.lvg)}</td><td class="t">${p2(x.lv)}</td><td>${p2(aB(x))}</td><td>${p2(aG(x))}</td><td class="t">${p2(x.ab)}</td><td>${pct1(x.pn+x.lv,x.t)}</td>`:'<td colspan="10" style="color:#777;font-weight:400">Not marked yet</td>')+'<td></td></tr>';
-  const tot=`<tr class="tr"><td>TOTAL</td><td>${p2(allB)}</td><td>${p2(allG)}</td><td class="t">${p2(allT)}</td><td>${p2(sum(rep,x=>x.pb))}</td><td>${p2(sum(rep,x=>x.pg))}</td><td class="t">${p2(sum(rep,x=>x.pn))}</td><td>${p2(sum(rep,x=>x.lvb))}</td><td>${p2(sum(rep,x=>x.lvg))}</td><td class="t">${p2(sum(rep,x=>x.lv))}</td><td>${p2(sum(rep,aB))}</td><td>${p2(sum(rep,aG))}</td><td class="t">${p2(sum(rep,x=>x.ab))}</td><td>${pct1(sum(rep,x=>x.pn+x.lv),sum(rep,x=>x.t))}</td><td></td></tr>`;
+  const row=x=>`<tr><td>${ROM[x.c]||x.c}</td><td>${p2(x.b)}</td><td>${p2(x.g)}</td><td class="t">${p2(x.t)}</td>`+(x.any?`<td>${p2(x.pb)}</td><td>${p2(x.pg)}</td><td class="t">${p2(x.pn)}</td><td>${p2(x.lvb)}</td><td>${p2(x.lvg)}</td><td class="t">${p2(x.lv)}</td><td>${p2(aB(x))}</td><td>${p2(aG(x))}</td><td class="t">${p2(x.ab)}</td><td>${pct1(x.pn+x.lv,x.t)}</td>`:'<td colspan="10" style="color:#777;font-weight:400">Not marked yet</td>')+'</tr>';
+  const tot=`<tr class="tr"><td>TOTAL</td><td>${p2(allB)}</td><td>${p2(allG)}</td><td class="t">${p2(allT)}</td><td>${p2(sum(rep,x=>x.pb))}</td><td>${p2(sum(rep,x=>x.pg))}</td><td class="t">${p2(sum(rep,x=>x.pn))}</td><td>${p2(sum(rep,x=>x.lvb))}</td><td>${p2(sum(rep,x=>x.lvg))}</td><td class="t">${p2(sum(rep,x=>x.lv))}</td><td>${p2(sum(rep,aB))}</td><td>${p2(sum(rep,aG))}</td><td class="t">${p2(sum(rep,x=>x.ab))}</td><td>${pct1(sum(rep,x=>x.pn+x.lv),sum(rep,x=>x.t))}</td></tr>`;
   const P=sum(rep,x=>x.pn+x.lv),A=sum(rep,x=>x.ab),R=sum(rep,x=>x.t),pend=st.filter(x=>!x.any).map(x=>x.c);
   return `<div class="sheet"><div class="sh-h"><img src="emblem.png" alt=""><div><h3>ADAM SONS ELEMENTARY SCHOOL JAMPUR-350105043</h3><small>Assisted by: Sindh Education Foundation (SEF)</small></div></div>
   <div class="sh-b">HEADCOUNT</div><div class="sh-dd"><span>Date: ${dd}</span><span>Day: ${dn}</span></div>
-  <div class="tw"><table class="hcf"><thead><tr><th>CLASS</th><th colspan="3">ON ROLL</th><th colspan="3">PRESENT</th><th colspan="3">LEAVE</th><th colspan="3">ABSENT</th><th>PER%</th><th>TEACHER'S SIGN.</th></tr>
-  <tr class="s2"><th>***</th><th>B</th><th>G</th><th>T</th><th>B</th><th>G</th><th>T</th><th>B</th><th>G</th><th>T</th><th>B</th><th>G</th><th>T</th><th>***</th><th>***</th></tr></thead>
+  <div class="tw"><table class="hcf"><thead><tr><th>CLASS</th><th colspan="3">ON ROLL</th><th colspan="3">PRESENT</th><th colspan="3">LEAVE</th><th colspan="3">ABSENT</th><th>PER%</th></tr>
+  <tr class="s2"><th>***</th><th>B</th><th>G</th><th>T</th><th>B</th><th>G</th><th>T</th><th>B</th><th>G</th><th>T</th><th>B</th><th>G</th><th>T</th><th>***</th></tr></thead>
   <tbody>${st.map(row).join('')}${tot}</tbody></table></div></div>
   <div class="hbx"><div style="background:linear-gradient(135deg,#0b2a8a,#1565d8)"><b>${allT}</b><small>Total</small></div><div style="background:linear-gradient(135deg,#2e9e47,#4caf50)"><b>${P}</b><small>Total Present</small></div>
   <div style="background:linear-gradient(135deg,#8a0f4f,#c2185b)"><b>${A}</b><small>Total Absent</small></div><div style="background:linear-gradient(135deg,#e0a100,#ffc800);color:#3b2a00"><b>${pct1(P,R)}</b><small>Per%</small></div></div>
