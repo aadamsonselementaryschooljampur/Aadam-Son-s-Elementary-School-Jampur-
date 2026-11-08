@@ -415,7 +415,7 @@ input[type=date]::-webkit-calendar-picker-indicator{width:22px;height:22px;opaci
     <div class="sl-t" id="sl_t">اَلسَّلَامُ عَلَيْكُمْ وَرَحْمَةُ اللَّهِ وَبَرَكَاتُهُ</div>
     <div class="card" id="gn_card" hidden style="margin-bottom:16px"><h2>Please set your Gender</h2><p class="sub">Choose Male or Female. You can set it only once; the admin can change it later.</p>
       <select id="gn_sel"><option value="">Select gender</option><option>Male</option><option>Female</option></select><button class="pri" id="gn_btn" type="button">Save</button></div>
-    <div class="card" id="io_card"><h2>Teacher's In &amp; Out</h2><small class="sub io-date"></small><div class="io-box"></div><div class="jm" id="jm" hidden>نماز قائم کرو</div></div>
+    <div class="card" id="io_card"><h2>Teacher's In &amp; Out</h2><small class="sub io-date"></small><div class="io-box"></div><small class="sub" id="auto_note" style="display:block;margin:12px 0 0">Auto In/Out is ON while this page is open and Location is allowed: In at school before 2:00 PM, Out after 2:00 PM.</small><div class="jm" id="jm" hidden>نماز قائم کرو</div></div>
     <div class="hx-box" id="hx-box" hidden></div>
     <div class="iq-wrap" id="iq-wrap" hidden>
       <div class="iq-top">
@@ -826,7 +826,7 @@ const dayStr=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMont
 const tm=t=>t?new Date(t).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',hour12:true}):'-';
 const mins=t=>{const d=new Date(t);return d.getHours()*60+d.getMinutes()};
 const isLate=r=>!!(r&&r.in_time&&mins(r.in_time)>8*60+30),isEarly=r=>!!(r&&r.out_time&&mins(r.out_time)<(new Date(r.out_time).getDay()===5?12*60+30:14*60));
-let todayRow=null,todayLeave=null;
+let todayRow=null,todayLeave=null,ioReady=false,autoBusy=false,autoNext=0;
 const setIO=h=>document.querySelectorAll('.io-box').forEach(e=>e.innerHTML=h);
 const dur=r=>{const m=Math.max(0,Math.round((new Date(r.out_time)-new Date(r.in_time))/60000));return Math.floor(m/60)+'h '+m%60+'m'};
 function ioList(att,teachers,lv,wk){
@@ -843,7 +843,7 @@ async function loadIO(){
   {const lv=await sb.from('leaves').select('*').eq('teacher_id',me.id).eq('day',dayStr()).maybeSingle();todayLeave=lv.data||null}
   const {data,error}=await sb.from('attendance').select('*').eq('teacher_id',me.id).eq('day',dayStr()).maybeSingle();
   if(error)return setIO('<p class="sub">'+esc(error.message)+'</p>');
-  todayRow=data;drawIO();
+  todayRow=data;ioReady=true;drawIO();autoIO();
 }
 function drawIO(){
   const hn=holOf(new Date());
@@ -972,6 +972,23 @@ async function dlSheet(btn,kind){
     else alert('JPG could not be made (internet needed once to load the tool). Please try again.');
   }finally{if(wrap)wrap.remove();btn.disabled=false;btn.textContent=old}
 }
+async function autoIO(){
+  if(!me||viewerRole(me.role)||!ioReady||autoBusy||ioBusy||document.visibilityState!=='visible'||!navigator.onLine)return;
+  if(holOf(new Date())||todayLeave||Date.now()<autoNext)return;
+  const t=new Date(),m=t.getHours()*60+t.getMinutes();let k=null;
+  if(!todayRow){if(m>=300&&m<840)k='in'}else if(!todayRow.out_time&&m>=840)k='out';
+  if(!k)return;
+  autoBusy=true;autoNext=Date.now()+240000;
+  try{
+    const p=await getFix();
+    const {data,error}=await sb.functions.invoke('mark-attendance',{body:{action:k,lat:p.coords.latitude,lng:p.coords.longitude,accuracy:p.coords.accuracy,fix_ts:p.timestamp}});
+    let out=data;if(error){try{out=await error.context.json()}catch(e){out=null}}
+    if(out&&out.ok){autoNext=0;toast('Auto '+(k==='in'?'In':'Out')+' recorded. You are '+out.distance_m+' m from school.',false);await loadIO()}
+  }catch(e){}
+  finally{autoBusy=false}
+}
+setInterval(()=>{if(document.visibilityState==='visible')autoIO()},90000);
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&me&&!viewerRole(me.role)){autoNext=0;loadIO()}});
 const holOf=d=>d.getMonth()===10&&d.getDate()===9?'Allama Iqbal Day Leave':d.getDay()===6?'Saturday Leave':d.getDay()===0?'Sunday Leave':'';
 const MN=['January','February','March','April','May','June','July','August','September','October','November','December'];
 async function loadTD(){
