@@ -415,7 +415,7 @@ input[type=date]::-webkit-calendar-picker-indicator{width:22px;height:22px;opaci
     <div class="sl-t" id="sl_t">اَلسَّلَامُ عَلَيْكُمْ وَرَحْمَةُ اللَّهِ وَبَرَكَاتُهُ</div>
     <div class="card" id="gn_card" hidden style="margin-bottom:16px"><h2>Please set your Gender</h2><p class="sub">Choose Male or Female. You can set it only once; the admin can change it later.</p>
       <select id="gn_sel"><option value="">Select gender</option><option>Male</option><option>Female</option></select><button class="pri" id="gn_btn" type="button">Save</button></div>
-    <div class="card" id="io_card"><h2>Teacher's In &amp; Out</h2><small class="sub io-date"></small><div class="io-box"></div><small class="sub" id="auto_note" style="display:block;margin:12px 0 0">Auto In/Out is ON while this page is open and Location is allowed: In at school before 2:00 PM, Out after 2:00 PM.</small><div class="jm" id="jm" hidden>نماز قائم کرو</div></div>
+    <div class="card" id="io_card"><h2>Teacher's In &amp; Out</h2><small class="sub io-date"></small><div class="io-box"></div><small class="sub" id="auto_note" style="display:block;margin:12px 0 0">Auto In/Out is ON while this page is open and Location is allowed: In at school before 2:00 PM, Out after 2:00 PM (Friday: 12:30 PM).</small><div class="jm" id="jm" hidden>نماز قائم کرو</div></div>
     <div class="hx-box" id="hx-box" hidden></div>
     <div class="iq-wrap" id="iq-wrap" hidden>
       <div class="iq-top">
@@ -934,6 +934,7 @@ function tdSheetHTML(){
     if(r)rem=[isLate(r)?'Late':'',r.out_time&&isEarly(r)?'Too Early':''].filter(Boolean).join(', ');
     else if(lk)rem=lk==='sick'?'Sick Leave':'Casual Leave';
     else if(holOf(d))rem=holOf(d);else if(day<today)rem='Absent';
+    if(lk){const ln=lk==='sick'?'Sick Leave':'Casual Leave';return `<tr><td>${p2(i+1)}</td><td class="nm2">${esc(t.full_name||t.email)}</td><td>${DL(t)}</td><td colspan="2"><b>${ln}</b></td><td><b>${ln}</b></td></tr>`}
     return `<tr><td>${p2(i+1)}</td><td class="nm2">${esc(t.full_name||t.email)}</td><td>${DL(t)}</td><td>${r?tm(r.in_time):''}</td><td>${r&&r.out_time?tm(r.out_time):''}</td><td>${rem}</td></tr>`}).join('');
   return `<div class="sheet"><div class="sh-h"><img src="emblem.png" alt=""><div><h3>ADAM SONS ELEMENTARY SCHOOL JAMPUR-350105043</h3><small>Assisted by: Sindh Education Foundation (SEF)</small></div></div>
   <div class="sh-b">TEACHERS' IN &amp; OUT</div><div class="sh-dd"><span>Date: ${dd}</span><span>Day: ${dn}</span></div>
@@ -975,8 +976,8 @@ async function dlSheet(btn,kind){
 async function autoIO(){
   if(!me||viewerRole(me.role)||!ioReady||autoBusy||ioBusy||document.visibilityState!=='visible'||!navigator.onLine)return;
   if(holOf(new Date())||todayLeave||Date.now()<autoNext)return;
-  const t=new Date(),m=t.getHours()*60+t.getMinutes();let k=null;
-  if(!todayRow){if(m>=300&&m<840)k='in'}else if(!todayRow.out_time&&m>=840)k='out';
+  const t=new Date(),m=t.getHours()*60+t.getMinutes(),lim=t.getDay()===5?750:840;let k=null;
+  if(!todayRow){if(m>=300&&m<lim)k='in'}else if(!todayRow.out_time&&m>=lim)k='out';
   if(!k)return;
   autoBusy=true;autoNext=Date.now()+240000;
   try{
