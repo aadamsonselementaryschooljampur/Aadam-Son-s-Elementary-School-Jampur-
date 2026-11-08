@@ -287,6 +287,11 @@ input[type=date]::-webkit-calendar-picker-indicator{width:22px;height:22px;opaci
 @media (prefers-reduced-motion:reduce){.hx-box{animation:none}}
 @font-face{font-family:'JNN';src:local('Jameel Noori Nastaleeq'),local('JameelNooriNastaleeq'),url('JameelNooriNastaleeq.ttf') format('truetype');font-display:swap}
 .hx-box,.iq-wrap{--jn:'JNN','Noto Nastaliq Urdu',serif}
+.sl-card{margin-top:0;border-radius:22px;padding:18px 12px;text-align:center;background:linear-gradient(135deg,#0a24c8,#0a1fb8 55%,#06148a);border:2px solid #f5b81c;box-shadow:0 10px 24px rgba(6,26,92,.35);position:relative;overflow:hidden;animation:iqIn .8s ease both}
+.sl-card::after{content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.22),transparent);animation:slSh 4.5s ease-in-out infinite}
+.sl-t{font-family:'Amiri','Noto Naskh Arabic',serif;font-weight:700;font-size:clamp(24px,7.6vw,34px);line-height:2;direction:rtl;color:#fff;text-shadow:0 0 12px rgba(255,217,102,.7)}
+@keyframes slSh{0%{left:-60%}60%,100%{left:130%}}
+@media (prefers-reduced-motion:reduce){.sl-card,.sl-card::after{animation:none}}
 .iq-wrap{margin-top:16px;border-radius:22px;padding:16px 12px 18px;background:#000;color:#fff;box-shadow:0 12px 28px rgba(0,0,0,.4);animation:iqIn .8s ease both}
 .iq-top{display:flex;direction:ltr;align-items:center;gap:12px}
 .iq-pc{flex:none;width:104px;height:104px;border-radius:50%;background:#fff;border:2px solid #000;box-shadow:0 0 0 2px #fff,0 0 20px rgba(255,255,255,.75);overflow:hidden;position:relative;animation:iqGlow 3.5s ease-in-out infinite}
@@ -412,7 +417,8 @@ input[type=date]::-webkit-calendar-picker-indicator{width:22px;height:22px;opaci
     <div id="v_dash">
     <div class="card" id="gn_card" hidden style="margin-bottom:16px"><h2>Please set your Gender</h2><p class="sub">Choose Male or Female. You can set it only once; the admin can change it later.</p>
       <select id="gn_sel"><option value="">Select gender</option><option>Male</option><option>Female</option></select><button class="pri" id="gn_btn" type="button">Save</button></div>
-    <div class="card"><h2>Teacher's In &amp; Out</h2><small class="sub io-date"></small><div class="io-box"></div><div class="jm" id="jm" hidden>نماز قائم کرو</div></div>
+    <div class="card" id="io_card"><h2>Teacher's In &amp; Out</h2><small class="sub io-date"></small><div class="io-box"></div><div class="jm" id="jm" hidden>نماز قائم کرو</div></div>
+    <div class="sl-card" id="sl_card" hidden><div class="sl-t">اَلسَّلَامُ عَلَيْكُمْ وَرَحْمَةُ اللَّهِ وَبَرَكَاتُهُ</div></div>
     <div class="hx-box" id="hx-box" hidden></div>
     <div class="iq-wrap" id="iq-wrap" hidden>
       <div class="iq-top">
@@ -635,13 +641,13 @@ async function boot(){
   $('l_title').textContent=admin?'All Students':'Students of '+(me.class_name||'-');
   const coord=viewerRole(me.role);
   if(coord){
-    document.querySelectorAll('#drawer .mi[data-v]').forEach(b=>b.hidden=!['tea','tdata','head'].includes(b.dataset.v));
+    document.querySelectorAll('#drawer .mi[data-v]').forEach(b=>b.hidden=!['dash','tea','tdata','head'].includes(b.dataset.v));
     const lbl=(v,t)=>{const b=document.querySelector('.mi[data-v='+v+']');[...b.childNodes].filter(n=>n.nodeType===3).forEach(n=>n.textContent=t)};
     lbl('tea',"Teacher's Data");lbl('tdata','In & Out');$('m_hc_t').textContent='All Head Count';
     $('hc_dayw').hidden=false;$('hc_h').hidden=false;if(!$('hc_day').value)$('hc_day').value=dayStr();$('who').textContent=(me.full_name?me.full_name+' - ':'')+(me.designation||'Coordinator');$('hc_h').textContent='All Head Count';
     document.querySelector('#v_tea>h2').textContent="Teacher's Data";document.querySelector('#v_tdata>h2').textContent='In & Out';
-    [['tea',1],['tdata',2],['head',3]].forEach(([v,o])=>document.querySelector('.mi[data-v='+v+']').style.order=o);$('logout').style.order=9;
-    drawProfile();restoreView(['tea','tdata','head'],'tea');return;
+    [['dash',0],['tea',1],['tdata',2],['head',3]].forEach(([v,o])=>document.querySelector('.mi[data-v='+v+']').style.order=o);$('logout').style.order=9;
+    drawProfile();restoreView(['dash','tea','tdata','head'],'dash');return;
   }
   resetForm();drawProfile();$('gn_card').hidden=!!me.gender;$('m_tea').hidden=!admin;$('m_tdata').hidden=!admin;$('m_leave').hidden=!admin;$('m_ph').hidden=!(admin||me.class_name);$('ph_class').parentElement.hidden=!admin;$('m_sa').hidden=admin||!me.class_name;$('m_allhc').hidden=!admin;$('m_hc_t').textContent=admin?'All Head Count':'Head Count';$('hc_dayw').hidden=!admin;$('hc_h').hidden=!admin;$('hc_h').textContent='All Head Count';$('m_loc').hidden=!admin;$('m_class_t').textContent=admin?'Classes':'Class';$('m_data').hidden=!admin;restoreDraft();restoreView(null,'dash');
 }
@@ -705,12 +711,12 @@ let scT;addEventListener('scroll',()=>{clearTimeout(scT);scT=setTimeout(()=>save
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')saveState()});
 addEventListener('pagehide',()=>saveState());
 function view(v){
-  if(me&&viewerRole(me.role)&&!['tea','tdata','head'].includes(v))v='tea';
+  if(me&&viewerRole(me.role)&&!['dash','tea','tdata','head'].includes(v))v='dash';
   curView=v;
   ['dash','students','photos','sattend','inout','head','allhc','class','data','tdata','leave','loc','search','add','prof','tea'].forEach(x=>$('v_'+x).hidden=x!==v);
   document.querySelectorAll('.mi[data-v]').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
   $('drawer').classList.remove('open');$('scrim').hidden=true;
-  if(v==='tea')loadTeachers();if(v==='dash'||v==='inout')loadIO();if(v==='dash'){renderHadith();renderIqbal();loadHCBtn();loadSA()}if(v==='sattend')loadSA();if(v==='head'){if(me.role==='admin'&&!$('hc_day').value)$('hc_day').value=dayStr();loadHC()}if(v==='allhc'){if(!$('ao_day').value)$('ao_day').value=dayStr();loadAllHC()}if(v==='loc')loadLoc();if(v==='leave'){if(!$('lv_day').value)$('lv_day').value=dayStr();loadLeave()}if(v==='tdata'){if(!$('td_day').value)$('td_day').value=dayStr();loadTD()}if(v==='photos')loadStudents();if(v==='dash'||v==='students'||v==='search'||v==='class'||v==='data')loadStudents();scrollTo(0,0);saveState(v);
+  if(v==='tea')loadTeachers();const sv=!!me&&(me.role==='admin'||viewerRole(me.role));if(v==='dash'){$('io_card').hidden=sv;$('sl_card').hidden=!sv}if(v==='inout'||(v==='dash'&&!sv))loadIO();if(v==='dash'){renderHadith();renderIqbal();if(me&&viewerRole(me.role)){$('hc_btn').hidden=true;$('sa_card').hidden=true}else{loadHCBtn();loadSA()}}if(v==='sattend')loadSA();if(v==='head'){if(me.role==='admin'&&!$('hc_day').value)$('hc_day').value=dayStr();loadHC()}if(v==='allhc'){if(!$('ao_day').value)$('ao_day').value=dayStr();loadAllHC()}if(v==='loc')loadLoc();if(v==='leave'){if(!$('lv_day').value)$('lv_day').value=dayStr();loadLeave()}if(v==='tdata'){if(!$('td_day').value)$('td_day').value=dayStr();loadTD()}if(v==='photos')loadStudents();if(v==='dash'||v==='students'||v==='search'||v==='class'||v==='data')loadStudents();scrollTo(0,0);saveState(v);
 }
 document.querySelector('.dh').onclick=()=>view('prof');
 document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const r=b.getBoundingClientRect(),d=Math.max(r.width,r.height),x=document.createElement('span');x.className='rp';x.style.cssText=`width:${d}px;height:${d}px;left:${e.clientX-r.left-d/2}px;top:${e.clientY-r.top-d/2}px`;b.appendChild(x);setTimeout(()=>x.remove(),650)});
