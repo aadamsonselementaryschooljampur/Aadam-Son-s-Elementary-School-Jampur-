@@ -289,6 +289,15 @@ input[type=date]::-webkit-calendar-picker-indicator{width:22px;height:22px;opaci
 .hx-box,.iq-wrap{--jn:'JNN','Noto Nastaliq Urdu',serif}
 .sl-t{font-family:'Amiri','Noto Naskh Arabic',serif;font-weight:700;font-size:clamp(25px,8vw,36px);line-height:2;direction:rtl;text-align:center;color:#0b2a8a;text-shadow:0 1px 0 #fff,0 0 14px rgba(245,184,28,.55);margin:0 0 12px;animation:iqIn .8s ease both}
 @media (prefers-reduced-motion:reduce){.sl-t{animation:none}}
+.bf-c{background:#fff;border-radius:20px;padding:14px;margin-bottom:14px;box-shadow:0 8px 20px rgba(11,42,138,.12)}
+.bf-t{display:flex;align-items:center;gap:14px}
+.bf-p{width:76px;height:76px;border-radius:50%;object-fit:cover;border:3px solid #f5b81c;flex:none;background:#e8eefc;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:30px;color:#0b2a8a}
+.bf-n{font-weight:800;color:#0b2a8a;font-size:17px;line-height:1.3}.bf-f{display:block;color:#5a6785;font-size:14px;margin-top:2px}
+.bf-c.done{border-left:6px solid #0a7a3a}
+.bf-r{display:flex;gap:10px;margin-top:12px;align-items:center}
+.bf-r input{flex:1 1 auto;min-width:0;width:auto;letter-spacing:.06em;font-weight:700;font-size:17px}
+.bf-r button{flex:none;width:auto;margin:0;padding:12px 20px}
+.bf-s{display:block;font-size:13px;margin-top:6px;min-height:16px;font-weight:700}.bf-ok{color:#0a7a3a}.bf-no{color:#b42318}
 .iq-wrap{margin-top:16px;border-radius:22px;padding:16px 12px 18px;background:#000;color:#fff;box-shadow:0 12px 28px rgba(0,0,0,.4);animation:iqIn .8s ease both}
 .iq-top{display:flex;direction:ltr;align-items:center;gap:12px}
 .iq-pc{flex:none;width:104px;height:104px;border-radius:50%;background:#fff;border:2px solid #000;box-shadow:0 0 0 2px #fff,0 0 20px rgba(255,255,255,.75);overflow:hidden;position:relative;animation:iqGlow 3.5s ease-in-out infinite}
@@ -394,6 +403,7 @@ input[type=date]::-webkit-calendar-picker-indicator{width:22px;height:22px;opaci
     <button class="mi" data-v="prof"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="8" r="4"/></svg>Profile</button>
     <button class="mi on" data-v="dash"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</button>
     <button class="mi" data-v="inout"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>In &amp; Out</button>
+    <button class="mi" data-v="bform" id="m_bf" hidden><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="11" r="2"/><path d="M6 16c.6-1.6 1.8-2.4 3-2.4s2.4.8 3 2.4M14.5 10h4M14.5 13.5h4"/></svg>B-Form</button>
     <button class="mi" data-v="photos" id="m_ph" hidden><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="15" rx="2"/><circle cx="12" cy="12.5" r="3.5"/><path d="M8 5l1.5-2h5L16 5"/></svg>Student Photos</button>
     <button class="mi" data-v="sattend" id="m_sa" hidden><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21a7 7 0 0 0-14 0"/><circle cx="9" cy="8" r="4"/><path d="m16 11 2 2 4-4"/></svg>Students' Attendance</button>
     <button class="mi" data-v="head"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2 20a7 7 0 0 1 14 0M17 5a3.5 3.5 0 0 1 0 6.5M19 20a6 6 0 0 0-3-5"/></svg><span id="m_hc_t">Head Count</span></button>
@@ -437,6 +447,7 @@ input[type=date]::-webkit-calendar-picker-indicator{width:22px;height:22px;opaci
     </div>
     <div class="card" id="sa_card" hidden style="margin-top:16px"><h2>Students' Attendance</h2><small class="sub sa-sub"></small><div class="sa-box"></div></div>
     <button class="cb" id="hc_btn" type="button" hidden style="width:100%;margin:16px 0"><b>Head Count</b><small id="hc_sub"></small></button>
+    <button class="cb" id="bf_btn" type="button" hidden style="width:100%;margin:0 0 16px;background:linear-gradient(135deg,#f5b81c,#ffd966);color:#0b2a8a;box-shadow:0 10px 22px rgba(245,184,28,.4)"><b>B-Form</b><small id="bf_sub" style="opacity:1;font-weight:700"></small></button>
     <div style="height:16px"></div>
     </div>
     <div id="v_students" hidden><h2 class="vt">Students</h2>
@@ -448,6 +459,9 @@ input[type=date]::-webkit-calendar-picker-indicator{width:22px;height:22px;opaci
     <div id="v_sattend" hidden><div class="card"><h2>Students' Attendance</h2><small class="sub sa-sub"></small><div class="sa-box"></div></div></div>
     <div id="v_inout" hidden><div class="card"><h2>Teacher's In &amp; Out</h2><small class="sub io-date"></small><div class="io-box"></div></div></div>
     <div id="v_head" hidden><div class="card"><h2 id="hc_h">Head Count</h2><div id="hc_dayw" hidden><input type="date" id="hc_day" style="margin:8px 0 14px"></div><div id="hc_body"></div></div></div>
+    <div id="v_bform" hidden><button class="alt" type="button" onclick="view('dash')" style="margin:0 0 10px;width:auto;padding:10px 18px">&larr; Dashboard</button><h2 class="vt">B-Form</h2>
+      <div class="card"><p class="sub" style="margin:0">Type the 13-digit B-Form number of each student of your class, then tap Save. The dashes come automatically.</p><p class="sub" id="bf_cnt" style="margin:10px 0 0;font-weight:700;color:#0b2a8a"></p></div>
+      <div id="bf_list" style="margin-top:16px"></div></div>
     <div id="v_photos" hidden><h2 class="vt">Student Photos</h2>
       <div class="card"><p class="sub">Tap Add Photo to set a student's picture. Only the photo changes here.</p>
         <div class="grid"><div><label>Class</label><select id="ph_class"></select></div><div><label>Search</label><input id="ph_q" placeholder="Name or G.R No."></div></div>
@@ -646,7 +660,7 @@ async function boot(){
     [['dash',0],['tea',1],['tdata',2],['head',3]].forEach(([v,o])=>document.querySelector('.mi[data-v='+v+']').style.order=o);$('logout').style.order=9;
     drawProfile();restoreView(['dash','tea','tdata','head'],'dash');return;
   }
-  resetForm();drawProfile();$('gn_card').hidden=!!me.gender;$('m_tea').hidden=!admin;$('m_tdata').hidden=!admin;$('m_leave').hidden=!admin;$('m_ph').hidden=!(admin||me.class_name);$('ph_class').parentElement.hidden=!admin;$('m_sa').hidden=admin||!me.class_name;$('m_allhc').hidden=!admin;$('m_hc_t').textContent=admin?'All Head Count':'Head Count';$('hc_dayw').hidden=!admin;$('hc_h').hidden=!admin;$('hc_h').textContent='All Head Count';$('m_loc').hidden=!admin;$('m_class_t').textContent=admin?'Classes':'Class';$('m_data').hidden=!admin;restoreDraft();restoreView(null,'dash');
+  resetForm();drawProfile();$('gn_card').hidden=!!me.gender;$('m_tea').hidden=!admin;$('m_tdata').hidden=!admin;$('m_leave').hidden=!admin;$('m_ph').hidden=!(admin||me.class_name);$('m_bf').hidden=true;$('ph_class').parentElement.hidden=!admin;$('m_sa').hidden=admin||!me.class_name;$('m_allhc').hidden=!admin;$('m_hc_t').textContent=admin?'All Head Count':'Head Count';$('hc_dayw').hidden=!admin;$('hc_h').hidden=!admin;$('hc_h').textContent='All Head Count';$('m_loc').hidden=!admin;$('m_class_t').textContent=admin?'Classes':'Class';$('m_data').hidden=!admin;restoreDraft();restoreView(null,'dash');
 }
 const ST_KEY='as_state',DR_KEY='as_draft';
 const HX_LIST=[
@@ -696,7 +710,7 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
 let curView='dash',touched=false;
 function saveState(v){if(!me)return;try{localStorage.setItem(ST_KEY,JSON.stringify({u:me.id,v:v||curView,y:Math.round(window.scrollY||0)}))}catch(e){}}
 function readState(){try{return JSON.parse(localStorage.getItem(ST_KEY))}catch(e){return null}}
-function viewOk(v){if(v==='dash')return true;const b=document.querySelector('.mi[data-v='+v+']');return !!b&&!b.hidden}
+function viewOk(v){if(v==='dash')return true;if(v==='bform')return !!me&&me.role==='teacher'&&!!me.class_name;const b=document.querySelector('.mi[data-v='+v+']');return !!b&&!b.hidden}
 function restoreView(allowed,def){
   const rs=readState();let v=def,y=0;touched=false;
   if(rs&&me&&rs.u===me.id&&rs.v&&viewOk(rs.v)&&(!allowed||allowed.includes(rs.v))){v=rs.v;y=rs.y||0}
@@ -710,10 +724,10 @@ addEventListener('pagehide',()=>saveState());
 function view(v){
   if(me&&viewerRole(me.role)&&!['dash','tea','tdata','head'].includes(v))v='dash';
   curView=v;
-  ['dash','students','photos','sattend','inout','head','allhc','class','data','tdata','leave','loc','search','add','prof','tea'].forEach(x=>$('v_'+x).hidden=x!==v);
+  ['dash','students','bform','photos','sattend','inout','head','allhc','class','data','tdata','leave','loc','search','add','prof','tea'].forEach(x=>$('v_'+x).hidden=x!==v);
   document.querySelectorAll('.mi[data-v]').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
   $('drawer').classList.remove('open');$('scrim').hidden=true;
-  if(v==='tea')loadTeachers();const vw=!!me&&viewerRole(me.role);if(v==='dash')$('io_card').hidden=vw;if(v==='inout'||(v==='dash'&&!vw))loadIO();if(v==='dash'){renderHadith();renderIqbal();if(me&&viewerRole(me.role)){$('hc_btn').hidden=true;$('sa_card').hidden=true}else{loadHCBtn();loadSA()}}if(v==='sattend')loadSA();if(v==='head'){if(me.role==='admin'&&!$('hc_day').value)$('hc_day').value=dayStr();loadHC()}if(v==='allhc'){if(!$('ao_day').value)$('ao_day').value=dayStr();loadAllHC()}if(v==='loc')loadLoc();if(v==='leave'){if(!$('lv_day').value)$('lv_day').value=dayStr();loadLeave()}if(v==='tdata'){if(!$('td_day').value)$('td_day').value=dayStr();loadTD()}if(v==='photos')loadStudents();if(v==='dash'||v==='students'||v==='search'||v==='class'||v==='data')loadStudents();scrollTo(0,0);saveState(v);
+  if(v==='tea')loadTeachers();const vw=!!me&&viewerRole(me.role);if(v==='dash')$('io_card').hidden=vw;if(v==='inout'||(v==='dash'&&!vw))loadIO();if(v==='dash'){renderHadith();renderIqbal();if(me&&viewerRole(me.role)){$('hc_btn').hidden=true;$('sa_card').hidden=true}else{loadHCBtn();loadSA().then(updBFBtn)}}if(v==='sattend')loadSA();if(v==='head'){if(me.role==='admin'&&!$('hc_day').value)$('hc_day').value=dayStr();loadHC()}if(v==='allhc'){if(!$('ao_day').value)$('ao_day').value=dayStr();loadAllHC()}if(v==='loc')loadLoc();if(v==='leave'){if(!$('lv_day').value)$('lv_day').value=dayStr();loadLeave()}if(v==='tdata'){if(!$('td_day').value)$('td_day').value=dayStr();loadTD()}if(v==='photos')loadStudents();if(v==='bform')loadBForm();if(v==='dash'||v==='students'||v==='search'||v==='class'||v==='data')loadStudents();scrollTo(0,0);saveState(v);
 }
 document.querySelector('.dh').onclick=()=>view('prof');
 document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const r=b.getBoundingClientRect(),d=Math.max(r.width,r.height),x=document.createElement('span');x.className='rp';x.style.cssText=`width:${d}px;height:${d}px;left:${e.clientX-r.left-d/2}px;top:${e.clientY-r.top-d/2}px`;b.appendChild(x);setTimeout(()=>x.remove(),650)});
@@ -1184,6 +1198,29 @@ function drawPhotos(){
   const l=all.slice(0,60),done=all.filter(s=>s.photo_url).length;
   $('ph_cnt').textContent=`${all.length} students - ${done} with photo${all.length>60?' - showing first 60, use Class or Search':''}`;
   $('ph_list').innerHTML=l.map(s=>`<div class="li">${s.photo_url?`<img src="${esc(s.photo_url)}" alt="">`:`<div class="i0">${esc((s.name||'?')[0])}</div>`}<div style="flex:1;min-width:0"><b>${esc(s.name)}</b><small>Class ${esc(s.class_name)}${s.gr_no?' - G.R '+esc(s.gr_no):''}</small></div><button onclick="pickPhoto('${s.id}')">${s.photo_url?'Change':'Add Photo'}</button></div>`).join('')||'<p class="sub">No students found.</p>';
+}
+async function loadBForm(){await loadStudents();drawBF()}
+function bfDigits(v){return String(v||'').replace(/\D/g,'')}
+function bfCnt(){const L=students.filter(s=>s.class_name===me.class_name);return [L.length,L.filter(s=>bfDigits(s.b_form).length===13).length]}
+function updBFBtn(){const b=$('bf_btn');if(!b)return;const ok=!!me&&me.role==='teacher'&&!!me.class_name;b.hidden=!ok;if(!ok)return;const [n,d]=bfCnt();$('bf_sub').textContent=n?(d+' of '+n+' students done'):'Write B-Form numbers of your class'}
+$('bf_btn').onclick=()=>view('bform');
+function drawBF(){
+  const L=students.filter(s=>s.class_name===me.class_name).sort(byGen),[n,d]=bfCnt();
+  $('bf_cnt').textContent='Class '+me.class_name+' - '+d+' of '+n+' done';
+  $('bf_list').innerHTML=L.map(s=>{const dn=bfDigits(s.b_form).length===13;return `<div class="bf-c${dn?' done':''}"><div class="bf-t">${s.photo_url?`<img class="bf-p" src="${esc(s.photo_url)}" alt="">`:`<div class="bf-p">${esc((s.name||'?')[0])}</div>`}<div style="min-width:0"><div class="bf-n">${esc(s.name)}</div><span class="bf-f">G.R# ${esc(s.gr_no||'-')}</span><span class="bf-f">Father's Name: ${esc(s.father_name||'-')}</span></div></div>
+  <div class="bf-r"><input inputmode="numeric" maxlength="15" placeholder="B-Form Number" value="${esc(s.b_form||'')}" oninput="fmt13(event)"><button class="pri" type="button" onclick="bfSave(this,'${esc(String(s.id))}')">${dn?'Update':'Save'}</button></div><span class="bf-s">${dn?'<span class="bf-ok">&#10003; Done</span>':''}</span></div>`}).join('')||'<p class="sub">No students in your class yet.</p>';
+}
+async function bfSave(btn,id){
+  const c=btn.closest('.bf-c'),inp=c.querySelector('input'),st=c.querySelector('.bf-s'),d=bfDigits(inp.value);
+  if(d.length!==13){st.innerHTML='<span class="bf-no">B-Form must be 13 digits.</span>';return}
+  const f=d.slice(0,5)+'-'+d.slice(5,12)+'-'+d.slice(12);inp.value=f;btn.disabled=true;
+  try{const {error}=await sb.rpc('set_student_bform',{p_student:String(id),p_bform:f});
+    if(error)throw error;
+    const s=students.find(x=>String(x.id)===String(id));if(s)s.b_form=f;
+    st.innerHTML='<span class="bf-ok">&#10003; Done</span>';c.classList.add('done');btn.textContent='Update';
+    const [n,d]=bfCnt();$('bf_cnt').textContent='Class '+me.class_name+' - '+d+' of '+n+' done';updBFBtn();
+  }catch(e){const m=String(e.message||e);st.innerHTML='<span class="bf-no">'+esc(/function|schema cache/i.test(m)?'Not set up yet. Please ask the admin to run the B-Form SQL.':m)+'</span>'}
+  finally{btn.disabled=false}
 }
 function pickPhoto(id){phId=id;$('ph_file').click()}
 $('ph_class').onchange=$('ph_q').oninput=drawPhotos;
