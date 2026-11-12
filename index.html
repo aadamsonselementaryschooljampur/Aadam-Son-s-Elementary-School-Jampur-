@@ -839,7 +839,7 @@ $('d_inc').onclick=()=>{dsel='inc';drawData()};$('d_com').onclick=()=>{dsel='com
 const dayStr=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
 const tm=t=>t?new Date(t).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',hour12:true}):'-';
 const mins=t=>{const d=new Date(t);return d.getHours()*60+d.getMinutes()};
-const isLate=r=>!!(r&&r.in_time&&mins(r.in_time)>8*60+30),isEarly=r=>!!(r&&r.out_time&&mins(r.out_time)<(new Date(r.out_time).getDay()===5?12*60+30:14*60));
+const isLate=r=>!!(r&&r.in_time&&mins(r.in_time)>8*60+40),isEarly=r=>!!(r&&r.out_time&&mins(r.out_time)<(new Date(r.out_time).getDay()===5?12*60+30:14*60));
 let todayRow=null,todayLeave=null,ioReady=false,autoBusy=false,autoNext=0;
 const setIO=h=>document.querySelectorAll('.io-box').forEach(e=>e.innerHTML=h);
 const dur=r=>{const m=Math.max(0,Math.round((new Date(r.out_time)-new Date(r.in_time))/60000));return Math.floor(m/60)+'h '+m%60+'m'};
@@ -861,7 +861,7 @@ async function loadIO(){
 }
 function drawIO(){
   const hn=holOf(new Date());
-  if(hn){return setIO(`<div class="lvbox wk"><b>${hn}</b><small>${hn.startsWith('Allama')?'School is closed today.':'Weekly holiday.'} In &amp; Out is not available.</small></div>`)}
+  if(hn){return setIO(`<div class="lvbox wk"><b>${hn}</b><small>${/^(Saturday|Sunday)/.test(hn)?'Weekly holiday.':'School is closed today.'} In &amp; Out is not available.</small></div>`)}
   if(todayLeave){const k=todayLeave.kind;return setIO(`<div class="lvbox ${k}"><b>${k==='sick'?'Sick Leave':'Casual Leave'}</b><small>You are on leave today. In &amp; Out is not available.</small></div>`)}
   const r=todayRow,late=isLate(r),early=isEarly(r);
   const inT=r&&r.in_time,outT=r&&r.out_time;
@@ -1004,7 +1004,7 @@ async function autoIO(){
 }
 setInterval(()=>{if(document.visibilityState==='visible')autoIO()},90000);
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&me&&!viewerRole(me.role)){autoNext=0;loadIO()}});
-const holOf=d=>d.getMonth()===10&&d.getDate()===9?'Allama Iqbal Day Leave':d.getDay()===6?'Saturday Leave':d.getDay()===0?'Sunday Leave':'';
+const holOf=d=>d.getMonth()===10&&d.getDate()===9?'Allama Iqbal Day Leave':(d.getFullYear()===2026&&d.getMonth()===10&&d.getDate()===13)?'Sufi Anwar Shah Leave':d.getDay()===6?'Saturday Leave':d.getDay()===0?'Sunday Leave':'';
 const MN=['January','February','March','April','May','June','July','August','September','October','November','December'];
 async function loadTD(){
   const day=$('td_day').value||dayStr(),dw=new Date(day+'T00:00:00').getDay();
